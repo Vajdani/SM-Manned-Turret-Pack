@@ -17,76 +17,10 @@ vec3_zero = sm.vec3.zero()
 vec3_one = sm.vec3.one()
 camOffset = sm.vec3.new(0,0,0.575)
 
----@type AmmoType[]
-ammoTypes = {
-    {
-        name = "AA Rounds",
-        damage = 100,
-        velocity = 300,
-        fireCooldown = 6,
-        spread = 5,
-        effect = "Turret - Shoot",
-        ammo = sm.uuid.new("cabf45e9-a47d-4086-8f5f-4f806d5ec3a2"),
-        uuid = sm.uuid.new("fad5bb05-b6da-46ec-92f7-9ffb38bd6c9b")
-    },
-    {
-        name = "Explosive Rounds",
-        damage = 10,
-        velocity = 130,
-        fireCooldown = 15,
-        spread = 8,
-        effect = "Turret - Shoot",
-        ammo = sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"),
-        uuid = projectile_explosivetape
-    },
-    {
-        name = "Water drops",
-        damage = 0,
-        velocity = 130,
-        fireCooldown = 8,
-        spread = 0,
-        effect = "Mountedwatercanon - Shoot",
-        ammo = sm.uuid.new( "869d4736-289a-4952-96cd-8a40117a2d28" ),
-        uuid = projectile_water
-    },
-    --[[{
-        name = "Chemical drops",
-        damage = 0,
-        velocity = 130,
-        fireCooldown = 6,
-        spread = 0,
-        effect = "Turret - Shoot",
-        ammo = "f74c2891-79a9-45e0-982e-4896651c2e25",
-        uuid = projectile_pesticide
-    },
-    {
-        name = "Fertilizer drops",
-        damage = 0,
-        velocity = 130,
-        fireCooldown = 6,
-        spread = 0,
-        effect = "Turret - Shoot",
-        ammo = "ac0b5b0a-14e1-4b31-8944-0a351fbfcc67",
-        uuid = projectile_fertilizer
-    },]]
-    {
-        name = "Potatoes",
-        damage = 56,
-        velocity = 200,
-        fireCooldown = 6,
-        spread = 8,
-        effect = "SpudgunBasic - BasicMuzzel",
-        ammo = sm.uuid.new( "bfcfac34-db0f-42d6-bd0c-74a7a5c95e82" ),
-        uuid = projectile_potato
-    }
-}
-containerToAmmoType = {
-    ["756594d6-6fdd-4f60-9289-a2416287f942"] = 1,
-    ["037e3ecb-e0a6-402b-8187-a7264863c64f"] = 2,
-    ["ea10d1af-b97a-46fb-8895-dfd1becb53bb"] = 3,
-    --["be29592a-ef58-4b1d-b18c-895023abd27f"] = 4,
-    --["76331bbf-abbd-4b8d-bb54-f721a5b6193b"] = 5,
-    ["096d4daf-639e-4947-a1a6-1890eaa94464"] = 4,
+ShootState = {
+    null = 0,
+    hold = 1,
+    toggle = 2
 }
 
 local repairTick = 0

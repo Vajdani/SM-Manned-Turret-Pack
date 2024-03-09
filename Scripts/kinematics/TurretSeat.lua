@@ -1,13 +1,81 @@
 ---@class TurretSeat : HarvestableClass
 ---@field base Interactable
+---@field ammoTypes AmmoType[]
+---@field containerToAmmoType { string: number }
+---@field baseUUID string
 TurretSeat = class()
 TurretSeat.poseWeightCount = 3
-
-local ShootState = {
-    null = 0,
-    hold = 1,
-    toggle = 2
+TurretSeat.ammoTypes = {
+    {
+        name = "AA Rounds",
+        damage = 100,
+        velocity = 300,
+        fireCooldown = 6,
+        spread = 5,
+        effect = "Turret - Shoot",
+        ammo = sm.uuid.new("cabf45e9-a47d-4086-8f5f-4f806d5ec3a2"),
+        uuid = sm.uuid.new("fad5bb05-b6da-46ec-92f7-9ffb38bd6c9b")
+    },
+    {
+        name = "Explosive Rounds",
+        damage = 10,
+        velocity = 130,
+        fireCooldown = 15,
+        spread = 8,
+        effect = "Turret - Shoot",
+        ammo = sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"),
+        uuid = projectile_explosivetape
+    },
+    {
+        name = "Water drops",
+        damage = 0,
+        velocity = 130,
+        fireCooldown = 8,
+        spread = 0,
+        effect = "Mountedwatercanon - Shoot",
+        ammo = sm.uuid.new( "869d4736-289a-4952-96cd-8a40117a2d28" ),
+        uuid = projectile_water
+    },
+    --[[{
+        name = "Chemical drops",
+        damage = 0,
+        velocity = 130,
+        fireCooldown = 6,
+        spread = 0,
+        effect = "Turret - Shoot",
+        ammo = "f74c2891-79a9-45e0-982e-4896651c2e25",
+        uuid = projectile_pesticide
+    },
+    {
+        name = "Fertilizer drops",
+        damage = 0,
+        velocity = 130,
+        fireCooldown = 6,
+        spread = 0,
+        effect = "Turret - Shoot",
+        ammo = "ac0b5b0a-14e1-4b31-8944-0a351fbfcc67",
+        uuid = projectile_fertilizer
+    },]]
+    {
+        name = "Potatoes",
+        damage = 56,
+        velocity = 200,
+        fireCooldown = 6,
+        spread = 8,
+        effect = "SpudgunBasic - BasicMuzzel",
+        ammo = sm.uuid.new( "bfcfac34-db0f-42d6-bd0c-74a7a5c95e82" ),
+        uuid = projectile_potato
+    }
 }
+TurretSeat.containerToAmmoType = {
+    ["756594d6-6fdd-4f60-9289-a2416287f942"] = 1,
+    ["037e3ecb-e0a6-402b-8187-a7264863c64f"] = 2,
+    ["ea10d1af-b97a-46fb-8895-dfd1becb53bb"] = 3,
+    --["be29592a-ef58-4b1d-b18c-895023abd27f"] = 4,
+    --["76331bbf-abbd-4b8d-bb54-f721a5b6193b"] = 5,
+    ["096d4daf-639e-4947-a1a6-1890eaa94464"] = 4,
+}
+TurretSeat.baseUUID = "e4497545-5f77-4d59-bfbf-ce5692284322"
 
 function TurretSeat:server_onCreate()
     self.shotCounter = 0
@@ -22,12 +90,12 @@ function TurretSeat:server_onUnload()
     sm.event.sendToInteractable(self.cl_base, "sv_respawnSeat")
 end
 
+---@param player Player
 function TurretSeat:server_onRemoved(player)
     local container = self.base:addContainer(5, 1)
-    local uuid = sm.uuid.new("e4497545-5f77-4d59-bfbf-ce5692284322")
     sm.container.beginTransaction()
-    sm.container.collect(container, uuid, 1)
-    sm.container.moveAllToCarryContainer( container, player, sm.item.getShapeDefaultColor(uuid) )
+    sm.container.collect(container, sm.uuid.new(self.baseUUID), 1)
+    sm.container.moveAllToCarryContainer( container, player, self.base.shape.color )
     sm.container.endTransaction()
     self.base:removeContainer(5)
 
@@ -90,7 +158,7 @@ function TurretSeat:sv_shoot(ammoType, caller)
     local dir = rot * vec3_up
     local canShoot = self:canShoot(ammoType)
     if canShoot then
-        local ammoData = ammoTypes[ammoType]
+        local ammoData = self.ammoTypes[ammoType]
         sm.projectile.projectileAttack( ammoData.uuid, ammoData.damage, endPos + dir * (hit and 0 or 0.25), sm.noise.gunSpread(dir, ammoData.spread) * ammoData.velocity, caller )
     end
 
@@ -212,10 +280,10 @@ function TurretSeat:client_onAction(action, state)
             self.lightActive = not self.lightActive
             self:cl_updateHotbar()
             self.network:sendToServer("sv_toggleLight", self.lightActive)
-        elseif action == 8 and not sm.game.getEnableAmmoConsumption() and self.cl_base:getSingleParent() == nil then
+        elseif action == 8 and #self.ammoTypes > 1 and not sm.game.getEnableAmmoConsumption() and self.cl_base:getSingleParent() == nil then
             if self.shootState == ShootState.null then
-                local ammoType = self.ammoType < #ammoTypes and self.ammoType + 1 or 1
-                sm.gui.displayAlertText("Ammunition selected: #df7f00"..ammoTypes[ammoType].name, 2)
+                local ammoType = self.ammoType < #self.ammoTypes and self.ammoType + 1 or 1
+                sm.gui.displayAlertText("Ammunition selected: #df7f00"..self.ammoTypes[ammoType].name, 2)
                 sm.audio.play("PaintTool - ColorPick")
 
                 self.ammoType = ammoType
@@ -250,7 +318,7 @@ function TurretSeat:client_onFixedUpdate()
 
     self.shootTimer = math.max(self.shootTimer - 1, 0)
     if self.shootState ~= ShootState.null and self.shootTimer <= 0 then
-        self.shootTimer = ammoTypes[self.ammoType].fireCooldown
+        self.shootTimer = self.ammoTypes[self.ammoType].fireCooldown
         self.network:sendToServer("sv_shoot", self.ammoType)
     end
 end
@@ -271,7 +339,7 @@ function TurretSeat:client_onUpdate(dt)
         local parent = self.cl_base:getSingleParent()
         if parent then
             local container = parent:getContainer(0)
-            local uuid = ammoTypes[self.ammoType].ammo
+            local uuid = self.ammoTypes[self.ammoType].ammo
             sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>%d / %d</p>"):format(sm.container.totalQuantity(container, uuid), container:getSize() * container:getMaxStackSize()))
         end
     end
@@ -300,7 +368,7 @@ function TurretSeat:cl_updateHotbar()
         })
     else
         self.hotbar:setGridItem( "ButtonGrid", 3, {
-            itemId = tostring(ammoTypes[self.ammoType].ammo),
+            itemId = tostring(self.ammoTypes[self.ammoType].ammo),
             active = false
         })
     end
@@ -314,7 +382,7 @@ function TurretSeat:cl_shoot(args)
             self.recoil_r = 1
         end
 
-        sm.effect.playEffect(ammoTypes[args.ammoType].effect, args.pos, vec3_zero, sm.vec3.getRotation(vec3_up, args.dir))
+        sm.effect.playEffect(self.ammoTypes[args.ammoType].effect, args.pos, vec3_zero, sm.vec3.getRotation(vec3_up, args.dir))
     else
         sm.audio.play("Lever off", args.pos)
 
@@ -352,7 +420,7 @@ end
 
 function TurretSeat:getAmmoType(parent)
     if parent then
-        return containerToAmmoType[tostring(parent.shape.uuid)]
+        return self.containerToAmmoType[tostring(parent.shape.uuid)]
     end
 
     if not sm.game.getEnableAmmoConsumption() then
@@ -366,7 +434,7 @@ function TurretSeat:canShoot(ammoType)
     local parent = self.base:getSingleParent()
     if parent then
         sm.container.beginTransaction()
-        sm.container.spend(parent:getContainer(0), ammoTypes[ammoType].ammo, 1)
+        sm.container.spend(parent:getContainer(0), self.ammoTypes[ammoType].ammo, 1)
         return sm.container.endTransaction()
     end
 

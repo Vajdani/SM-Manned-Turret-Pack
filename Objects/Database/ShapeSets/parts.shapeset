@@ -21,6 +21,7 @@
          "rotationSet" : "PropY",
          "scripted" : {
             "classname" : "TurretBase",
+            "data" : {},
             "filename" : "$CONTENT_DATA/Scripts/interactables/TurretBase.lua"
          },
          "sticky" : "-Y",
@@ -51,6 +52,60 @@
          },
          "sticky" : "-X+X-Y",
          "uuid" : "891bd0f5-f387-4020-a2b4-1bace9932ec0"
+      },
+      {
+         "carryItem" : true,
+         "color" : "6b7d07",
+         "hull" : {
+            "col" : "$CONTENT_DATA/Objects/Mesh/obj_interactive_turret_base_col.obj",
+            "x" : 7,
+            "y" : 3,
+            "z" : 7
+         },
+         "name" : "obj_interactive_cannon_base",
+         "physicsMaterial" : "Metal",
+         "ratings" : {
+            "durability" : 10
+         },
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/obj_interactive_turret_base.rend",
+         "restrictions" : {
+            "destructable" : false
+         },
+         "rotationSet" : "PropY",
+         "scripted" : {
+            "classname" : "CannonBase",
+            "data" : {},
+            "filename" : "$CONTENT_DATA/Scripts/interactables/CannonBase.lua"
+         },
+         "sticky" : "-Y",
+         "uuid" : "a0c96d35-37ca-4cf9-82d8-9b9077132918"
+      },
+      {
+         "color" : "9f2600",
+         "friction" : 0.250,
+         "name" : "obj_interactive_cannon_ball",
+         "physicsMaterial" : "Metal",
+         "qualityLevel" : 0,
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/obj_interactive_cannon_ball.rend",
+         "rotationSet" : "PropZ",
+         "scripted" : {
+            "classname" : "CannonBall",
+            "data": {
+					"destructionLevel": 7,
+					"destructionRadius": 4.0,
+					"impulseRadius": 12.0,
+					"impulseMagnitude": 40.0,
+					"effectExplosion": "PropaneTank - ExplosionBig",
+					"effectActivate": "PropaneTank - ActivateBig"
+				},
+            "filename" : "$CONTENT_DATA/Scripts/interactables/CannonBall.lua"
+         },
+         "sphere" : {
+            "diameter" : 5
+         },
+         "sticky" : "-Z",
+         "uuid" : "24d5e812-3902-4ac3-b214-a0c924a5c40f",
+         "showInInventory": false
       }
    ]
 }

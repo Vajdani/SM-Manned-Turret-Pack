@@ -1,4 +1,6 @@
 ---@class TurretBase : ShapeClass
+---@field seatUUID string
+---@field maxHealth number
 ---@field turret Harvestable
 ---@field cl_turret Harvestable
 TurretBase = class()
@@ -9,6 +11,7 @@ TurretBase.connectionOutput = sm.interactable.connectionType.none
 TurretBase.colorNormal = sm.color.new( 0xcb0a00ff )
 TurretBase.colorHighlight = sm.color.new( 0xee0a00ff )
 TurretBase.maxHealth = 1000
+TurretBase.seatUUID = "22b00c9e-e040-48e2-b67a-3f41a6470354"
 
 function TurretBase:server_onCreate()
     local data = self.storage:load() or {}
@@ -105,8 +108,7 @@ end
 
 function TurretBase:sv_createTurret()
     if self.destroyed then return end
-
-    self.turret = sm.harvestable.create(sm.uuid.new("22b00c9e-e040-48e2-b67a-3f41a6470354"), self:getSeatPos(), self.shape.worldRotation)
+    self.turret = sm.harvestable.create(sm.uuid.new(self.seatUUID), self:getSeatPos(), self.shape.worldRotation)
     self.turret:setParams({ base = self.interactable, ammoType = self.ammoType })
     self.network:setClientData(self.turret, 1)
 end
