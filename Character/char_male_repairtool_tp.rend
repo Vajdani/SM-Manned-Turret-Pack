@@ -1,0 +1,14 @@
+{
+	"lodList": [{
+		"animationList" : [	
+			{ "name": "spudgun_spine_bend", 			"file": "$GAME_DATA/Character/Char_Male/Animations/Thirdperson/Posetarget/ani_posetarget_spudgun_spine_bend.dae" },
+
+			{ "name" : "weldtool_pickup", 				"file" : "$GAME_DATA/Character/Char_Male/Animations/Thirdperson/Weldtool/ani_char_male_weldtool_pickup.dae" 	},
+			{ "name" : "weldtool_use_into", 			"file" : "$GAME_DATA/Character/Char_Male/Animations/Thirdperson/Weldtool/ani_char_male_weldtool_use_into.dae" 	},
+			{ "name" : "weldtool_use_idle", 			"file" : "$GAME_DATA/Character/Char_Male/Animations/Thirdperson/Weldtool/ani_char_male_weldtool_use_idle.dae",			"looping": true },
+			{ "name" : "weldtool_use_exit", 			"file" : "$GAME_DATA/Character/Char_Male/Animations/Thirdperson/Weldtool/ani_char_male_weldtool_use_exit.dae" 	},
+			{ "name" : "weldtool_putdown", 				"file" : "$GAME_DATA/Character/Char_Male/Animations/Thirdperson/Weldtool/ani_char_male_weldtool_putdown.dae" 	}
+		],
+		"maxViewDistance": 1000.0
+	}]
+}

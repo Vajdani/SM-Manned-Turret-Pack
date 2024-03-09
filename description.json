@@ -1,0 +1,17 @@
+{
+   "allow_add_mods" : true,
+   "custom_icons" : false,
+   "dependencies" : [
+      {
+         "fileId" : 3107289209,
+         "localId" : "0407ffa7-c133-4934-a490-fe737c11d262",
+         "name" : "Manned Turret Kinematic"
+      }
+   ],
+   "description" : "[h1]Introducing... the [b]Manned Turret![/b][/h1]\n\nThis player controlled turret is capable of many things:\n[list]\n[*]Taking down bots with potatoes/AA rounds\n[*]Watering soil plots\n[*]Lighting up an area\n[*]Rapidly disassembling anything using the Explosive rounds\n[/list]\n\nBe careful though, it's not invincible!\n\n[h1]And all of this is available in survival, thanks to [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2816900681]Questionable Mark's Modded Craftbot Recipes[/url]![/h1]\n\n[h1]Credits[/h1]\n[list]\n    [*][b]Vajdani[/b] - Scripting\n    [*][b]Illumina[/b] - Models, textures, thumbnail\n[/list]\n\nHave fun!",
+   "fileId" : 3107290429,
+   "localId" : "f51045bd-3f94-476a-8053-55ba172d19a5",
+   "name" : "Manned Turret",
+   "type" : "Blocks and Parts",
+   "version" : 1
+}

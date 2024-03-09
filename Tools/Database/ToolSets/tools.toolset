@@ -1,0 +1,16 @@
+{
+   "toolList" : [
+      {
+         "name" : "RepairTool",
+         "previewRenderable" : "$GAME_DATA/Character/Char_Tools/Char_smallhammer/char_smallhammer_fp.rend",
+         "previewRotation": [ 1, 0, 0, 0, 0, -1, 0, 1, 0 ],
+         "script" : {
+            "class" : "RepairTool",
+            "data" : {},
+            "file" : "$CONTENT_DATA/Scripts/RepairTool.lua"
+         },
+         "uuid" : "68f9a1ef-dbbc-40c9-8006-0779ececcbf5",
+         "showInInventory": false
+      }
+   ]
+}

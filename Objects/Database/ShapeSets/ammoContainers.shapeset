@@ -1,0 +1,66 @@
+{
+    "partList": [
+        {
+            "box": {
+                "x": 4,
+                "y": 3,
+                "z": 2
+            },
+            "color": "505c30",
+            "flammable": false,
+            "name": "obj_container_turret_normal_ammo",
+            "physicsMaterial": "Metal",
+            "ratings": {
+                "buoyancy": 6,
+                "density": 5,
+                "durability": 6,
+                "friction": 4
+            },
+            "renderable": "$CONTENT_DATA/Objects/Renderables/obj_container_turret_normal_ammo.rend",
+            "restrictions": {
+                "usable": true
+            },
+            "rotationSet": "PropYZ",
+            "scripted": {
+                "classname": "TurretNormalAmmoContainer",
+                "data": {
+                    "filterUid": "cabf45e9-a47d-4086-8f5f-4f806d5ec3a2",
+                    "stackSize": 50
+                },
+                "filename": "$CONTENT_DATA/Scripts/interactables/ConsumableContainer.lua"
+            },
+            "uuid": "756594d6-6fdd-4f60-9289-a2416287f942"
+        },
+        {
+            "box": {
+                "x": 4,
+                "y": 3,
+                "z": 2
+            },
+            "color": "785c30",
+            "flammable": false,
+            "name": "obj_container_turret_explosive_ammo",
+            "physicsMaterial": "Metal",
+            "ratings": {
+                "buoyancy": 6,
+                "density": 5,
+                "durability": 6,
+                "friction": 4
+            },
+            "renderable": "$CONTENT_DATA/Objects/Renderables/obj_container_turret_explosive_ammo.rend",
+            "restrictions": {
+                "usable": true
+            },
+            "rotationSet": "PropYZ",
+            "scripted": {
+                "classname": "TurretExplosiveAmmoContainer",
+                "data": {
+                    "filterUid": "4c69fa44-dd0d-42ce-9892-e61d13922bd2",
+                    "stackSize": 50
+                },
+                "filename": "$CONTENT_DATA/Scripts/interactables/ConsumableContainer.lua"
+            },
+            "uuid": "037e3ecb-e0a6-402b-8187-a7264863c64f"
+        }
+    ]
+}

@@ -1,0 +1,26 @@
+{
+    "e4497545-5f77-4d59-bfbf-ce5692284322": {
+        "description": "The turret has a #df7f001000 health points#919191, and can be #df7f00damaged #919191via #ffffffprojectiles#919191, #ffffffmelee attacks#919191 and #ffffffexplosions#919191.\n\nThe cannons can #df7f00fire multiple types of projectiles#919191, it just depends on the #df7f00connected container#919191! (#ffffffAA Rounds#919191, #ffffffExplosive Rounds#919191, #ffffffWater#919191, #ffffffPotatoes#919191)\n\n(#ffffffIn creative#919191: Press the bind for the #df7f00ammo icon#919191 to #df7f00switch ammo types#919191)",
+        "title": "Manned Turret"
+    },
+    "891bd0f5-f387-4020-a2b4-1bace9932ec0": {
+        "description": "A mounted version of the Manned Turret's cannons! Connect a #df7f00logic input to fire#919191!\n\nIt can #df7f00fire multiple types of projectiles#919191, it just depends on the #df7f00connected container#919191! (#ffffffAA Rounds#919191, #ffffffExplosive Rounds#919191, #ffffffWater#919191, #ffffffPotatoes#919191)\n\n(#ffffffIn creative#919191: #df7f00Interact with the cannon#919191 to #df7f00switch ammo types#919191)",
+        "title": "Turret Cannon"
+    },
+    "756594d6-6fdd-4f60-9289-a2416287f942": {
+        "description": "Can store AA Rounds to be used with the Manned Turret.",
+        "title": "AA Ammo Container"
+    },
+    "037e3ecb-e0a6-402b-8187-a7264863c64f": {
+        "description": "Can store Explosive Rounds to be used with the Manned Turret.",
+        "title": "Explosive Ammo Container"
+    },
+    "cabf45e9-a47d-4086-8f5f-4f806d5ec3a2": {
+        "description": "Used as ammo for the Manned Turret.\n\n'We fire the whole bullet! That's 65% more bullet per bullet!'",
+        "title": "AA Round"
+    },
+    "4c69fa44-dd0d-42ce-9892-e61d13922bd2": {
+        "description": "Used as ammo for the Manned Turret.\n\n'We fire the whole bullet! That's 65% more bullet per bullet!'",
+        "title": "Explosive Round"
+    }
+}

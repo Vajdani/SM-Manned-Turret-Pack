@@ -1,0 +1,116 @@
+{
+   "partList" : [
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "color" : "ffffff",
+         "name" : "turret_seat_debris_bar",
+         "physicsMaterial" : "Plastic",
+         "ratings" : {},
+         "renderable" : "$CONTENT_DATA/Particles/Renderables/turret_seat_debris_bar.rend",
+         "rotationSet" : "Default",
+         "showInInventory" : false,
+         "stackSize" : 1,
+         "uuid" : "81b668f4-af00-4fbc-b359-dd1b35b939e5"
+      },
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "color" : "ffffff",
+         "name" : "turret_seat_debris_barrel",
+         "physicsMaterial" : "Plastic",
+         "ratings" : {},
+         "renderable" : "$CONTENT_DATA/Particles/Renderables/turret_seat_debris_barrel.rend",
+         "rotationSet" : "Default",
+         "showInInventory" : false,
+         "stackSize" : 1,
+         "uuid" : "5dde0f36-1cbb-47ba-a9ba-a0cc2b1db555"
+      },
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "color" : "ffffff",
+         "name" : "turret_seat_debris_reciever_left",
+         "physicsMaterial" : "Plastic",
+         "ratings" : {},
+         "renderable" : "$CONTENT_DATA/Particles/Renderables/turret_seat_debris_reciever_left.rend",
+         "rotationSet" : "Default",
+         "showInInventory" : false,
+         "stackSize" : 1,
+         "uuid" : "a58a7a52-6737-468f-a499-aee18faedabb"
+      },
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "color" : "ffffff",
+         "name" : "turret_seat_debris_reciever_right",
+         "physicsMaterial" : "Plastic",
+         "ratings" : {},
+         "renderable" : "$CONTENT_DATA/Particles/Renderables/turret_seat_debris_reciever_right.rend",
+         "rotationSet" : "Default",
+         "showInInventory" : false,
+         "stackSize" : 1,
+         "uuid" : "17a8ce54-0617-422c-bac7-9c5c07203094"
+      },
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "color" : "ffffff",
+         "name" : "turret_seat_debris_shield_left",
+         "physicsMaterial" : "Plastic",
+         "ratings" : {},
+         "renderable" : "$CONTENT_DATA/Particles/Renderables/turret_seat_debris_shield_left.rend",
+         "rotationSet" : "Default",
+         "showInInventory" : false,
+         "stackSize" : 1,
+         "uuid" : "ea9511ab-26bf-4dcb-9929-7c688f2b240e"
+      },
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "color" : "ffffff",
+         "name" : "turret_seat_debris_shield_right",
+         "physicsMaterial" : "Plastic",
+         "ratings" : {},
+         "renderable" : "$CONTENT_DATA/Particles/Renderables/turret_seat_debris_shield_right.rend",
+         "rotationSet" : "Default",
+         "showInInventory" : false,
+         "stackSize" : 1,
+         "uuid" : "d793783b-6ac8-4fb7-b9b4-b7f2d159efed"
+      },
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "color" : "ffffff",
+         "name" : "kin_interactive_turret_seat_hologram",
+         "physicsMaterial" : "Plastic",
+         "ratings" : {},
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/kin_interactive_turret_seat_hologram.rend",
+         "rotationSet" : "Default",
+         "showInInventory" : false,
+         "stackSize" : 1,
+         "uuid" : "49ce0ee7-7d9b-43b0-8160-5dc3fb127cfb"
+      }
+   ]
+}

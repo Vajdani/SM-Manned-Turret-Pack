@@ -1,0 +1,25 @@
+{
+   "lodList" : [
+      {
+         "mesh" : "$CONTENT_DATA/Objects/Mesh/kin_interactive_turret_seat.fbx",
+         "subMeshList" : [
+            {
+               "material" : "DifAsgNor",
+               "textureList" : [
+                  "$CONTENT_DATA/Objects/Textures/kin_interactive_turret_02_dif.tga",
+                  "$CONTENT_DATA/Objects/Textures/kin_interactive_turret_02_asg.tga",
+                  "$CONTENT_DATA/Objects/Textures/kin_interactive_turret_02_nor.tga"
+               ]
+            },
+            {
+               "material" : "DifAsgNor",
+               "textureList" : [
+                  "$CONTENT_DATA/Objects/Textures/kin_interactive_turret_01_dif.tga",
+                  "$CONTENT_DATA/Objects/Textures/kin_interactive_turret_01_asg.tga",
+                  "$CONTENT_DATA/Objects/Textures/kin_interactive_turret_01_nor.tga"
+               ]
+            }
+         ]
+      }
+   ]
+}

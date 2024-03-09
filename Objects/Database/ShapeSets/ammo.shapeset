@@ -1,0 +1,34 @@
+{
+   "partList": [
+      {
+         "cylinder": {
+            "axis": "Z",
+            "depth": 1,
+            "diameter": 1
+         },
+         "name": "obj_turret_cardridge_normal",
+         "physicsMaterial": "Metal",
+         "renderable": "$CONTENT_DATA/Objects/Renderables/obj_turret_cardridge_normal.rend",
+         "rotationSet": "PropY",
+         "sticky": "-Y",
+         "stackSize": 100,
+         "uuid": "cabf45e9-a47d-4086-8f5f-4f806d5ec3a2",
+         "consumable": true
+      },
+      {
+         "cylinder": {
+            "axis": "Z",
+            "depth": 1,
+            "diameter": 1
+         },
+         "name": "obj_turret_cardridge_explosive",
+         "physicsMaterial": "Metal",
+         "renderable": "$CONTENT_DATA/Objects/Renderables/obj_turret_cardridge_explosive.rend",
+         "rotationSet": "PropY",
+         "sticky": "-Y",
+         "stackSize": 100,
+         "uuid": "4c69fa44-dd0d-42ce-9892-e61d13922bd2",
+         "consumable": true
+      }
+   ]
+}

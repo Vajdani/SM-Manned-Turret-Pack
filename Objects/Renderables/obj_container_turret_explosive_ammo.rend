@@ -1,0 +1,39 @@
+{
+   "lodList" : [
+      {
+         "mesh" : "$CONTENT_DATA/Objects/Mesh/obj_container_turret_ammo.fbx",
+         "subMeshMap" : {
+            "ammobox" : {
+               "material" : "DifAsgNor",
+               "textureList" : [
+                  "$CONTENT_DATA/Objects/Textures/obj_container_turret_ammo_exp_dif.tga",
+                  "$CONTENT_DATA/Objects/Textures/obj_container_turret_ammo_exp_asg.tga",
+                  "$CONTENT_DATA/Objects/Textures/obj_container_turret_ammo_exp_nor.tga"
+               ]
+            },
+            "connectionpoint" : {
+               "material" : "DifAsgNor",
+               "textureList" : [
+                  "$SURVIVAL_DATA/Objects/Textures/containers/obj_interactive_container_connectorpoint_dif.tga",
+                  "$SURVIVAL_DATA/Objects/Textures/containers/obj_interactive_container_connectorpoint_asg.tga",
+                  "$CONTENT_DATA/Objects/Textures/obj_interactive_container_connectorpoint_nor.TGA"
+               ]
+            },
+            "screen" : {
+               "custom" : {
+                  "uv0" : {
+                     "u" : 1.0,
+                     "v" : 0.1669999957084656
+                  }
+               },
+               "material" : "UVAnimDifAsgNor",
+               "textureList" : [
+                  "$SURVIVAL_DATA/Objects/Textures/containers/obj_containers_screen_dif.tga",
+                  "$SURVIVAL_DATA/Objects/Textures/containers/obj_containers_screen_asg.tga",
+                  "$CONTENT_DATA/Objects/Textures/obj_containers_screen_nor.tga"
+               ]
+            }
+         }
+      }
+   ]
+}
