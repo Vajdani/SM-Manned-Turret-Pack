@@ -50,8 +50,8 @@ function CannonSeat:client_onUpdate(dt)
     if not sm.exists(self.cl_base) then return end
 
     local speed = dt * 7.5
-    self.recoil_r = math.max(self.recoil_r - speed, 0)
-    self.harvestable:setPoseWeight(1, sm.util.easing("easeOutCubic", self.recoil_r))
+    self.recoil_l = math.max(self.recoil_l - speed, 0)
+    self.harvestable:setPoseWeight(0, sm.util.easing("easeOutCubic", self.recoil_l))
 
     if self.seated then
         sm.localPlayer.getPlayer().clientPublicData.customCameraData = { cameraState = 5 }
@@ -75,7 +75,7 @@ end
 
 function CannonSeat:cl_shoot(args)
     if args.canShoot then
-        self.recoil_r = 1
+        self.recoil_l = 1
         sm.effect.playEffect(self.ammoTypes[args.ammoType].effect, args.pos, vec3_zero, sm.vec3.getRotation(vec3_up, args.dir))
     else
         sm.audio.play("Lever off", args.pos)

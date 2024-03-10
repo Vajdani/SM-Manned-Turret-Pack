@@ -111,6 +111,22 @@
          "showInInventory" : false,
          "stackSize" : 1,
          "uuid" : "49ce0ee7-7d9b-43b0-8160-5dc3fb127cfb"
+      },
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "color" : "ffffff",
+         "name" : "kin_interactive_cannon_seat_hologram",
+         "physicsMaterial" : "Plastic",
+         "ratings" : {},
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/kin_interactive_cannon_seat_hologram.rend",
+         "rotationSet" : "Default",
+         "showInInventory" : false,
+         "stackSize" : 1,
+         "uuid" : "80196448-2fd0-40cc-8085-093f27f48158"
       }
    ]
 }

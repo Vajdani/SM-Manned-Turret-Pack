@@ -1,6 +1,12 @@
+---@class ExplosionDebris
+---@field uuid Uuid
+---@field offset Vec3
+
 ---@class TurretBase : ShapeClass
----@field seatUUID string
 ---@field maxHealth number
+---@field seatUUID string
+---@field seatHologramUUID string
+---@field explosionDebrisData ExplosionDebris[]
 ---@field turret Harvestable
 ---@field cl_turret Harvestable
 TurretBase = class()
@@ -12,6 +18,17 @@ TurretBase.colorNormal = sm.color.new( 0xcb0a00ff )
 TurretBase.colorHighlight = sm.color.new( 0xee0a00ff )
 TurretBase.maxHealth = 1000
 TurretBase.seatUUID = "22b00c9e-e040-48e2-b67a-3f41a6470354"
+TurretBase.seatHologramUUID = "49ce0ee7-7d9b-43b0-8160-5dc3fb127cfb"
+TurretBase.explosionDebrisData = {
+    { uuid = sm.uuid.new("81b668f4-af00-4fbc-b359-dd1b35b939e5"), offset = sm.vec3.new(0.960741,    -2.49486,   -0.842322) * 0.25 },
+    { uuid = sm.uuid.new("81b668f4-af00-4fbc-b359-dd1b35b939e5"), offset = sm.vec3.new(-0.960741,   -2.49486,   -0.842322) * 0.25 },
+    { uuid = sm.uuid.new("5dde0f36-1cbb-47ba-a9ba-a0cc2b1db555"), offset = sm.vec3.new(-1.07416,    1.37402,      5.55211) * 0.25 },
+    { uuid = sm.uuid.new("5dde0f36-1cbb-47ba-a9ba-a0cc2b1db555"), offset = sm.vec3.new(1.07416,     1.37402,      5.55211) * 0.25 },
+    { uuid = sm.uuid.new("a58a7a52-6737-468f-a499-aee18faedabb"), offset = sm.vec3.new(0.971095,    1.18554,      2.06928) * 0.25 },
+    { uuid = sm.uuid.new("17a8ce54-0617-422c-bac7-9c5c07203094"), offset = sm.vec3.new(-0.971095,   1.18554,      2.06928) * 0.25 },
+    { uuid = sm.uuid.new("ea9511ab-26bf-4dcb-9929-7c688f2b240e"), offset = sm.vec3.new(1.45117,     -0.877968,    2.84755) * 0.25 },
+    { uuid = sm.uuid.new("d793783b-6ac8-4fb7-b9b4-b7f2d159efed"), offset = sm.vec3.new(-1.45117,    -0.877968,    2.84755) * 0.25 },
+}
 
 function TurretBase:server_onCreate()
     local data = self.storage:load() or {}
@@ -285,7 +302,7 @@ function TurretBase:client_onClientDataUpdate(data, channel)
             if not self.repairVisualization or not sm.exists(self.repairVisualization) then
                 if health > 0 then
                     self.repairVisualization = sm.effect.createEffect("ShapeRenderable", self.interactable)
-                    self.repairVisualization:setParameter("uuid", sm.uuid.new("49ce0ee7-7d9b-43b0-8160-5dc3fb127cfb"))
+                    self.repairVisualization:setParameter("uuid", sm.uuid.new(self.seatHologramUUID))
                     self.repairVisualization:setParameter("visualization", true)
                     self.repairVisualization:setOffsetPosition(vec3_forward * 1.33)
                     self.repairVisualization:setScale(vec3_one * 0.25)
@@ -364,16 +381,6 @@ function TurretBase:cl_onRepairEnd(tool)
     sm.event.sendToTool(tool, "cl_markUnforce")
 end
 
-local debris = {
-    { uuid = sm.uuid.new("81b668f4-af00-4fbc-b359-dd1b35b939e5"), offset = sm.vec3.new(0.960741,    -2.49486,   -0.842322) * 0.25 },
-    { uuid = sm.uuid.new("81b668f4-af00-4fbc-b359-dd1b35b939e5"), offset = sm.vec3.new(-0.960741,   -2.49486,   -0.842322) * 0.25 },
-    { uuid = sm.uuid.new("5dde0f36-1cbb-47ba-a9ba-a0cc2b1db555"), offset = sm.vec3.new(-1.07416,    1.37402,      5.55211) * 0.25 },
-    { uuid = sm.uuid.new("5dde0f36-1cbb-47ba-a9ba-a0cc2b1db555"), offset = sm.vec3.new(1.07416,     1.37402,      5.55211) * 0.25 },
-    { uuid = sm.uuid.new("a58a7a52-6737-468f-a499-aee18faedabb"), offset = sm.vec3.new(0.971095,    1.18554,      2.06928) * 0.25 },
-    { uuid = sm.uuid.new("17a8ce54-0617-422c-bac7-9c5c07203094"), offset = sm.vec3.new(-0.971095,   1.18554,      2.06928) * 0.25 },
-    { uuid = sm.uuid.new("ea9511ab-26bf-4dcb-9929-7c688f2b240e"), offset = sm.vec3.new(1.45117,     -0.877968,    2.84755) * 0.25 },
-    { uuid = sm.uuid.new("d793783b-6ac8-4fb7-b9b4-b7f2d159efed"), offset = sm.vec3.new(-1.45117,    -0.877968,    2.84755) * 0.25 },
-}
 function TurretBase:cl_onDestroy()
     local seatPos = self:getSeatPos()
 
@@ -381,7 +388,7 @@ function TurretBase:cl_onDestroy()
 
     local rot = self.cl_turret.worldRotation
     local col = self.shape.color
-    for k, data in pairs(debris) do
+    for k, data in pairs(self.explosionDebrisData) do
         local pos = seatPos + rot * data.offset
         --sm.debris.createDebris(data.uuid, pos, rot, (pos - seatPos):normalize() * (math.random(100, 0) * 0.1), vec3_zero, col)
         sm.effect.playEffect(
