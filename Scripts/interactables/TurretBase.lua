@@ -105,8 +105,8 @@ function TurretBase:sv_takeDamage(damage)
 
     print(string.format("[TURRET ID[%s]] Took %s damage: %s / %s HP", self.shape.id, damage, newHealth, self.maxHealth))
     self.cl_health = newHealth
-    if sm.exists(self.cl_turret) then
-        self.cl_turret.publicData.health = newHealth
+    if sm.exists(self.turret) then
+        self.turret.publicData.health = newHealth
     end
 
     local data = { health = newHealth, destroyed = self.destroyed, prevDestroyed = prevDestroyed, ammoType = self.ammoType }
@@ -131,7 +131,7 @@ function TurretBase:sv_createTurret()
 end
 
 function TurretBase:sv_updateDir(dir)
-    if not sm.exists(self.turret) then return end
+    if not sm.exists(self.turret) or not self.turret.publicData.controlsEnabled then return end
 
     self.network:sendToClients("cl_n_updateDir", dir)
 end
@@ -259,7 +259,7 @@ function TurretBase:client_onUpdate(dt)
 
     self.cl_turret:setPosition(self:getSeatPos())
 
-    if not self.shape.body:isOnLift() and self.cl_turret:getSeatCharacter() == sm.localPlayer.getPlayer().character then
+    if not self.shape.body:isOnLift() and self.cl_turret:getSeatCharacter() == sm.localPlayer.getPlayer().character and self.cl_turret.clientPublicData.controlsEnabled then
         local x, y = sm.localPlayer.getMouseDelta()
         if x ~= 0 or y ~= 0 then
             local dir = { x = x , y = y }

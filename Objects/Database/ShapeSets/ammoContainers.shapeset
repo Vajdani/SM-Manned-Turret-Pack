@@ -86,8 +86,8 @@
             "scripted": {
                 "classname": "CannonAmmoContainer",
                 "data": {
-                    "filterUid": "6d8215fc-8d35-4754-a580-6d1974b87fb7",
-                    "stackSize": 50
+                    "filterUid": "24d5e812-3902-4ac3-b214-a0c924a5c40f",
+                    "stackSize": 5
                 },
                 "filename": "$CONTENT_DATA/Scripts/interactables/ConsumableContainer.lua"
             },

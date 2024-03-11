@@ -83,7 +83,9 @@ function TurretSeat:server_onCreate()
     self.network:setClientData(self.base, 1)
     self.network:setClientData(self.params.ammoType, 2)
 
-    self.harvestable.publicData = { health = TurretBase.maxHealth }
+    self.sv_controlsEnabled = true
+
+    self.harvestable.publicData = { health = TurretBase.maxHealth, controlsEnabled = true }
 end
 
 function TurretSeat:server_onUnload()
@@ -141,12 +143,16 @@ function TurretSeat:server_canErase()
 end
 
 function TurretSeat:sv_updateAmmoType(ammoType)
+    if not self.sv_controlsEnabled then return end
+
     sm.event.sendToInteractable(self.base, "sv_e_setAmmoType", ammoType)
     self.network:setClientData(ammoType, 2)
 end
 
 local rayFilter = sm.physics.filter.dynamicBody + sm.physics.filter.staticBody + sm.physics.filter.terrainAsset + sm.physics.filter.terrainSurface + sm.physics.filter.harvestable
 function TurretSeat:sv_shoot(ammoType, caller)
+    if not self.sv_controlsEnabled then return end
+
     self.shotCounter = self.shotCounter + 1
     local startPos, endPos = self:getFirePos()
     local rot = self.harvestable.worldRotation
@@ -166,7 +172,14 @@ function TurretSeat:sv_shoot(ammoType, caller)
 end
 
 function TurretSeat:sv_toggleLight(toggle)
+    if not self.sv_controlsEnabled then return end
     self.network:sendToClients("cl_toggleLight", toggle)
+end
+
+function TurretSeat:sv_SetTurretControlsEnabled(state)
+    self.sv_controlsEnabled = state
+    self.harvestable.publicData.controlsEnabled = state
+    self.network:sendToClients("cl_SetTurretControlsEnabled", state)
 end
 
 
@@ -186,8 +199,9 @@ function TurretSeat:client_onCreate()
     self:cl_toggleLight(false)
 
     self.seated = false
+    self.cl_controlsEnabled = true
 
-    self.harvestable.clientPublicData = { health = TurretBase.maxHealth }
+    self.harvestable.clientPublicData = { health = TurretBase.maxHealth, controlsEnabled = true }
 end
 
 function TurretSeat:client_onDestroy()
@@ -208,9 +222,9 @@ end
 
 function TurretSeat:client_canErase()
     local canErase = not g_repairingTurret and self.harvestable.clientPublicData.health >= TurretBase.maxHealth and self.harvestable:getSeatCharacter() == nil
-    --[[if not canErase then
+    if not canErase then
         sm.gui.setInteractionText("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>Unable to pick up damaged turret</p>")
-    end]]
+    end
 
     return canErase
 end
@@ -259,6 +273,8 @@ function TurretSeat:cl_unSeat()
 end
 
 function TurretSeat:client_onAction(action, state)
+    if not self.cl_controlsEnabled then return true end
+
     if self.cl_base.shape.body:isOnLift() then
         if action == 15 then
             self:cl_unSeat()
@@ -402,6 +418,16 @@ function TurretSeat:cl_toggleLight(toggle)
 
     self.lightActive = toggle
     self.harvestable:setUvFrameIndex(toggle and 1 or 0)
+end
+
+function TurretSeat:cl_SetTurretControlsEnabled(state)
+    self.cl_controlsEnabled = state
+    self.harvestable.clientPublicData.controlsEnabled = state
+
+    if self.harvestable:getSeatCharacter():getPlayer() == sm.localPlayer.getPlayer() then
+        self.shootState = ShootState.null
+        self:cl_updateHotbar()
+    end
 end
 
 

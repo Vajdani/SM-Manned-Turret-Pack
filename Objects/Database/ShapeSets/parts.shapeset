@@ -83,29 +83,23 @@
       {
          "color" : "9f2600",
          "friction" : 0.250,
-         "name" : "obj_interactive_cannon_ball",
+         "name" : "obj_interactive_cannon_rocket",
          "physicsMaterial" : "Metal",
          "qualityLevel" : 0,
-         "renderable" : "$CONTENT_DATA/Objects/Renderables/obj_interactive_cannon_ball.rend",
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/obj_interactive_cannon_rocket.rend",
          "rotationSet" : "PropZ",
          "scripted" : {
-            "classname" : "CannonBall",
-            "data": {
-					"destructionLevel": 7,
-					"destructionRadius": 4.0,
-					"impulseRadius": 12.0,
-					"impulseMagnitude": 40.0,
-					"effectExplosion": "PropaneTank - ExplosionBig",
-					"effectActivate": "PropaneTank - ActivateBig"
-				},
-            "filename" : "$CONTENT_DATA/Scripts/interactables/CannonBall.lua"
+            "classname" : "CannonRocket",
+            "data": {},
+            "filename" : "$CONTENT_DATA/Scripts/interactables/CannonRocket.lua"
          },
          "sphere" : {
             "diameter" : 5
          },
          "sticky" : "-Z",
+         "stackSize": 5,
          "uuid" : "24d5e812-3902-4ac3-b214-a0c924a5c40f",
-         "showInInventory": false
+         "consumable": false
       }
    ]
 }

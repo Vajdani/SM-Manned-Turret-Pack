@@ -80,3 +80,7 @@ function nlerp(a, b, t)
     return normalise(quat_lerp(a, b, t));
 end
 -- #endregion
+
+function BoolToNum(bool)
+    return bool and 1 or 0
+end

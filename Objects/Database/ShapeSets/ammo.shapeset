@@ -6,9 +6,9 @@
             "depth": 1,
             "diameter": 1
          },
-         "name": "obj_turret_cardridge_normal",
+         "name": "obj_turret_cartridge_normal",
          "physicsMaterial": "Metal",
-         "renderable": "$CONTENT_DATA/Objects/Renderables/obj_turret_cardridge_normal.rend",
+         "renderable": "$CONTENT_DATA/Objects/Renderables/obj_turret_cartridge_normal.rend",
          "rotationSet": "PropY",
          "sticky": "-Y",
          "stackSize": 100,
@@ -21,41 +21,14 @@
             "depth": 1,
             "diameter": 1
          },
-         "name": "obj_turret_cardridge_explosive",
+         "name": "obj_turret_cartridge_explosive",
          "physicsMaterial": "Metal",
-         "renderable": "$CONTENT_DATA/Objects/Renderables/obj_turret_cardridge_explosive.rend",
+         "renderable": "$CONTENT_DATA/Objects/Renderables/obj_turret_cartridge_explosive.rend",
          "rotationSet": "PropY",
          "sticky": "-Y",
          "stackSize": 100,
          "uuid": "4c69fa44-dd0d-42ce-9892-e61d13922bd2",
          "consumable": true
-      },
-      {
-			"uuid": "6d8215fc-8d35-4754-a580-6d1974b87fb7",
-			"name": "obj_cannon_dynamite",
-			"renderable": "$CONTENT_DATA/Objects/Renderables/obj_cannon_dynamite.rend",
-			"color": "981e11",
-			"box": {
-				"x": 2,
-				"y": 2,
-				"z": 2
-			},
-			"itemStack": {},
-			"rotationSet": "PropY",
-			"sticky": "-Y+Y",
-			"physicsMaterial": "Plastic",
-			"ratings": {
-				"density": 2,
-				"durability": 2,
-				"friction": 4,
-				"buoyancy": 7
-			},
-			"flammable": true,
-			"consumable": true,
-			"stackSize": 100,
-			"restrictions": {
-				"erasable": true
-			}
-		}
+      }
    ]
 }
