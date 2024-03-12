@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="ImageBox" skin="ImageBox" position_real="0 0 1 1" name="overlay">
+        <Property key="ImageTexture" value="$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Gui/RocketControlHud.png"/>
+    </Widget>
+    <CodeGeneratorSettings/>
+</MyGUI>

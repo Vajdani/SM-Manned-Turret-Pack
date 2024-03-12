@@ -23,12 +23,18 @@ function CannonSeat:server_onCreate()
     TurretSeat.server_onCreate(self)
 
     self.harvestable.publicData.rocketRoll = 0
-    self.rollStates = { [1] = false, [2] = false }
+    self.harvestable.publicData.rocketBoost = 0
+    self.rocketControls = { [1] = false, [2] = false, [3] = false, [4] = false }
 end
 
 function CannonSeat:sv_rocketRollUpdate(data)
-    self.rollStates[data.action] = data.state
-    self.harvestable.publicData.rocketRoll = BoolToNum(self.rollStates[2]) - BoolToNum(self.rollStates[1])
+    self.rocketControls[data.action] = data.state
+    self.harvestable.publicData.rocketRoll = BoolToNum(self.rocketControls[2]) - BoolToNum(self.rocketControls[1])
+end
+
+function CannonSeat:sv_rocketBoostUpdate(data)
+    self.rocketControls[data.action] = data.state
+    self.harvestable.publicData.rocketBoost = BoolToNum(self.rocketControls[3]) - BoolToNum(self.rocketControls[4])
 end
 
 local rayFilter = sm.physics.filter.dynamicBody + sm.physics.filter.staticBody + sm.physics.filter.terrainAsset + sm.physics.filter.terrainSurface + sm.physics.filter.harvestable
@@ -61,7 +67,8 @@ end
 function CannonSeat:sv_onRocketExplode(detonated)
     self.rocket = nil
     self.harvestable.publicData.rocketRoll = 0
-    self.rollStates = { [1] = false, [2] = false }
+    self.harvestable.publicData.rocketBoost = 0
+    self.rocketControls = { [1] = false, [2] = false, [3] = false, [4] = false }
     self:sv_SetTurretControlsEnabled(true)
     self.network:sendToClient(self.harvestable:getSeatCharacter():getPlayer(), "cl_onRocketExplode", detonated)
 end
@@ -81,6 +88,10 @@ function CannonSeat:client_onAction(action, state)
             self.network:sendToServer("sv_rocketRollUpdate", { action = action, state = state })
         end
 
+        if (action == 3 or action == 4) then
+            self.network:sendToServer("sv_rocketBoostUpdate", { action = action, state = state })
+        end
+
         if state and (action == 5 or action == 19) then
             self.network:sendToServer("sv_detonateRocket")
         end
@@ -88,7 +99,65 @@ function CannonSeat:client_onAction(action, state)
         return true
     end
 
-    return TurretSeat.client_onAction(self, action, state)
+    if self.cl_base.shape.body:isOnLift() then
+        if action == 15 then
+            self:cl_unSeat()
+        end
+
+        return true
+    end
+
+    if (action == 5 or action == 19) and self.shootState ~= ShootState.toggle then
+        self.shootState = state and ShootState.hold or ShootState.null
+        self:cl_updateHotbar()
+    end
+
+    if state then
+        if action == 6 then
+            self.lightActive = not self.lightActive
+            self:cl_updateHotbar()
+            self.network:sendToServer("sv_toggleLight", self.lightActive)
+        elseif action == 7 and #self.ammoTypes > 1 and not sm.game.getEnableAmmoConsumption() and self.cl_base:getSingleParent() == nil then
+            if self.shootState == ShootState.null then
+                local ammoType = self.ammoType < #self.ammoTypes and self.ammoType + 1 or 1
+                sm.gui.displayAlertText("Ammunition selected: #df7f00"..self.ammoTypes[ammoType].name, 2)
+                sm.audio.play("PaintTool - ColorPick")
+
+                self.ammoType = ammoType
+                self:cl_updateHotbar()
+
+                self.network:sendToServer("sv_updateAmmoType", ammoType)
+            end
+        elseif action == 15 then
+            self:cl_unSeat()
+        end
+    end
+
+    return true
+end
+
+function CannonSeat:cl_updateHotbar()
+    self.hotbar:setGridItem( "ButtonGrid", 0, {
+        itemId = "1e8d93a4-506b-470d-9ada-9c0a321e2db5",
+        active = self.shootState == ShootState.hold
+    })
+
+    self.hotbar:setGridItem( "ButtonGrid", 1, {
+        itemId = "ed27f5e2-cac5-4a32-a5d9-49f116acc6af",
+        active = self.lightActive
+    })
+
+    if self.ammoType == 0 then
+        self.hotbar:setGridItem( "ButtonGrid", 2, {
+            itemId = nil,
+            active = false
+        })
+    else
+        self.hotbar:setGridItem( "ButtonGrid", 2, {
+            itemId = tostring(self.ammoTypes[self.ammoType].ammo),
+            active = false
+        })
+    end
 end
 
 function CannonSeat:client_onUpdate(dt)
@@ -125,7 +194,8 @@ function CannonSeat:cl_shoot(args)
 
         if self.seated then
 			sm.audio.play("Blueprint - Build")
-            sm.gui.startFadeToBlack(0.1, 0.5)
+            sm.gui.startFadeToBlack(1.0, 0.5)
+			sm.gui.endFadeToBlack(0.8)
             sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", false)
 
             self.hotbar:setGridItem( "ButtonGrid", 0, {
@@ -135,6 +205,14 @@ function CannonSeat:cl_shoot(args)
             self.hotbar:setGridItem( "ButtonGrid", 1, nil)
             self.hotbar:setGridItem( "ButtonGrid", 2, nil)
             self.hotbar:setGridItem( "ButtonGrid", 3, nil)
+
+            local dir = self.harvestable.worldRotation * vec3_up
+            sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = {
+                cameraState = 3,
+                cameraFov = 45,
+                cameraPosition = sm.camera.getPosition() + dir * 0.25,
+                cameraDirection = dir
+            }
         end
     else
         sm.audio.play("Lever off", args.pos)
@@ -148,6 +226,9 @@ end
 
 function CannonSeat:cl_onRocketExplode(detonated)
     sm.audio.play(detonated and "Retrofmblip" or "Blueprint - Delete")
-    sm.gui.startFadeToBlack(0.1, 1)
+    sm.gui.startFadeToBlack(1.0, 0.5)
+    sm.gui.endFadeToBlack(0.8)
     sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", true)
+
+    sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = nil
 end
