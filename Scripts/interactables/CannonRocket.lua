@@ -8,11 +8,11 @@ function CannonRocket:server_onCreate()
 
     if self.isPrimed then
         self.thrustActivate = 0
-        self.deathTick = sm.game.getServerTick() + self.lifeTime
+        self.sv_deathTick = sm.game.getServerTick() + self.lifeTime
 
         self.seat = self.interactable.publicData.seat
 
-        self.network:setClientData({ owner = publicData.owner, deathTick = self.deathTick })
+        self.network:setClientData({ owner = publicData.owner, deathTick = self.sv_deathTick })
     end
 end
 
@@ -52,7 +52,7 @@ function CannonRocket:server_onFixedUpdate(dt)
 
     self:sv_controlRocket(dt)
 
-    if self.deathTick - sm.game.getServerTick() <= 0 then
+    if self.sv_deathTick - sm.game.getServerTick() <= 0 then
         self:sv_explode(pos)
     end
 end
