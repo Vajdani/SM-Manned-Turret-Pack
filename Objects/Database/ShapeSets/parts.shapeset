@@ -79,27 +79,6 @@
          },
          "sticky" : "-Y",
          "uuid" : "a0c96d35-37ca-4cf9-82d8-9b9077132918"
-      },
-      {
-         "color" : "9f2600",
-         "friction" : 0.250,
-         "name" : "obj_interactive_cannon_rocket",
-         "physicsMaterial" : "Metal",
-         "qualityLevel" : 0,
-         "renderable" : "$CONTENT_DATA/Objects/Renderables/obj_interactive_cannon_rocket.rend",
-         "rotationSet" : "PropZ",
-         "scripted" : {
-            "classname" : "CannonRocket",
-            "data": {},
-            "filename" : "$CONTENT_DATA/Scripts/interactables/CannonRocket.lua"
-         },
-         "sphere" : {
-            "diameter" : 5
-         },
-         "sticky" : "-Z",
-         "stackSize": 5,
-         "uuid" : "24d5e812-3902-4ac3-b214-a0c924a5c40f",
-         "consumable": false
       }
    ]
 }
