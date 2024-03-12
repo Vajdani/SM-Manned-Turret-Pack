@@ -148,7 +148,7 @@ function TurretBase:sv_onRepair(slot, caller)
         inv:setItem(slot, sm.uuid.new("68f9a1ef-dbbc-40c9-8006-0779ececcbf5"), 1)
         sm.container.endTransaction()
     else
-        self.network:sendToClients("cl_onRepairEnd", slot)
+        self.network:sendToClient(caller, "cl_onRepairEnd", slot)
     end
 end
 

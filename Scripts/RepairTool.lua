@@ -325,9 +325,9 @@ local function _updateFpAnimations( self, data, equipped, dt )
                     end
 
 					if endRepair and g_repairingTurret then
-						self.network:sendToServer("sv_onRepairEnd")
 						sm.tool.forceTool(nil)
 						g_repairingTurret = false
+						self.network:sendToServer("sv_onRepairEnd")
 					else
 						animation.eventPlayed = false
 					end
@@ -348,6 +348,11 @@ end
 
 function RepairTool:client_onCreate()
 	if self.tool:isLocal() then
+		if not g_repairingTurret then --failsafe for stuck repair tool
+			self.network:sendToServer("sv_onRepairEnd")
+			return
+		end
+
 		g_repairTool = self.tool
 		sm.tool.forceTool(self.tool)
 	end
