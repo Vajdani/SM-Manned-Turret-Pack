@@ -27,6 +27,12 @@ function CannonSeat:server_onCreate()
     self.rocketControls = { [1] = false, [2] = false, [3] = false, [4] = false }
 end
 
+function CannonSeat:server_onDestroy()
+    if self.rocket then
+        sm.event.sendToInteractable(self.rocket.interactable, "sv_explode")
+    end
+end
+
 function CannonSeat:sv_rocketRollUpdate(data)
     self.rocketControls[data.action] = data.state
     self.harvestable.publicData.rocketRoll = BoolToNum(self.rocketControls[2]) - BoolToNum(self.rocketControls[1])
@@ -81,6 +87,15 @@ function CannonSeat:sv_detonateRocket()
 end
 
 
+
+function CannonSeat:client_onDestroy()
+    self.hotbar:destroy()
+
+    if self.seated then
+        sm.localPlayer.getPlayer().clientPublicData.customCameraData = nil
+        sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = nil
+    end
+end
 
 function CannonSeat:client_onAction(action, state)
     if not self.cl_controlsEnabled then
