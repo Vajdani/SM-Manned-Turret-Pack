@@ -135,7 +135,7 @@ function TurretSeat:server_onMelee(position, attacker, damage, power, direction,
 end
 
 function TurretSeat:server_onExplosion(center, destructionLevel)
-    sm.event.sendToInteractable(self.base, "sv_takeDamage", destructionLevel * 25)
+    --sm.event.sendToInteractable(self.base, "sv_takeDamage", destructionLevel * 25)
 end
 
 function TurretSeat:server_canErase()
@@ -154,18 +154,30 @@ function TurretSeat:sv_shoot(ammoType, caller)
     if not self.sv_controlsEnabled then return end
 
     self.shotCounter = self.shotCounter + 1
+
+    local ammoData = self.ammoTypes[ammoType]
     local startPos, endPos = self:getFirePos()
     local rot = self.harvestable.worldRotation
     local hit, result = sm.physics.raycast(startPos, endPos, self.harvestable, rayFilter)
     if hit then
-        endPos = result.pointWorld - result.normalWorld * 0.1
+        if ammoData.isPart then
+            self.network:sendToClients("cl_shoot", { canShoot = false, pos = endPos })
+            return
+        else
+            endPos = result.pointWorld - result.normalWorld * 0.1
+        end
     end
 
     local dir = rot * vec3_up
     local canShoot = self:canShoot(ammoType)
     if canShoot then
-        local ammoData = self.ammoTypes[ammoType]
-        sm.projectile.projectileAttack( ammoData.uuid, ammoData.damage, endPos + dir * (hit and 0 or 0.25), sm.noise.gunSpread(dir, ammoData.spread) * ammoData.velocity, caller )
+        if ammoData.isPart then
+            local projectileRot = rot * sm.quat.angleAxis(math.rad(90), vec3_right) * sm.quat.angleAxis(math.rad(180), vec3_forward)
+            local projectile = sm.shape.createPart(ammoData.uuid, endPos - projectileRot * sm.item.getShapeOffset(ammoData.uuid), projectileRot)
+            self:sv_OnPartFire(ammoType, ammoData, projectile, caller)
+        else
+            sm.projectile.projectileAttack( ammoData.uuid, ammoData.damage, endPos + dir * (hit and 0 or 0.25), sm.noise.gunSpread(dir, ammoData.spread) * ammoData.velocity, caller )
+        end
     end
 
     self.network:sendToClients("cl_shoot", { canShoot = canShoot, pos = endPos, dir = dir, shotCount = self.shotCounter, ammoType = ammoType })
@@ -181,6 +193,12 @@ function TurretSeat:sv_SetTurretControlsEnabled(state)
     self.harvestable.publicData.controlsEnabled = state
     self.network:sendToClients("cl_SetTurretControlsEnabled", state)
 end
+
+---@param ammoType number
+---@param ammoData AmmoType
+---@param part Shape
+---@param player Player
+function TurretSeat:sv_OnPartFire(ammoType, ammoData, part, player) end
 
 
 
@@ -276,7 +294,7 @@ function TurretSeat:client_onAction(action, state)
     if not self.cl_controlsEnabled then return true end
 
     if self.cl_base.shape.body:isOnLift() then
-        if action == 15 then
+        if state and action == 15 then
             self:cl_unSeat()
         end
 
@@ -424,7 +442,7 @@ function TurretSeat:cl_SetTurretControlsEnabled(state)
     self.cl_controlsEnabled = state
     self.harvestable.clientPublicData.controlsEnabled = state
 
-    if self.harvestable:getSeatCharacter():getPlayer() == sm.localPlayer.getPlayer() then
+    if self.seated and self.shootState ~= ShootState.null then
         self.shootState = ShootState.null
         self:cl_updateHotbar()
     end

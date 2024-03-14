@@ -42,6 +42,42 @@
          "radius" : 0.250,
          "spin" : 7.0,
          "uuid" : "fad5bb05-b6da-46ec-92f7-9ffb38bd6c9b"
+      },
+      {
+         "amount" : 25,
+         "attachedEffect" : "",
+         "audiomass" : 250.0,
+         "destruction" : {
+            "destructionLevels" : [
+               {
+                  "chance" : 1.0,
+                  "qualityLevel" : 1
+               },
+               {
+                  "chance" : 0.40,
+                  "qualityLevel" : 2
+               },
+               {
+                  "chance" : 0.20,
+                  "qualityLevel" : 3
+               },
+               {
+                  "chance" : 0.10,
+                  "qualityLevel" : 4
+               }
+            ]
+         },
+         "effect" : "Sledgehammer - Hit",
+         "effectmaterial" : "Metal",
+         "enableGravity" : true,
+         "enableImpactEffect" : false,
+         "friction" : 0.2000000029802322,
+         "mass" : 3.0,
+         "mesh" : "$CONTENT_DATA/Projectiles/Renderables/turret_bullet_normal.rend",
+         "name" : "cannon_ratshot",
+         "radius" : 0.250,
+         "spin" : 7.0,
+         "uuid" : "53e5da10-99ea-48d5-98b5-c03d0938811e"
       }
    ]
 }

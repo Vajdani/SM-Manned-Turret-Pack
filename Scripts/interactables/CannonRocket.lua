@@ -45,7 +45,7 @@ function CannonRocket:server_onFixedUpdate(dt)
 
     local pos = self.shape.worldPosition
     local hit, result = sm.physics.spherecast(pos, pos + self.shape.at * 2, 0.1, self.shape)
-    if result.type == "limiter" then
+    if hit then
         self:sv_explode(pos)
         return
     end

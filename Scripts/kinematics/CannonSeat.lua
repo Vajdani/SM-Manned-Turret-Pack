@@ -4,18 +4,40 @@ dofile "TurretSeat.lua"
 CannonSeat = class(TurretSeat)
 CannonSeat.ammoTypes = {
     {
-        name = "Cannon Ball",
+        name = "Guided Missile",
         velocity = 50,
-        fireCooldown = 20, --2.5 * 40,
+        fireCooldown = 40,
         effect = "Turret - Shoot",
         ammo = sm.uuid.new("24d5e812-3902-4ac3-b214-a0c924a5c40f"),
-        uuid = sm.uuid.new("24d5e812-3902-4ac3-b214-a0c924a5c40f")
+        uuid = sm.uuid.new("24d5e812-3902-4ac3-b214-a0c924a5c40f"),
+        isPart = true
+    },
+    {
+        name = "Air Strike",
+        velocity = 50,
+        fireCooldown = 40,
+        effect = "Turret - Shoot",
+        ammo = sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"),
+        uuid = projectile_explosivetape
+    },
+    {
+        name = "Ratshot",
+        damage = 10,
+        velocity = 130,
+        fireCooldown = 40,
+        spread = 0,
+        effect = "Turret - Shoot", --"PropaneTank - ExplosionSmall",
+        ammo = sm.uuid.new("cabf45e9-a47d-4086-8f5f-4f806d5ec3a2"),
+        uuid = sm.uuid.new("53e5da10-99ea-48d5-98b5-c03d0938811e")
     }
 }
 CannonSeat.containerToAmmoType = {
     ["d9e6453a-2e8c-47f8-a843-d0e700957d39"] = 1,
+    ["037e3ecb-e0a6-402b-8187-a7264863c64f"] = 2,
+    ["756594d6-6fdd-4f60-9289-a2416287f942"] = 3,
 }
 CannonSeat.baseUUID = "a0c96d35-37ca-4cf9-82d8-9b9077132918"
+CannonSeat.airStrikeDistanceLimit = 100
 
 
 
@@ -25,11 +47,21 @@ function CannonSeat:server_onCreate()
     self.harvestable.publicData.rocketRoll = 0
     self.harvestable.publicData.rocketBoost = 0
     self.rocketControls = { [1] = false, [2] = false, [3] = false, [4] = false }
+
+    self.airStrikes = {}
 end
 
 function CannonSeat:server_onDestroy()
     if self.rocket then
         sm.event.sendToInteractable(self.rocket.interactable, "sv_explode")
+    end
+end
+
+function CannonSeat:server_onFixedUpdate()
+    for k, v in pairs(self.airStrikes) do
+        if v:tick() then
+            self.airStrikes[k] = nil
+        end
     end
 end
 
@@ -43,31 +75,12 @@ function CannonSeat:sv_rocketBoostUpdate(data)
     self.harvestable.publicData.rocketBoost = BoolToNum(self.rocketControls[3]) - BoolToNum(self.rocketControls[4])
 end
 
-local rayFilter = sm.physics.filter.dynamicBody + sm.physics.filter.staticBody + sm.physics.filter.terrainAsset + sm.physics.filter.terrainSurface + sm.physics.filter.harvestable
-function CannonSeat:sv_shoot(ammoType, caller)
-    self.shotCounter = self.shotCounter + 1
-    local startPos, endPos = self:getFirePos()
-    local rot = self.harvestable.worldRotation
-    local hit, result = sm.physics.raycast(startPos, endPos, self.harvestable, rayFilter)
-    if hit then
-        self.network:sendToClients("cl_shoot", { canShoot = false, pos = endPos })
-        return
-    end
-
-    local dir = rot * vec3_up
-    local canShoot = self:canShoot(ammoType)
-    if canShoot then
-        local ammoData = self.ammoTypes[ammoType]
-
-        local projectileRot = rot * sm.quat.angleAxis(math.rad(90), vec3_right) * sm.quat.angleAxis(math.rad(180), vec3_forward)
-        local projectile = sm.shape.createPart(ammoData.uuid, endPos - projectileRot * sm.item.getShapeOffset(ammoData.uuid), projectileRot)
-        projectile.interactable.publicData = { owner = caller, seat = self.harvestable }
-        self.rocket = projectile
-
+function CannonSeat:sv_OnPartFire(ammoType, ammoData, part, player)
+    if ammoType == 1 then
+        part.interactable.publicData = { owner = player, seat = self.harvestable }
+        self.rocket = part
         self:sv_SetTurretControlsEnabled(false)
     end
-
-    self.network:sendToClients("cl_shoot", { canShoot = canShoot, pos = endPos, dir = dir, shotCount = self.shotCounter, ammoType = ammoType })
 end
 
 function CannonSeat:sv_onRocketExplode(detonated)
@@ -86,7 +99,46 @@ function CannonSeat:sv_detonateRocket()
     self.rocket = nil
 end
 
+function CannonSeat:sv_castAirStrike(pos, caller)
+    sm.effect.playEffect("Loot - Pickup", pos)
 
+    local strike = {
+        position = pos + vec3_up * 100,
+        currentTick = 0,
+        delay = 0,
+        circleCounter = 1,
+        angleOffset = math.random(-5, 5) * 60,
+        spinDirection = 1,
+        tick = function(self)
+            self.delay = self.delay + 1
+            if self.delay < 5 then return false end
+
+            sm.projectile.projectileAttack(projectile_explosivetape, 100, self.position + vec3_right:rotate(math.rad(self.angleOffset + self.currentTick * 30 * self.spinDirection), vec3_up) * 3 * self.circleCounter, -vec3_up * 100, caller)
+            self.currentTick = self.currentTick + 1
+            self.delay = 0
+
+            if self.currentTick%12 == 0 then
+                self.angleOffset = math.random(-5, 5) * 60
+                self.spinDirection = self.spinDirection == 1 and -1 or 1
+                self.circleCounter = self.circleCounter + 1
+            end
+
+            return self.circleCounter > 4
+        end
+    }
+
+    table.insert(self.airStrikes, strike)
+
+    self:sv_SetTurretControlsEnabled(true)
+end
+
+
+
+function CannonSeat:client_onCreate()
+    TurretSeat.client_onCreate(self)
+
+    self.strikeMoveControls = { [1] = false, [2] = false, [3] = false, [4] = false }
+end
 
 function CannonSeat:client_onDestroy()
     self.hotbar:destroy()
@@ -98,81 +150,87 @@ function CannonSeat:client_onDestroy()
 end
 
 function CannonSeat:client_onAction(action, state)
-    if not self.cl_controlsEnabled then
-        if (action == 1 or action == 2) then
-            self.network:sendToServer("sv_rocketRollUpdate", { action = action, state = state })
-        end
-
-        if (action == 3 or action == 4) then
-            self.network:sendToServer("sv_rocketBoostUpdate", { action = action, state = state })
-        end
-
-        if state and (action == 5 or action == 19) then
-            self.network:sendToServer("sv_detonateRocket")
-        end
-
-        return true
-    end
-
-    if self.cl_base.shape.body:isOnLift() then
-        if action == 15 then
-            self:cl_unSeat()
-        end
-
-        return true
-    end
-
-    if (action == 5 or action == 19) and self.shootState ~= ShootState.toggle then
-        self.shootState = state and ShootState.hold or ShootState.null
-        self:cl_updateHotbar()
-    end
-
-    if state then
-        if action == 6 then
-            self.lightActive = not self.lightActive
-            self:cl_updateHotbar()
-            self.network:sendToServer("sv_toggleLight", self.lightActive)
-        elseif action == 7 and #self.ammoTypes > 1 and not sm.game.getEnableAmmoConsumption() and self.cl_base:getSingleParent() == nil then
-            if self.shootState == ShootState.null then
-                local ammoType = self.ammoType < #self.ammoTypes and self.ammoType + 1 or 1
-                sm.gui.displayAlertText("Ammunition selected: #df7f00"..self.ammoTypes[ammoType].name, 2)
-                sm.audio.play("PaintTool - ColorPick")
-
-                self.ammoType = ammoType
-                self:cl_updateHotbar()
-
-                self.network:sendToServer("sv_updateAmmoType", ammoType)
+    if self.ammoType == 1 then
+        if not self.cl_controlsEnabled then
+            if (action == 1 or action == 2) then
+                self.network:sendToServer("sv_rocketRollUpdate", { action = action, state = state })
             end
-        elseif action == 15 then
-            self:cl_unSeat()
+
+            if (action == 3 or action == 4) then
+                self.network:sendToServer("sv_rocketBoostUpdate", { action = action, state = state })
+            end
+
+            if state and (action == 5 or action == 19) then
+                self.network:sendToServer("sv_detonateRocket")
+            end
+
+            return true
+        end
+    elseif self.ammoType == 2 then
+        if self.strikeMoveControls[action] ~= nil then
+            self.strikeMoveControls[action] = state
+        end
+
+        if state then
+            if self.spottingStrike then
+                if action == 5 or action == 19 then
+                    local camPos = sm.camera.getPosition()
+                    local hit, result = sm.physics.raycast(camPos, camPos - vec3_up * 1000)
+                    self.network:sendToServer("sv_castAirStrike", result.pointWorld)
+                    self:cl_endAirStrike(false)
+                elseif action == 6 then
+                    self:cl_endAirStrike(true)
+                elseif action == 7 then
+                    self.strikeZoom = self.strikeZoom > 1 and self.strikeZoom - 1 or 1
+                    sm.audio.play("ConnectTool - Rotate", self:getStrikeCamPos())
+                    sm.localPlayer.getPlayer().clientPublicData.interactableCameraData.cameraPosition = self:getStrikeCamPos()
+                elseif action == 8 then
+                    self.strikeZoom = self.strikeZoom < 5 and self.strikeZoom + 1 or 5
+                    sm.audio.play("ConnectTool - Rotate", self:getStrikeCamPos())
+                    sm.localPlayer.getPlayer().clientPublicData.interactableCameraData.cameraPosition = self:getStrikeCamPos()
+                end
+
+                return true
+            elseif (action == 5 or action == 19 or action == 6 or action == 18) then
+                self.network:sendToServer("sv_SetTurretControlsEnabled", false)
+                sm.gui.startFadeToBlack(1.0, 0.5)
+                sm.gui.endFadeToBlack(0.8)
+                sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", false)
+
+                self.hotbar:setGridItem( "ButtonGrid", 0, {
+                    itemId = "1e8d93a4-506b-470d-9ada-9c0a321e2db5",
+                    active = false
+                })
+                self.hotbar:setGridItem( "ButtonGrid", 1, {
+                    itemId = "068a89ca-504e-4782-9ede-48f710aeea73",
+                    active = false
+                })
+                self.hotbar:setGridItem( "ButtonGrid", 2, {
+                    itemId = "add3acc6-a6fd-44e8-a384-a7a16ce13c81",
+                    active = false
+                })
+                self.hotbar:setGridItem( "ButtonGrid", 3, {
+                    itemId = "20dcd41c-0a11-4668-9b00-97f278ce21af",
+                    active = false
+                })
+
+                sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = {
+                    cameraState = 3,
+                    cameraFov = 45,
+                    cameraPosition = self.cl_base.shape.worldPosition + vec3_up * 10,
+                    cameraDirection = -vec3_up
+                }
+
+                self.strikeCamOffset = sm.vec3.zero()
+                self.strikeZoom = 1
+                self.spottingStrike = true
+
+                return true
+            end
         end
     end
 
-    return true
-end
-
-function CannonSeat:cl_updateHotbar()
-    self.hotbar:setGridItem( "ButtonGrid", 0, {
-        itemId = "1e8d93a4-506b-470d-9ada-9c0a321e2db5",
-        active = self.shootState == ShootState.hold
-    })
-
-    self.hotbar:setGridItem( "ButtonGrid", 1, {
-        itemId = "ed27f5e2-cac5-4a32-a5d9-49f116acc6af",
-        active = self.lightActive
-    })
-
-    if self.ammoType == 0 then
-        self.hotbar:setGridItem( "ButtonGrid", 2, {
-            itemId = nil,
-            active = false
-        })
-    else
-        self.hotbar:setGridItem( "ButtonGrid", 2, {
-            itemId = tostring(self.ammoTypes[self.ammoType].ammo),
-            active = false
-        })
-    end
+    return TurretSeat.client_onAction(self, action, state)
 end
 
 function CannonSeat:client_onUpdate(dt)
@@ -182,14 +240,31 @@ function CannonSeat:client_onUpdate(dt)
     self.recoil_l = math.max(self.recoil_l - speed, 0)
     self.harvestable:setPoseWeight(0, sm.util.easing("easeOutCubic", self.recoil_l))
 
-    if self.seated and self.cl_controlsEnabled then --If controlling rocket, dont do turret pov
-        sm.localPlayer.getPlayer().clientPublicData.customCameraData = { cameraState = 5 }
+    if self.seated then
+        if self.cl_controlsEnabled then --If controlling rocket, dont do turret pov
+            sm.localPlayer.getPlayer().clientPublicData.customCameraData = { cameraState = 5 }
 
-        local parent = self.cl_base:getSingleParent()
-        if parent then
-            local container = parent:getContainer(0)
-            local uuid = self.ammoTypes[self.ammoType].ammo
-            sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>%d / %d</p>"):format(sm.container.totalQuantity(container, uuid), container:getSize() * container:getMaxStackSize()))
+            local parent = self.cl_base:getSingleParent()
+            if parent then
+                local container = parent:getContainer(0)
+                local uuid = self.ammoTypes[self.ammoType].ammo
+                sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>%d / %d</p>"):format(sm.container.totalQuantity(container, uuid), container:getSize() * container:getMaxStackSize()))
+            end
+        else
+            if self.spottingStrike then
+                local horizontal = BoolToNum(self.strikeMoveControls[2]) - BoolToNum(self.strikeMoveControls[1])
+                local veritcal = BoolToNum(self.strikeMoveControls[3]) - BoolToNum(self.strikeMoveControls[4])
+
+                if horizontal ~= 0 or veritcal ~= 0 then
+                    self.strikeCamOffset = self.strikeCamOffset + (vec3_forward * veritcal + vec3_right * horizontal):safeNormalize(vec3_zero) * dt * 10 * self.strikeZoom
+                    local distance = self.strikeCamOffset:length()
+                    if distance >= self.airStrikeDistanceLimit then
+                        self.strikeCamOffset = self.strikeCamOffset * (self.airStrikeDistanceLimit / distance)
+                    end
+
+                    sm.localPlayer.getPlayer().clientPublicData.interactableCameraData.cameraPosition = self:getStrikeCamPos()
+                end
+            end
         end
     end
 end
@@ -202,12 +277,18 @@ function CannonSeat:getFirePos()
     return pos + rot * offsetBase, pos + rot * (vec3_up * 2.75 + offsetBase)
 end
 
+function CannonSeat:getStrikeCamPos()
+    return self.cl_base.shape.worldPosition + vec3_up * 10 * self.strikeZoom + self.strikeCamOffset
+end
+
 function CannonSeat:cl_shoot(args)
     if args.canShoot then
         self.recoil_l = 1
-        sm.effect.playEffect(self.ammoTypes[args.ammoType].effect, args.pos, vec3_zero, sm.vec3.getRotation(vec3_up, args.dir))
 
-        if self.seated then
+        local ammoType = args.ammoType
+        sm.effect.playEffect(self.ammoTypes[ammoType].effect, args.pos, vec3_zero, sm.vec3.getRotation(vec3_up, args.dir))
+
+        if self.seated and ammoType == 1 then
 			sm.audio.play("Blueprint - Build")
             sm.gui.startFadeToBlack(1.0, 0.5)
 			sm.gui.endFadeToBlack(0.8)
@@ -239,11 +320,27 @@ function CannonSeat:cl_shoot(args)
     end
 end
 
+function CannonSeat:cl_endAirStrike(toggleControls)
+    if toggleControls then
+        self.network:sendToServer("sv_SetTurretControlsEnabled", true)
+    end
+
+    sm.gui.startFadeToBlack(1.0, 0.5)
+    sm.gui.endFadeToBlack(0.8)
+    sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", true)
+
+    self:cl_updateHotbar()
+
+    sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = nil
+    self.spottingStrike = false
+end
+
 function CannonSeat:cl_onRocketExplode(detonated)
     sm.audio.play(detonated and "Retrofmblip" or "Blueprint - Delete")
     sm.gui.startFadeToBlack(1.0, 0.5)
     sm.gui.endFadeToBlack(0.8)
     sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", true)
 
+    self:cl_updateHotbar()
     sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = nil
 end
