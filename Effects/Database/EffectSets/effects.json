@@ -311,5 +311,50 @@
 				"delay": 0.0
 			}
 		]
+	},
+	"Cannon - Shoot": {
+		"effectList": [
+			{
+				"type": "audio",
+				"name": "Gas Explosion",
+				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
+				"parameters":
+				[
+					"size"
+				],
+				"delay": 0.0
+			},
+			{
+				"attached": false,
+				"delay": 0.0,
+				"name": "cannon_shoot_flash",
+				"offset": [
+					0.0,
+					0.0,
+					0.0
+				],
+				"type": "particle"
+			},
+			{
+				"delay": 0.0,
+				"duration": 0.40,
+				"name": "",
+				"offset": [
+					0.0,
+					0.0,
+					0.0
+				],
+				"parameters": [
+					"shakeStrength",
+					"shakeRadius"
+				],
+				"type": "cameraShake"
+			}
+		],
+		"parameterList": {
+			"shakeRadius": 10.0,
+			"shakeStrength": 0.00050,
+			"size": 0.5
+		}
 	}
 }

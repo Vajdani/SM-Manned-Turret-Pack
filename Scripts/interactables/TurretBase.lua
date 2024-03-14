@@ -152,6 +152,9 @@ function TurretBase:sv_onRepair(slot, caller)
     end
 end
 
+function TurretBase:sv_setDirTarget(dir)
+    self.network:sendToClients("cl_setDirTarget", dir)
+end
 
 
 function TurretBase:client_onCreate()
@@ -161,6 +164,7 @@ function TurretBase:client_onCreate()
 
     self.turretRot = self.shape.worldRotation
     self.dir = { x = 0, y = 0 }
+    self.dirProgress = 0
 
     self.cl_health = self.maxHealth
 
@@ -259,7 +263,18 @@ function TurretBase:client_onUpdate(dt)
 
     self.cl_turret:setPosition(self:getSeatPos())
 
-    if not self.shape.body:isOnLift() and self.cl_turret:getSeatCharacter() == sm.localPlayer.getPlayer().character and self.cl_turret.clientPublicData.controlsEnabled then
+    if self.dirTarget then
+        self.dirProgress = self.dirProgress + dt
+        self.dir.x = sm.util.lerp(self.dirPrev.x, self.dirTarget.x, self.dirProgress)
+        self.dir.y = sm.util.lerp(self.dirPrev.y, self.dirTarget.y, self.dirProgress)
+        self:cl_updateDir({ x = 0, y = 0 })
+
+        if self.dirProgress >= 1 then
+            self.dirProgress = 0
+            self.dirPrev = nil
+            self.dirTarget = nil
+        end
+    elseif not self.shape.body:isOnLift() and self.cl_turret:getSeatCharacter() == sm.localPlayer.getPlayer().character and self.cl_turret.clientPublicData.controlsEnabled then
         local x, y = sm.localPlayer.getMouseDelta()
         if x ~= 0 or y ~= 0 then
             local dir = { x = x , y = y }
@@ -367,6 +382,12 @@ function TurretBase:cl_updateDir(dir)
     if norm_y > limit then
         self.dir.y = self.dir.y * (limit / norm_y)
     end
+end
+
+function TurretBase:cl_setDirTarget(dir)
+    self.dirProgress = 0
+    self.dirPrev = self.dir
+    self.dirTarget = dir
 end
 
 function TurretBase:cl_n_toggleHud(toggle)

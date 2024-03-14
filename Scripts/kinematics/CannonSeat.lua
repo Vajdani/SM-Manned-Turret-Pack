@@ -7,7 +7,7 @@ CannonSeat.ammoTypes = {
         name = "Guided Missile",
         velocity = 50,
         fireCooldown = 40,
-        effect = "Turret - Shoot",
+        effect = "Cannon - Shoot",
         ammo = sm.uuid.new("24d5e812-3902-4ac3-b214-a0c924a5c40f"),
         uuid = sm.uuid.new("24d5e812-3902-4ac3-b214-a0c924a5c40f"),
         isPart = true
@@ -16,7 +16,7 @@ CannonSeat.ammoTypes = {
         name = "Air Strike",
         velocity = 50,
         fireCooldown = 40,
-        effect = "Turret - Shoot",
+        effect = "Cannon - Shoot",
         ammo = sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"),
         uuid = projectile_explosivetape
     },
@@ -26,7 +26,7 @@ CannonSeat.ammoTypes = {
         velocity = 130,
         fireCooldown = 40,
         spread = 0,
-        effect = "Turret - Shoot", --"PropaneTank - ExplosionSmall",
+        effect = "Cannon - Shoot", --"PropaneTank - ExplosionSmall",
         ammo = sm.uuid.new("cabf45e9-a47d-4086-8f5f-4f806d5ec3a2"),
         uuid = sm.uuid.new("53e5da10-99ea-48d5-98b5-c03d0938811e")
     }
@@ -47,8 +47,6 @@ function CannonSeat:server_onCreate()
     self.harvestable.publicData.rocketRoll = 0
     self.harvestable.publicData.rocketBoost = 0
     self.rocketControls = { [1] = false, [2] = false, [3] = false, [4] = false }
-
-    self.airStrikes = {}
 end
 
 function CannonSeat:server_onDestroy()
@@ -58,9 +56,10 @@ function CannonSeat:server_onDestroy()
 end
 
 function CannonSeat:server_onFixedUpdate()
-    for k, v in pairs(self.airStrikes) do
-        if v:tick() then
-            self.airStrikes[k] = nil
+    if self.airStrike then
+        if self.airStrike:tick() then
+            self.airStrike = nil
+            self:sv_endAirStrike()
         end
     end
 end
@@ -99,8 +98,13 @@ function CannonSeat:sv_detonateRocket()
     self.rocket = nil
 end
 
-function CannonSeat:sv_castAirStrike(pos, caller)
+function CannonSeat:sv_startAirStrike(pos, caller)
     sm.effect.playEffect("Loot - Pickup", pos)
+
+    local shape = self.base.shape
+    local dir = (pos - shape.worldPosition):normalize()
+    local fwd = shape.up
+    sm.event.sendToInteractable(self.base, "sv_setDirTarget", { x = math.acos(dir:dot(fwd)) * (dir:cross(fwd).z >= 0 and -1 or 1), y = 1.05 })
 
     local strike = {
         turretSelf = self,
@@ -112,8 +116,9 @@ function CannonSeat:sv_castAirStrike(pos, caller)
         spinDirection = 1,
         tick = function(self)
             self.delay = self.delay + 1
-            if self.delay < 5 then return false end
+            if self.delay < 10 then return false end
 
+            self.turretSelf.network:sendToClients("cl_shoot", { canShoot = true })
             if not self:fire(self.position + vec3_right:rotate(math.rad(self.angleOffset + self.currentTick * 30 * self.spinDirection), vec3_up) * 3 * self.circleCounter) then
                 return true
             end
@@ -143,10 +148,13 @@ function CannonSeat:sv_castAirStrike(pos, caller)
     }
 
     if not strike:start() then
-        table.insert(self.airStrikes, strike)
+        self.airStrike = strike
     end
+end
 
+function CannonSeat:sv_endAirStrike()
     self:sv_SetTurretControlsEnabled(true)
+    self.network:sendToClient(self.harvestable:getSeatCharacter():getPlayer(), "cl_endAirStrike", false)
 end
 
 
@@ -190,67 +198,14 @@ function CannonSeat:client_onAction(action, state)
 
         if state then
             if self.spottingStrike then
-                if action == 5 or action == 19 then
-                    local camPos = sm.camera.getPosition()
-                    local hit, result = sm.physics.raycast(camPos, camPos - vec3_up * 1000)
-                    self.network:sendToServer("sv_castAirStrike", result.pointWorld)
-                    self:cl_endAirStrike(false)
-                elseif action == 6 then
-                    self:cl_endAirStrike(true)
-                elseif action == 7 then
-                    self.strikeZoom = self.strikeZoom > 1 and self.strikeZoom - 1 or 1
-                    sm.audio.play("ConnectTool - Rotate", self:getStrikeCamPos())
-                    sm.localPlayer.getPlayer().clientPublicData.interactableCameraData.cameraPosition = self:getStrikeCamPos()
-                elseif action == 8 then
-                    self.strikeZoom = self.strikeZoom < 5 and self.strikeZoom + 1 or 5
-                    sm.audio.play("ConnectTool - Rotate", self:getStrikeCamPos())
-                    sm.localPlayer.getPlayer().clientPublicData.interactableCameraData.cameraPosition = self:getStrikeCamPos()
-                end
-
+                self:cl_strikeControls(action)
                 return true
             elseif (action == 5 or action == 19 or action == 6 or action == 18) then
-                local parent = self.base:getSingleParent()
-                if not parent or not parent:getContainer(0):canSpend(self.ammoTypes[2].ammo, 1) then
-                    local _, _end = self:getFirePos()
-                    self:cl_shoot({ canShoot = false, pos = _end, dir = self.harvestable.worldRotation * vec3_up, ammoType = self.ammoType })
-                    return true
-                end
-
-                self.network:sendToServer("sv_SetTurretControlsEnabled", false)
-                sm.gui.startFadeToBlack(1.0, 0.5)
-                sm.gui.endFadeToBlack(0.8)
-                sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", false)
-
-                self.hotbar:setGridItem( "ButtonGrid", 0, {
-                    itemId = "1e8d93a4-506b-470d-9ada-9c0a321e2db5",
-                    active = false
-                })
-                self.hotbar:setGridItem( "ButtonGrid", 1, {
-                    itemId = "068a89ca-504e-4782-9ede-48f710aeea73",
-                    active = false
-                })
-                self.hotbar:setGridItem( "ButtonGrid", 2, {
-                    itemId = "add3acc6-a6fd-44e8-a384-a7a16ce13c81",
-                    active = false
-                })
-                self.hotbar:setGridItem( "ButtonGrid", 3, {
-                    itemId = "20dcd41c-0a11-4668-9b00-97f278ce21af",
-                    active = false
-                })
-
-                sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = {
-                    cameraState = 3,
-                    cameraFov = 45,
-                    cameraPosition = self.cl_base.shape.worldPosition + vec3_up * 10,
-                    cameraDirection = -vec3_up
-                }
-
-                self.strikeCamOffset = sm.vec3.zero()
-                self.strikeZoom = 1
-                self.spottingStrike = true
-
+                self:cl_startAirStrike()
                 return true
             end
+
+            if self.blockStrikeCast then return true end
         end
     end
 
@@ -265,7 +220,20 @@ function CannonSeat:client_onUpdate(dt)
     self.harvestable:setPoseWeight(0, sm.util.easing("easeOutCubic", self.recoil_l))
 
     if self.seated then
-        if self.cl_controlsEnabled then --If controlling rocket, dont do turret pov
+        if self.spottingStrike then
+            local horizontal = BoolToNum(self.strikeMoveControls[2]) - BoolToNum(self.strikeMoveControls[1])
+            local veritcal = BoolToNum(self.strikeMoveControls[3]) - BoolToNum(self.strikeMoveControls[4])
+
+            if horizontal ~= 0 or veritcal ~= 0 then
+                self.strikeCamOffset = self.strikeCamOffset + (vec3_forward * veritcal + vec3_right * horizontal):safeNormalize(vec3_zero) * dt * 10 * self.strikeZoom
+                local distance = self.strikeCamOffset:length()
+                if distance >= self.airStrikeDistanceLimit then
+                    self.strikeCamOffset = self.strikeCamOffset * (self.airStrikeDistanceLimit / distance)
+                end
+
+                sm.localPlayer.getPlayer().clientPublicData.interactableCameraData.cameraPosition = self:getStrikeCamPos()
+            end
+        else
             sm.localPlayer.getPlayer().clientPublicData.customCameraData = { cameraState = 5 }
 
             local parent = self.cl_base:getSingleParent()
@@ -273,21 +241,6 @@ function CannonSeat:client_onUpdate(dt)
                 local container = parent:getContainer(0)
                 local uuid = self.ammoTypes[self.ammoType].ammo
                 sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>%d / %d</p>"):format(sm.container.totalQuantity(container, uuid), container:getSize() * container:getMaxStackSize()))
-            end
-        else
-            if self.spottingStrike then
-                local horizontal = BoolToNum(self.strikeMoveControls[2]) - BoolToNum(self.strikeMoveControls[1])
-                local veritcal = BoolToNum(self.strikeMoveControls[3]) - BoolToNum(self.strikeMoveControls[4])
-
-                if horizontal ~= 0 or veritcal ~= 0 then
-                    self.strikeCamOffset = self.strikeCamOffset + (vec3_forward * veritcal + vec3_right * horizontal):safeNormalize(vec3_zero) * dt * 10 * self.strikeZoom
-                    local distance = self.strikeCamOffset:length()
-                    if distance >= self.airStrikeDistanceLimit then
-                        self.strikeCamOffset = self.strikeCamOffset * (self.airStrikeDistanceLimit / distance)
-                    end
-
-                    sm.localPlayer.getPlayer().clientPublicData.interactableCameraData.cameraPosition = self:getStrikeCamPos()
-                end
             end
         end
     end
@@ -305,12 +258,35 @@ function CannonSeat:getStrikeCamPos()
     return self.cl_base.shape.worldPosition + vec3_up * 10 * self.strikeZoom + self.strikeCamOffset
 end
 
+function CannonSeat:cl_strikeControls(action)
+    if not self.blockStrikeCast and (action == 5 or action == 19) then
+        local camPos = sm.camera.getPosition()
+        local hit, result = sm.physics.raycast(camPos, camPos - vec3_up * 1000)
+        self.network:sendToServer("sv_startAirStrike", result.pointWorld)
+        self.blockStrikeCast = true
+    elseif action == 6 then
+        self:cl_cancelAirStrike(self.blockStrikeCast == false)
+    elseif action == 7 then
+        if self.strikeZoom > 1 then
+            self.strikeZoom = self.strikeZoom - 1
+            sm.audio.play("ConnectTool - Rotate", self:getStrikeCamPos())
+            sm.localPlayer.getPlayer().clientPublicData.interactableCameraData.cameraPosition = self:getStrikeCamPos()
+        end
+    elseif action == 8 then
+        if self.strikeZoom < 5 then
+            self.strikeZoom = self.strikeZoom + 1
+            sm.audio.play("ConnectTool - Rotate", self:getStrikeCamPos())
+            sm.localPlayer.getPlayer().clientPublicData.interactableCameraData.cameraPosition = self:getStrikeCamPos()
+        end
+    end
+end
+
 function CannonSeat:cl_shoot(args)
     if args.canShoot then
         self.recoil_l = 1
 
-        local ammoType = args.ammoType
-        sm.effect.playEffect(self.ammoTypes[ammoType].effect, args.pos, vec3_zero, sm.vec3.getRotation(vec3_up, args.dir))
+        local ammoType = args.ammoType or self.ammoType
+        sm.effect.playEffect(self.ammoTypes[ammoType].effect, args.pos or ({self:getFirePos()})[2], vec3_zero, sm.vec3.getRotation(vec3_up, args.dir or self.harvestable.worldRotation * vec3_up))
 
         if self.seated and ammoType == 1 then
 			sm.audio.play("Blueprint - Build")
@@ -344,19 +320,70 @@ function CannonSeat:cl_shoot(args)
     end
 end
 
-function CannonSeat:cl_endAirStrike(toggleControls)
+function CannonSeat:cl_startAirStrike()
+    if self.blockStrikeCast then return end
+
+    local parent = self.base:getSingleParent()
+    if parent and not parent:getContainer(0):canSpend(self.ammoTypes[2].ammo, 1) then
+        local _, _end = self:getFirePos()
+        self:cl_shoot({ canShoot = false })
+        return true
+    end
+
+    self.network:sendToServer("sv_SetTurretControlsEnabled", false)
+    sm.gui.startFadeToBlack(1.0, 0.5)
+    sm.gui.endFadeToBlack(0.8)
+    sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", false)
+
+    self.hotbar:setGridItem( "ButtonGrid", 0, {
+        itemId = "1e8d93a4-506b-470d-9ada-9c0a321e2db5",
+        active = false
+    })
+    self.hotbar:setGridItem( "ButtonGrid", 1, {
+        itemId = "068a89ca-504e-4782-9ede-48f710aeea73",
+        active = false
+    })
+    self.hotbar:setGridItem( "ButtonGrid", 2, {
+        itemId = "add3acc6-a6fd-44e8-a384-a7a16ce13c81",
+        active = false
+    })
+    self.hotbar:setGridItem( "ButtonGrid", 3, {
+        itemId = "20dcd41c-0a11-4668-9b00-97f278ce21af",
+        active = false
+    })
+
+    sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = {
+        cameraState = 3,
+        cameraFov = 45,
+        cameraPosition = self.cl_base.shape.worldPosition + vec3_up * 10,
+        cameraDirection = -vec3_up
+    }
+
+    self.strikeCamOffset = sm.vec3.zero()
+    self.strikeZoom = 1
+    self.spottingStrike = true
+end
+
+function CannonSeat:cl_cancelAirStrike(toggleControls)
     if toggleControls then
         self.network:sendToServer("sv_SetTurretControlsEnabled", true)
     end
 
-    sm.gui.startFadeToBlack(1.0, 0.5)
-    sm.gui.endFadeToBlack(0.8)
-    sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", true)
+    if sm.localPlayer.getPlayer().clientPublicData.interactableCameraData then
+        sm.gui.startFadeToBlack(1.0, 0.5)
+        sm.gui.endFadeToBlack(0.8)
+        sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", true)
 
-    self:cl_updateHotbar()
+        self:cl_updateHotbar()
+    end
 
     sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = nil
     self.spottingStrike = false
+end
+
+function CannonSeat:cl_endAirStrike(toggleControls)
+    self:cl_cancelAirStrike(toggleControls)
+    self.blockStrikeCast = false
 end
 
 function CannonSeat:cl_onRocketExplode(detonated)
