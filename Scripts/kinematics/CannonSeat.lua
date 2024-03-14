@@ -103,6 +103,7 @@ function CannonSeat:sv_castAirStrike(pos, caller)
     sm.effect.playEffect("Loot - Pickup", pos)
 
     local strike = {
+        turretSelf = self,
         position = pos + vec3_up * 100,
         currentTick = 0,
         delay = 0,
@@ -113,7 +114,9 @@ function CannonSeat:sv_castAirStrike(pos, caller)
             self.delay = self.delay + 1
             if self.delay < 5 then return false end
 
-            sm.projectile.projectileAttack(projectile_explosivetape, 100, self.position + vec3_right:rotate(math.rad(self.angleOffset + self.currentTick * 30 * self.spinDirection), vec3_up) * 3 * self.circleCounter, -vec3_up * 100, caller)
+            if not self:fire(self.position + vec3_right:rotate(math.rad(self.angleOffset + self.currentTick * 30 * self.spinDirection), vec3_up) * 3 * self.circleCounter) then
+                return true
+            end
             self.currentTick = self.currentTick + 1
             self.delay = 0
 
@@ -124,10 +127,24 @@ function CannonSeat:sv_castAirStrike(pos, caller)
             end
 
             return self.circleCounter > 4
+        end,
+        start = function(self)
+            self:fire(self.position) --One ammo check is already done to start firing
+            if not self:fire(self.position) then return true end
+        end,
+        fire = function(self, position)
+            if not self.turretSelf:canShoot(2) then
+                return false
+            end
+
+            sm.projectile.projectileAttack(projectile_explosivetape, 100, position, -vec3_up * 100, caller)
+            return true
         end
     }
 
-    table.insert(self.airStrikes, strike)
+    if not strike:start() then
+        table.insert(self.airStrikes, strike)
+    end
 
     self:sv_SetTurretControlsEnabled(true)
 end
@@ -192,6 +209,13 @@ function CannonSeat:client_onAction(action, state)
 
                 return true
             elseif (action == 5 or action == 19 or action == 6 or action == 18) then
+                local parent = self.base:getSingleParent()
+                if not parent or not parent:getContainer(0):canSpend(self.ammoTypes[2].ammo, 1) then
+                    local _, _end = self:getFirePos()
+                    self:cl_shoot({ canShoot = false, pos = _end, dir = self.harvestable.worldRotation * vec3_up, ammoType = self.ammoType })
+                    return true
+                end
+
                 self.network:sendToServer("sv_SetTurretControlsEnabled", false)
                 sm.gui.startFadeToBlack(1.0, 0.5)
                 sm.gui.endFadeToBlack(0.8)
@@ -339,8 +363,11 @@ function CannonSeat:cl_onRocketExplode(detonated)
     sm.audio.play(detonated and "Retrofmblip" or "Blueprint - Delete")
     sm.gui.startFadeToBlack(1.0, 0.5)
     sm.gui.endFadeToBlack(0.8)
-    sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", true)
 
-    self:cl_updateHotbar()
     sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = nil
+
+    if self.harvestable.clientPublicData.health > 0 then
+        sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", true)
+        self:cl_updateHotbar()
+    end
 end
