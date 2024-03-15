@@ -22,19 +22,19 @@ CannonSeat.ammoTypes = {
     },
     {
         name = "Ratshot",
-        damage = 10,
+        damage = 5,
         velocity = 130,
         fireCooldown = 40,
         spread = 0,
-        effect = "Cannon - Shoot", --"PropaneTank - ExplosionSmall",
-        ammo = sm.uuid.new("cabf45e9-a47d-4086-8f5f-4f806d5ec3a2"),
+        effect = "Cannon - Shoot",
+        ammo = sm.uuid.new("e36b172c-ae2d-4697-af44-8041d9cbde0e"),
         uuid = sm.uuid.new("53e5da10-99ea-48d5-98b5-c03d0938811e")
     }
 }
 CannonSeat.containerToAmmoType = {
     ["d9e6453a-2e8c-47f8-a843-d0e700957d39"] = 1,
     ["037e3ecb-e0a6-402b-8187-a7264863c64f"] = 2,
-    ["756594d6-6fdd-4f60-9289-a2416287f942"] = 3,
+    ["da615034-dd24-4090-ba66-9d36785d7483"] = 3,
 }
 CannonSeat.baseUUID = "a0c96d35-37ca-4cf9-82d8-9b9077132918"
 CannonSeat.airStrikeDistanceLimit = 100

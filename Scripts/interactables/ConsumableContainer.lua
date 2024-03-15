@@ -93,7 +93,12 @@ TurretExplosiveAmmoContainer.connectionOutput = 2^14
 TurretExplosiveAmmoContainer.colorNormal = sm.color.new( 0x84ff32ff )
 TurretExplosiveAmmoContainer.colorHighlight = sm.color.new( 0xa7ff4fff )
 
-CannonAmmoContainer = class( ConsumableContainer )
-CannonAmmoContainer.connectionOutput = 2^15
-CannonAmmoContainer.colorNormal = sm.color.new( 0x84ff32ff )
-CannonAmmoContainer.colorHighlight = sm.color.new( 0xa7ff4fff )
+CannonRocketContainer = class( ConsumableContainer )
+CannonRocketContainer.connectionOutput = 2^15
+CannonRocketContainer.colorNormal = sm.color.new( 0x84ff32ff )
+CannonRocketContainer.colorHighlight = sm.color.new( 0xa7ff4fff )
+
+CannonRatshotContainer = class( ConsumableContainer )
+CannonRatshotContainer.connectionOutput = 2^16
+CannonRatshotContainer.colorNormal = sm.color.new( 0x84ff32ff )
+CannonRatshotContainer.colorHighlight = sm.color.new( 0xa7ff4fff )

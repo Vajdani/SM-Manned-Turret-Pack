@@ -50,6 +50,21 @@
          "stackSize": 5,
          "uuid" : "24d5e812-3902-4ac3-b214-a0c924a5c40f",
          "consumable": true
+      },
+      {
+         "cylinder": {
+            "axis": "Z",
+            "depth": 1,
+            "diameter": 1
+         },
+         "name": "obj_cannon_ratshot",
+         "physicsMaterial": "Metal",
+         "renderable": "$CONTENT_DATA/Objects/Renderables/obj_turret_cartridge_normal.rend",
+         "rotationSet": "PropY",
+         "sticky": "-Y",
+         "stackSize": 10,
+         "uuid": "e36b172c-ae2d-4697-af44-8041d9cbde0e",
+         "consumable": true
       }
    ]
 }

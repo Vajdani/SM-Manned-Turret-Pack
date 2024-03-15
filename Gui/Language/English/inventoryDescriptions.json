@@ -23,6 +23,10 @@
         "description": "Can store Guided Missiles to be used with the Manned Cannon.",
         "title": "Guided Missile Container"
     },
+    "da615034-dd24-4090-ba66-9d36785d7483": {
+        "description": "Can store Ratshot Rounds to be used with the Manned Cannon.",
+        "title": "Ratshot Container"
+    },
     "cabf45e9-a47d-4086-8f5f-4f806d5ec3a2": {
         "description": "Used as ammo for the Manned Turret.\n\n'We fire the whole bullet! That's 65% more bullet per bullet!'",
         "title": "AA Round"
@@ -34,5 +38,9 @@
     "24d5e812-3902-4ac3-b214-a0c924a5c40f": {
         "description": "Used as ammo for the Manned Cannon.",
         "title": "Guided Missile"
+    },
+    "e36b172c-ae2d-4697-af44-8041d9cbde0e": {
+        "description": "Used as ammo for the Manned Cannon.",
+        "title": "Ratshot Round"
     }
 }

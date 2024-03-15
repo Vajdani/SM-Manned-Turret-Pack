@@ -68,9 +68,9 @@
                 "y": 3,
                 "z": 2
             },
-            "color": "505c30",
+            "color": "ff0000",
             "flammable": false,
-            "name": "obj_container_cannon_ammo",
+            "name": "obj_container_cannon_rockets",
             "physicsMaterial": "Metal",
             "ratings": {
                 "buoyancy": 6,
@@ -84,7 +84,7 @@
             },
             "rotationSet": "PropYZ",
             "scripted": {
-                "classname": "CannonAmmoContainer",
+                "classname": "CannonRocketContainer",
                 "data": {
                     "filterUid": "24d5e812-3902-4ac3-b214-a0c924a5c40f",
                     "stackSize": 5
@@ -92,6 +92,37 @@
                 "filename": "$CONTENT_DATA/Scripts/interactables/ConsumableContainer.lua"
             },
             "uuid": "d9e6453a-2e8c-47f8-a843-d0e700957d39"
+        },
+        {
+            "box": {
+                "x": 4,
+                "y": 3,
+                "z": 2
+            },
+            "color": "ffff00",
+            "flammable": false,
+            "name": "obj_container_cannon_ratshot",
+            "physicsMaterial": "Metal",
+            "ratings": {
+                "buoyancy": 6,
+                "density": 5,
+                "durability": 6,
+                "friction": 4
+            },
+            "renderable": "$CONTENT_DATA/Objects/Renderables/obj_container_turret_normal_ammo.rend",
+            "restrictions": {
+                "usable": true
+            },
+            "rotationSet": "PropYZ",
+            "scripted": {
+                "classname": "CannonRatshotContainer",
+                "data": {
+                    "filterUid": "e36b172c-ae2d-4697-af44-8041d9cbde0e",
+                    "stackSize": 10
+                },
+                "filename": "$CONTENT_DATA/Scripts/interactables/ConsumableContainer.lua"
+            },
+            "uuid": "da615034-dd24-4090-ba66-9d36785d7483"
         }
     ]
 }

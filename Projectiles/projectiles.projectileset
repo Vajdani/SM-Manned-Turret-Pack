@@ -44,7 +44,7 @@
          "uuid" : "fad5bb05-b6da-46ec-92f7-9ffb38bd6c9b"
       },
       {
-         "amount" : 25,
+         "amount" : 50,
          "attachedEffect" : "",
          "audiomass" : 250.0,
          "destruction" : {
