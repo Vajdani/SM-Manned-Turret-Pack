@@ -154,7 +154,12 @@ end
 
 function CannonSeat:sv_endAirStrike()
     self:sv_SetTurretControlsEnabled(true)
-    self.network:sendToClient(self.harvestable:getSeatCharacter():getPlayer(), "cl_endAirStrike", false)
+    self.network:sendToClient(self.harvestable:getSeatCharacter():getPlayer(), "cl_endAirStrike")
+end
+
+function CannonSeat:sv_cancelAirStrike()
+    self.airStrike = nil
+    self:sv_endAirStrike()
 end
 
 
@@ -265,7 +270,7 @@ function CannonSeat:cl_strikeControls(action)
         self.network:sendToServer("sv_startAirStrike", result.pointWorld)
         self.blockStrikeCast = true
     elseif action == 6 then
-        self:cl_cancelAirStrike(self.blockStrikeCast == false)
+        self:cl_cancelAirStrike()
     elseif action == 7 then
         if self.strikeZoom > 1 then
             self.strikeZoom = self.strikeZoom - 1
@@ -364,8 +369,10 @@ function CannonSeat:cl_startAirStrike()
     self.spottingStrike = true
 end
 
-function CannonSeat:cl_cancelAirStrike(toggleControls)
-    if toggleControls then
+function CannonSeat:cl_cancelAirStrike()
+    if self.blockStrikeCast then
+        self.network:sendToServer("sv_cancelAirStrike")
+    else
         self.network:sendToServer("sv_SetTurretControlsEnabled", true)
     end
 
@@ -381,8 +388,8 @@ function CannonSeat:cl_cancelAirStrike(toggleControls)
     self.spottingStrike = false
 end
 
-function CannonSeat:cl_endAirStrike(toggleControls)
-    self:cl_cancelAirStrike(toggleControls)
+function CannonSeat:cl_endAirStrike()
+    self:cl_cancelAirStrike()
     self.blockStrikeCast = false
 end
 
