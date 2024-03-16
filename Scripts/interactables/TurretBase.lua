@@ -152,6 +152,10 @@ function TurretBase:sv_onRepair(slot, caller)
     end
 end
 
+function TurretBase:sv_onRepairToolDestroy(player)
+    self.network:sendToClient(player, "cl_onRepairToolDestroy")
+end
+
 function TurretBase:sv_setDirTarget(dir)
     self.network:sendToClients("cl_setDirTarget", dir)
 end
@@ -161,6 +165,7 @@ function TurretBase:client_onCreate()
     self.healthBar = sm.gui.createSurvivalHudGui()
     self.healthBar:setVisible("WaterBar", false)
     self.healthBar:setVisible("FoodBar", false)
+    self.healthBar:setVisible("BindingPanel", false)
 
     self.turretRot = self.shape.worldRotation
     self.dir = { x = 0, y = 0 }
@@ -234,6 +239,7 @@ function TurretBase:client_onTinker(char, state)
 
     if state then
         g_repairingTurret = true
+        g_turretBase = self.interactable
     end
 
     if sm.game.getLimitedInventory() then
@@ -390,16 +396,33 @@ function TurretBase:cl_setDirTarget(dir)
     self.dirTarget = dir
 end
 
-function TurretBase:cl_n_toggleHud(toggle)
+function TurretBase:cl_n_toggleHud(toggle, forceSurvivalOff)
+    if type(toggle) == "table" then
+        toggle, forceSurvivalOff = toggle[1], toggle[2]
+    end
+
     if toggle then
         self.healthBar:open()
+        if sm.SURVIVALHUD then
+            sm.SURVIVALHUD:close()
+        end
     else
         self.healthBar:close()
+        if sm.SURVIVALHUD and not forceSurvivalOff then
+            sm.SURVIVALHUD:open()
+        end
     end
 end
 
 function TurretBase:cl_onRepairEnd(tool)
+    if not sm.exists(tool) then return end
     sm.event.sendToTool(tool, "cl_markUnforce")
+end
+
+function TurretBase:cl_onRepairToolDestroy()
+    sm.tool.forceTool(nil)
+	g_repairingTurret = false
+    g_turretBase = nil
 end
 
 function TurretBase:cl_onDestroy()

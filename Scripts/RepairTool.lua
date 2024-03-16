@@ -1,3 +1,17 @@
+local gameHooked = false
+local oldEffect = sm.effect.createEffect
+function effectHook(name, object, bone)
+    if not gameHooked and name == "SurvivalMusic" then
+        gameHooked = true
+        dofile("$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Scripts/vanilla_override.lua")
+    end
+
+	return oldEffect(name, object, bone)
+end
+sm.effect.createEffect = effectHook
+
+
+
 dofile "$GAME_DATA/Scripts/game/AnimationUtil.lua"
 dofile "$SURVIVAL_DATA/Scripts/util.lua"
 dofile "$SURVIVAL_DATA/Scripts/game/survival_harvestable.lua"
@@ -312,8 +326,7 @@ local function _updateFpAnimations( self, data, equipped, dt )
                     else
                         if animation.nextAnimation then
                             if not animation.blockHeal then
-                                local hit, result = sm.localPlayer.getRaycast(7.5)
-                                self.network:sendToServer("sv_healTurret", result:getShape())
+                                self.network:sendToServer("sv_healTurret", g_turretBase.shape)
                             end
 
 							if not endRepair then
@@ -325,9 +338,7 @@ local function _updateFpAnimations( self, data, equipped, dt )
                     end
 
 					if endRepair and g_repairingTurret then
-						sm.tool.forceTool(nil)
-						g_repairingTurret = false
-						self.network:sendToServer("sv_onRepairEnd")
+						self.network:sendToServer("sv_onRepairEnd", g_turretBase)
 					else
 						animation.eventPlayed = false
 					end
@@ -448,8 +459,12 @@ function RepairTool:sv_healTurret(turret)
     sm.event.sendToInteractable(turret.interactable, "sv_takeDamage", -math.ceil(TurretBase.maxHealth/12))
 end
 
-function RepairTool:sv_onRepairEnd(args, caller)
-    local inv = sm.game.getLimitedInventory() and caller:getInventory() or caller:getHotbar()
+function RepairTool:sv_onRepairEnd(base, caller)
+	if base then
+		sm.event.sendToInteractable(base, "sv_onRepairToolDestroy", caller)
+	end
+
+	local inv = sm.game.getLimitedInventory() and caller:getInventory() or caller:getHotbar()
 	local data = caller.publicData.itemBeforeRepair
 
 	sm.container.beginTransaction()

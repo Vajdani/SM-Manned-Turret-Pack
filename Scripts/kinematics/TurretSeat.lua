@@ -88,6 +88,13 @@ function TurretSeat:server_onCreate()
     self.harvestable.publicData = { health = TurretBase.maxHealth, controlsEnabled = true }
 end
 
+function TurretSeat:sv_OnPlayerDeath(player)
+    self:sv_OnPlayerSuddenUnSeated()
+    self.network:sendToClient(player, "cl_unSeat_graphics")
+end
+
+function TurretSeat:sv_OnPlayerSuddenUnSeated() end
+
 function TurretSeat:server_onUnload()
     sm.event.sendToInteractable(self.cl_base, "sv_respawnSeat")
 end
@@ -110,6 +117,17 @@ function TurretSeat:sv_seatRespawn(player)
 end
 
 ---@param caller Player
+function TurretSeat:sv_seat(args, caller)
+    local char = caller.character
+    self.harvestable:setSeatCharacter(char)
+    self.sv_seated = char
+    self.sv_seatTick = sm.game.getServerTick()
+
+    caller.publicData = caller.publicData or {}
+    caller.publicData.turretSeat = self.harvestable
+end
+
+---@param caller Player
 function TurretSeat:sv_unSeat(args, caller)
     --self:sv_toggleLight(false)
 
@@ -124,6 +142,8 @@ function TurretSeat:sv_unSeat(args, caller)
             yaw, pitch
         )
     )
+
+    caller.publicData.turretSeat = nil
 end
 
 function TurretSeat:server_onProjectile(position, airTime, velocity, projectileName, shooter, damage, customData, normal, uuid)
@@ -266,25 +286,30 @@ end
 
 function TurretSeat:client_onInteract(char, state)
     if not state then return end
-    self:cl_seat(char)
+    self:cl_seat()
 end
 
-function TurretSeat:cl_seat(char)
+function TurretSeat:cl_seat()
+    self.network:sendToServer("sv_seat")
+
     self.seated = true
-    self.harvestable:setSeatCharacter(char)
     self.hotbar:open()
-    sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", true)
     self.ammoType = self:getAmmoType(self.cl_base:getSingleParent())
     self:cl_updateHotbar()
+    sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", true)
     sm.camera.setCameraPullback(0,0)
     sm.localPlayer.getPlayer().clientPublicData.customCameraData = { cameraState = 5 }
 end
 
 function TurretSeat:cl_unSeat()
+    self.network:sendToServer("sv_unSeat")
+    self:cl_unSeat_graphics()
+end
+
+function TurretSeat:cl_unSeat_graphics()
     self.shootState = ShootState.null
     self.shootTimer = 0
     self.seated = false
-    self.network:sendToServer("sv_unSeat")
     self.hotbar:close()
     sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", false)
     sm.localPlayer.getPlayer().clientPublicData.customCameraData = nil

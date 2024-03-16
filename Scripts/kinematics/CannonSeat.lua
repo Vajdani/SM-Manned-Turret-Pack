@@ -64,6 +64,14 @@ function CannonSeat:server_onFixedUpdate()
     end
 end
 
+function CannonSeat:sv_OnPlayerSuddenUnSeated()
+    self:sv_detonateRocket()
+
+    if self.airStrike then
+        self:sv_cancelAirStrike()
+    end
+end
+
 function CannonSeat:sv_rocketRollUpdate(data)
     self.rocketControls[data.action] = data.state
     self.harvestable.publicData.rocketRoll = BoolToNum(self.rocketControls[2]) - BoolToNum(self.rocketControls[1])
@@ -297,7 +305,7 @@ function CannonSeat:cl_shoot(args)
 			sm.audio.play("Blueprint - Build")
             sm.gui.startFadeToBlack(1.0, 0.5)
 			sm.gui.endFadeToBlack(0.8)
-            sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", false)
+            sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", { false, true })
 
             self.hotbar:setGridItem( "ButtonGrid", 0, {
                 itemId = "24001201-40dd-4950-b99f-17d878a9e07b",
@@ -338,7 +346,7 @@ function CannonSeat:cl_startAirStrike()
     self.network:sendToServer("sv_SetTurretControlsEnabled", false)
     sm.gui.startFadeToBlack(1.0, 0.5)
     sm.gui.endFadeToBlack(0.8)
-    sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", false)
+    sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", { false, true })
 
     self.hotbar:setGridItem( "ButtonGrid", 0, {
         itemId = "1e8d93a4-506b-470d-9ada-9c0a321e2db5",
