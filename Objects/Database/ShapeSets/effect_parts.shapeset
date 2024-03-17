@@ -119,6 +119,70 @@
             "z" : 1
          },
          "color" : "ffffff",
+         "name" : "cannon_seat_debris_barrel",
+         "physicsMaterial" : "Plastic",
+         "ratings" : {},
+         "renderable" : "$CONTENT_DATA/Particles/Renderables/cannon_seat_debris_barrel.rend",
+         "rotationSet" : "Default",
+         "showInInventory" : false,
+         "stackSize" : 1,
+         "uuid" : "195fdc52-d6f0-4638-b770-5de70f00c3f2"
+      },
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "color" : "ffffff",
+         "name" : "cannon_seat_debris_keyboard",
+         "physicsMaterial" : "Plastic",
+         "ratings" : {},
+         "renderable" : "$CONTENT_DATA/Particles/Renderables/cannon_seat_debris_keyboard.rend",
+         "rotationSet" : "Default",
+         "showInInventory" : false,
+         "stackSize" : 1,
+         "uuid" : "caa2bcc0-e207-4759-b841-6510a023c881"
+      },
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "color" : "ffffff",
+         "name" : "cannon_seat_debris_screen",
+         "physicsMaterial" : "Plastic",
+         "ratings" : {},
+         "renderable" : "$CONTENT_DATA/Particles/Renderables/cannon_seat_debris_screen.rend",
+         "rotationSet" : "Default",
+         "showInInventory" : false,
+         "stackSize" : 1,
+         "uuid" : "187dbc85-b8af-4a08-9bb7-0dc764e927c0"
+      },
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "color" : "ffffff",
+         "name" : "cannon_seat_debris_handle",
+         "physicsMaterial" : "Plastic",
+         "ratings" : {},
+         "renderable" : "$CONTENT_DATA/Particles/Renderables/cannon_seat_debris_handle.rend",
+         "rotationSet" : "Default",
+         "showInInventory" : false,
+         "stackSize" : 1,
+         "uuid" : "1cc59da0-8408-4b76-bac1-cea1e7e7ece6"
+      },
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "color" : "ffffff",
          "name" : "kin_interactive_cannon_seat_hologram",
          "physicsMaterial" : "Plastic",
          "ratings" : {},

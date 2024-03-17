@@ -1,16 +1,8 @@
 {
    "lodList" : [
       {
-         "mesh" : "$CONTENT_DATA/Objects/Mesh/kin_interactive_cannon_seat.fbx",
+         "mesh" : "$CONTENT_DATA/Particles/Mesh/cannon_seat_debris_keyboard.fbx",
          "subMeshList" : [
-            {
-               "material" : "DifAsgNor",
-               "textureList" : [
-                  "$CONTENT_DATA/Objects/Textures/kin_interactive_turret_01_dif.tga",
-                  "$CONTENT_DATA/Objects/Textures/kin_interactive_turret_01_asg.tga",
-                  "$CONTENT_DATA/Objects/Textures/kin_interactive_turret_01_nor.tga"
-               ]
-            },
             {
                "material" : "DifAsgNor",
                "textureList" : [

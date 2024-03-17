@@ -23,7 +23,7 @@
                "material" : "DifAsgNor",
                "textureList" : [
                   "$CONTENT_DATA/Objects/Textures/kin_interactive_turret_cannon_dif.tga",
-                  "$GAME_DATA/Textures/Default/default_asg.tga",
+                  "$CONTENT_DATA/Objects/Textures/kin_interactive_turret_cannon_asg.tga",
                   "$CONTENT_DATA/Objects/Textures/kin_interactive_turret_cannon_nor.tga"
                ]
             }

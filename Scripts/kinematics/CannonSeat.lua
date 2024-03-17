@@ -41,14 +41,6 @@ CannonSeat.airStrikeDistanceLimit = 100
 
 
 
-function CannonSeat:server_onProjectile(position, airTime, velocity, projectileName, shooter, damage, customData, normal, uuid)
-    self.network:sendToClients("jdhgjd")
-end
-
-function CannonSeat:jdhgjd(position, airTime, velocity, projectileName, shooter, damage, customData, normal, uuid)
-    sm.event.sendToInteractable(self.cl_base, "cl_onDestroy")
-end
-
 function CannonSeat:server_onCreate()
     TurretSeat.server_onCreate(self)
 

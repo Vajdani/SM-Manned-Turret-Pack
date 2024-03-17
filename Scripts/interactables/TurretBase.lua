@@ -19,7 +19,7 @@ TurretBase.colorHighlight = sm.color.new( 0xee0a00ff )
 TurretBase.maxHealth = 1000
 TurretBase.seatUUID = "22b00c9e-e040-48e2-b67a-3f41a6470354"
 TurretBase.seatHologramUUID = "49ce0ee7-7d9b-43b0-8160-5dc3fb127cfb"
-TurretBase.explosionDebrisData = {
+TurretBase.explosionDebrisData = { --swap the blender y and z coordinates, invert z afterwards
     { uuid = sm.uuid.new("81b668f4-af00-4fbc-b359-dd1b35b939e5"), offset = sm.vec3.new(0.960741,    -2.49486,   -0.842322) * 0.25 },
     { uuid = sm.uuid.new("81b668f4-af00-4fbc-b359-dd1b35b939e5"), offset = sm.vec3.new(-0.960741,   -2.49486,   -0.842322) * 0.25 },
     { uuid = sm.uuid.new("5dde0f36-1cbb-47ba-a9ba-a0cc2b1db555"), offset = sm.vec3.new(-1.07416,    1.37402,      5.55211) * 0.25 },
