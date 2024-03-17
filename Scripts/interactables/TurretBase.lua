@@ -87,7 +87,7 @@ function TurretBase:sv_takeDamage(damage)
     local prevDestroyed = self.destroyed
     local newHealth = sm.util.clamp(self.cl_health - damage, 0, self.maxHealth)
     local turretExists = sm.exists(self.turret)
-    if newHealth <= 0 and turretExists then
+    if newHealth <= 0 and not self.destroyed then
         self.network:sendToClients("cl_onDestroy")
 
         local char = self.turret:getSeatCharacter()
@@ -105,7 +105,7 @@ function TurretBase:sv_takeDamage(damage)
 
     print(string.format("[TURRET ID[%s]] Took %s damage: %s / %s HP", self.shape.id, damage, newHealth, self.maxHealth))
     self.cl_health = newHealth
-    if sm.exists(self.turret) then
+    if turretExists then
         self.turret.publicData.health = newHealth
     end
 

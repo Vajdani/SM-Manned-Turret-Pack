@@ -41,6 +41,14 @@ CannonSeat.airStrikeDistanceLimit = 100
 
 
 
+function CannonSeat:server_onProjectile(position, airTime, velocity, projectileName, shooter, damage, customData, normal, uuid)
+    self.network:sendToClients("jdhgjd")
+end
+
+function CannonSeat:jdhgjd(position, airTime, velocity, projectileName, shooter, damage, customData, normal, uuid)
+    sm.event.sendToInteractable(self.cl_base, "cl_onDestroy")
+end
+
 function CannonSeat:server_onCreate()
     TurretSeat.server_onCreate(self)
 
@@ -264,7 +272,7 @@ function CannonSeat:getFirePos()
     local rot = self.harvestable.worldRotation
 
     local offsetBase = vec3_forward * 0.2
-    return pos + rot * offsetBase, pos + rot * (vec3_up * 2.75 + offsetBase)
+    return pos + rot * offsetBase, pos + rot * (vec3_up * 2.25 + offsetBase)
 end
 
 function CannonSeat:getStrikeCamPos()

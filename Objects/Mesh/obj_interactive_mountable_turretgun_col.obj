@@ -1,6 +1,5 @@
 # Blender 4.0.2
 # www.blender.org
-mtllib obj_interactive_mountable_turretgun_col.mtl
 o Cube
 v -0.702458 -0.851764 2.059977
 v -0.702458 0.236247 2.059977

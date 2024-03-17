@@ -155,7 +155,7 @@ function TurretSeat:server_onMelee(position, attacker, damage, power, direction,
 end
 
 function TurretSeat:server_onExplosion(center, destructionLevel)
-    --sm.event.sendToInteractable(self.base, "sv_takeDamage", destructionLevel * 25)
+    sm.event.sendToInteractable(self.base, "sv_takeDamage", destructionLevel * 25)
 end
 
 function TurretSeat:server_canErase()

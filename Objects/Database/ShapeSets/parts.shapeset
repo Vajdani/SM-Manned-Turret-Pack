@@ -67,7 +67,7 @@
          "ratings" : {
             "durability" : 10
          },
-         "renderable" : "$CONTENT_DATA/Objects/Renderables/obj_interactive_turret_base.rend",
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/obj_interactive_cannon_base.rend",
          "restrictions" : {
             "destructable" : false
          },
