@@ -1,7 +1,7 @@
 {
    "lodList" : [
       {
-         "mesh" : "$CONTENT_DATA/Projectiles/Mesh/turret_bullet.fbx",
+         "mesh" : "$CONTENT_DATA/Objects/Mesh/Ammo/obj_turret_cartridge.fbx",
          "subMeshList" : [
             {
                "material" : "DifAsgNor",

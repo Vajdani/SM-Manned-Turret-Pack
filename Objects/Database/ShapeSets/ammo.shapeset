@@ -1,70 +1,70 @@
 {
-   "partList": [
+   "partList" : [
       {
-         "cylinder": {
-            "axis": "Z",
-            "depth": 1,
-            "diameter": 1
+         "consumable" : true,
+         "cylinder" : {
+            "axis" : "Z",
+            "depth" : 1,
+            "diameter" : 1
          },
-         "name": "obj_turret_cartridge_normal",
-         "physicsMaterial": "Metal",
-         "renderable": "$CONTENT_DATA/Objects/Renderables/obj_turret_cartridge_normal.rend",
-         "rotationSet": "PropY",
-         "sticky": "-Y",
-         "stackSize": 100,
-         "uuid": "cabf45e9-a47d-4086-8f5f-4f806d5ec3a2",
-         "consumable": true
+         "name" : "obj_turret_cartridge_normal",
+         "physicsMaterial" : "Metal",
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/Ammo/obj_turret_cartridge_normal.rend",
+         "rotationSet" : "PropY",
+         "stackSize" : 100,
+         "sticky" : "-Y",
+         "uuid" : "cabf45e9-a47d-4086-8f5f-4f806d5ec3a2"
       },
       {
-         "cylinder": {
-            "axis": "Z",
-            "depth": 1,
-            "diameter": 1
+         "consumable" : true,
+         "cylinder" : {
+            "axis" : "Z",
+            "depth" : 1,
+            "diameter" : 1
          },
-         "name": "obj_turret_cartridge_explosive",
-         "physicsMaterial": "Metal",
-         "renderable": "$CONTENT_DATA/Objects/Renderables/obj_turret_cartridge_explosive.rend",
-         "rotationSet": "PropY",
-         "sticky": "-Y",
-         "stackSize": 100,
-         "uuid": "4c69fa44-dd0d-42ce-9892-e61d13922bd2",
-         "consumable": true
+         "name" : "obj_turret_cartridge_explosive",
+         "physicsMaterial" : "Metal",
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/Ammo/obj_turret_cartridge_explosive.rend",
+         "rotationSet" : "PropY",
+         "stackSize" : 100,
+         "sticky" : "-Y",
+         "uuid" : "4c69fa44-dd0d-42ce-9892-e61d13922bd2"
       },
       {
          "color" : "9f2600",
+         "consumable" : true,
          "friction" : 0.250,
          "name" : "obj_interactive_cannon_rocket",
          "physicsMaterial" : "Metal",
          "qualityLevel" : 0,
-         "renderable" : "$CONTENT_DATA/Objects/Renderables/obj_interactive_cannon_rocket.rend",
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/Ammo/obj_interactive_cannon_rocket.rend",
          "rotationSet" : "PropZ",
          "scripted" : {
             "classname" : "CannonRocket",
-            "data": {},
+            "data" : {},
             "filename" : "$CONTENT_DATA/Scripts/interactables/CannonRocket.lua"
          },
          "sphere" : {
             "diameter" : 5
          },
+         "stackSize" : 5,
          "sticky" : "-Z",
-         "stackSize": 5,
-         "uuid" : "24d5e812-3902-4ac3-b214-a0c924a5c40f",
-         "consumable": true
+         "uuid" : "24d5e812-3902-4ac3-b214-a0c924a5c40f"
       },
       {
-         "cylinder": {
-            "axis": "Z",
-            "depth": 1,
-            "diameter": 1
+         "consumable" : true,
+         "cylinder" : {
+            "axis" : "Z",
+            "depth" : 1,
+            "diameter" : 1
          },
-         "name": "obj_cannon_ratshot",
-         "physicsMaterial": "Metal",
-         "renderable": "$CONTENT_DATA/Objects/Renderables/obj_turret_cartridge_normal.rend",
-         "rotationSet": "PropY",
-         "sticky": "-Y",
-         "stackSize": 10,
-         "uuid": "e36b172c-ae2d-4697-af44-8041d9cbde0e",
-         "consumable": true
+         "name" : "obj_cannon_ratshot",
+         "physicsMaterial" : "Metal",
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/Ammo/obj_turret_cartridge_normal.rend",
+         "rotationSet" : "PropY",
+         "stackSize" : 10,
+         "sticky" : "-Y",
+         "uuid" : "e36b172c-ae2d-4697-af44-8041d9cbde0e"
       }
    ]
 }

@@ -1,0 +1,17 @@
+{
+   "lodList" : [
+      {
+         "mesh" : "$CONTENT_DATA/Particles/Mesh/TurretDebris/turret_seat_debris_bar.fbx",
+         "subMeshList" : [
+            {
+               "material" : "DifAsgNor",
+               "textureList" : [
+                  "$CONTENT_DATA/Objects/Textures/TurretSeat/Normal/kin_interactive_turret_01_dif.tga",
+                  "$CONTENT_DATA/Objects/Textures/TurretSeat/Normal/kin_interactive_turret_01_asg.tga",
+                  "$CONTENT_DATA/Objects/Textures/TurretSeat/Normal/kin_interactive_turret_01_nor.tga"
+               ]
+            }
+         ]
+      }
+   ]
+}

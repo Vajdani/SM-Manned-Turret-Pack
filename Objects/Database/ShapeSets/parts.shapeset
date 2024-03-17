@@ -4,7 +4,7 @@
          "carryItem" : true,
          "color" : "6b7d07",
          "hull" : {
-            "col" : "$CONTENT_DATA/Objects/Mesh/obj_interactive_turret_base_col.obj",
+            "col" : "$CONTENT_DATA/Objects/Mesh/Collision/obj_interactive_turret_base_col.obj",
             "x" : 7,
             "y" : 3,
             "z" : 7
@@ -14,7 +14,7 @@
          "ratings" : {
             "durability" : 10
          },
-         "renderable" : "$CONTENT_DATA/Objects/Renderables/obj_interactive_turret_base.rend",
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/TurretBase/obj_interactive_turret_base.rend",
          "restrictions" : {
             "destructable" : false
          },
@@ -30,7 +30,7 @@
       {
          "color" : "6b7d07",
          "hull" : {
-            "col" : "$CONTENT_DATA/Objects/Mesh/obj_interactive_mountable_turretgun_col.obj",
+            "col" : "$CONTENT_DATA/Objects/Mesh/Collision/obj_interactive_mountable_turretgun_col.obj",
             "x" : 1,
             "y" : 2,
             "z" : 5
@@ -57,7 +57,7 @@
          "carryItem" : true,
          "color" : "6b7d07",
          "hull" : {
-            "col" : "$CONTENT_DATA/Objects/Mesh/obj_interactive_turret_base_col.obj",
+            "col" : "$CONTENT_DATA/Objects/Mesh/Collision/obj_interactive_turret_base_col.obj",
             "x" : 7,
             "y" : 3,
             "z" : 7
@@ -67,7 +67,7 @@
          "ratings" : {
             "durability" : 10
          },
-         "renderable" : "$CONTENT_DATA/Objects/Renderables/obj_interactive_cannon_base.rend",
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/TurretBase/obj_interactive_cannon_base.rend",
          "restrictions" : {
             "destructable" : false
          },

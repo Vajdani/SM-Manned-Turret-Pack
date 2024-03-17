@@ -1,11 +1,10 @@
 {
    "lodList" : [
       {
-         "mesh" : "$CONTENT_DATA/Objects/Mesh/obj_interactive_mountable_turretgun.fbx",
-         "pose0" : "$CONTENT_DATA/Objects/Mesh/obj_interactive_mountable_turretgun_pose0.fbx",
+         "mesh" : "$CONTENT_DATA/Particles/Mesh/TurretDebris/turret_seat_debris_shield_left.fbx",
          "subMeshList" : [
             {
-               "material" : "PoseAnimDifAsgNor",
+               "material" : "DifAsgNor",
                "textureList" : [
                   "$CONTENT_DATA/Objects/Textures/TurretSeat/Normal/kin_interactive_turret_02_dif.tga",
                   "$CONTENT_DATA/Objects/Textures/TurretSeat/Normal/kin_interactive_turret_02_asg.tga",
