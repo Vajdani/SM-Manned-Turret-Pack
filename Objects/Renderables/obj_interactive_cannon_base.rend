@@ -3,7 +3,7 @@
       {
          "mesh" : "$CONTENT_DATA/Objects/Mesh/obj_interactive_cannon_base.fbx",
          "subMeshMap" : {
-            "turretbase": {
+            "turretbase" : {
                "material" : "DifAsgNor",
                "textureList" : [
                   "$CONTENT_DATA/Objects/Textures/obj_interactive_turret_base_dif.tga",
@@ -11,20 +11,20 @@
                   "$CONTENT_DATA/Objects/Textures/obj_interactive_turret_base_nor.tga"
                ]
             },
-            "turretpart2": {
-               "material" : "DifAsgNor",
-               "textureList" : [
-                  "$CONTENT_DATA/Objects/Textures/kin_interactive_turret_02_dif.tga",
-                  "$CONTENT_DATA/Objects/Textures/kin_interactive_turret_02_asg.tga",
-                  "$CONTENT_DATA/Objects/Textures/kin_interactive_turret_02_nor.tga"
-               ]
-            },
-            "turretpart1": {
+            "turretpart1" : {
                "material" : "DifAsgNor",
                "textureList" : [
                   "$CONTENT_DATA/Objects/Textures/kin_interactive_turret_01_dif.tga",
                   "$CONTENT_DATA/Objects/Textures/kin_interactive_turret_01_asg.tga",
                   "$CONTENT_DATA/Objects/Textures/kin_interactive_turret_01_nor.tga"
+               ]
+            },
+            "turretpart2" : {
+               "material" : "DifAsgNor",
+               "textureList" : [
+                  "$CONTENT_DATA/Objects/Textures/kin_interactive_turret_cannon_dif.tga",
+                  "$GAME_DATA/Textures/Default/default_asg.tga",
+                  "$CONTENT_DATA/Objects/Textures/kin_interactive_turret_cannon_nor.tga"
                ]
             }
          }
