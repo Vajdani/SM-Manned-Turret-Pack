@@ -3,6 +3,11 @@ CannonRocket = class()
 CannonRocket.lifeTime = 15 * 40
 
 function CannonRocket:server_onCreate()
+    if self.storage:load() then
+        self.shape:destroyShape()
+        return
+    end
+
     local publicData = self.interactable.publicData
     self.isPrimed = publicData ~= nil
 
@@ -16,21 +21,26 @@ function CannonRocket:server_onCreate()
     end
 end
 
+function CannonRocket:server_onUnload()
+    self.storage:save(true)
+    self:sv_explode()
+end
+
 function CannonRocket:server_onProjectile()
     if self.isPrimed then
-        self:sv_explode(self.shape.worldPosition)
+        self:sv_explode()
     end
 end
 
 function CannonRocket:server_onMelee()
     if self.isPrimed then
-        self:sv_explode(self.shape.worldPosition)
+        self:sv_explode()
     end
 end
 
 function CannonRocket:server_onExplosion()
     if self.isPrimed then
-        self:sv_explode(self.shape.worldPosition)
+        self:sv_explode()
     end
 end
 
