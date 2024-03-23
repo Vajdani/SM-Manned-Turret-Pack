@@ -70,7 +70,7 @@ end
 function CannonRocket:sv_explode(position)
     sm.event.sendToHarvestable(self.seat, "sv_onRocketExplode", position == nil)
 
-    sm.physics.explode( position or self.shape.worldPosition, 10, 10, 12, 25, "PropaneTank - ExplosionBig", self.shape )
+    sm.physics.explode( position or self.shape.worldPosition, 7, 5, 7, 15, "PropaneTank - ExplosionBig", self.shape )
     self.shape:destroyShape()
 end
 
