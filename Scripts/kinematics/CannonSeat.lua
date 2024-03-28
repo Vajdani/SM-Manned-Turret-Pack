@@ -228,7 +228,7 @@ end
 function CannonSeat:client_onUpdate(dt)
     if not sm.exists(self.cl_base) then return end
 
-    local speed = dt * 7.5
+    local speed = dt * 2.5
     self.recoil_l = math.max(self.recoil_l - speed, 0)
     self.harvestable:setPoseWeight(0, sm.util.easing("easeOutCubic", self.recoil_l))
 

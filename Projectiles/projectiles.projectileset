@@ -73,7 +73,7 @@
          "enableImpactEffect" : false,
          "friction" : 0.2000000029802322,
          "mass" : 3.0,
-         "mesh" : "$CONTENT_DATA/Projectiles/Renderables/turret_bullet_normal.rend",
+         "mesh" : "$CONTENT_DATA/Projectiles/Renderables/cannon_ratshot.rend",
          "name" : "cannon_ratshot",
          "radius" : 0.250,
          "spin" : 7.0,
