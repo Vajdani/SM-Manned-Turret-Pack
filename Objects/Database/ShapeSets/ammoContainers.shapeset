@@ -78,7 +78,7 @@
             "durability" : 6,
             "friction" : 4
          },
-         "renderable" : "$CONTENT_DATA/Objects/Renderables/AmmoContainer/obj_container_turret_normal_ammo.rend",
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/AmmoContainer/obj_container_cannon_rockets.rend",
          "restrictions" : {
             "usable" : true
          },
@@ -109,7 +109,7 @@
             "durability" : 6,
             "friction" : 4
          },
-         "renderable" : "$CONTENT_DATA/Objects/Renderables/AmmoContainer/obj_container_turret_normal_ammo.rend",
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/AmmoContainer/obj_container_cannon_ratshot.rend",
          "restrictions" : {
             "usable" : true
          },

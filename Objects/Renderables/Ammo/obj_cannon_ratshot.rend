@@ -1,0 +1,17 @@
+{
+   "lodList" : [
+      {
+         "mesh" : "$CONTENT_DATA/Objects/Mesh/Ammo/obj_cannon_ratshot.fbx",
+         "subMeshList" : [
+            {
+               "material" : "DifAsgNor",
+               "textureList" : [
+                  "$CONTENT_DATA/Objects/Textures/Ammo/obj_turret_cartridge_dif.tga",
+                  "$CONTENT_DATA/Objects/Textures/Ammo/obj_turret_cartridge_asg.tga",
+                  "$CONTENT_DATA/Objects/Textures/Ammo/obj_turret_cartridge_nor.tga"
+               ]
+            }
+         ]
+      }
+   ]
+}
