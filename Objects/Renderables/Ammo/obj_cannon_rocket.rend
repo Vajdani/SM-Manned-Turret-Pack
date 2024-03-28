@@ -1,11 +1,11 @@
 {
-   "lodList": [
+   "lodList" : [
       {
-         "mesh": "$CHALLENGE_DATA/Objects/Mesh/interactive/obj_interactive_challengeball.fbx",
-         "subMeshMap": {
-            "lambert1": {
-               "material": "DifAsgNor",
-               "textureList": [
+         "mesh" : "$CONTENT_DATA/Objects/Mesh/Ammo/obj_cannon_rocket.fbx",
+         "subMeshMap" : {
+            "lambert1" : {
+               "material" : "DifAsgNor",
+               "textureList" : [
                   "$CHALLENGE_DATA/Objects/Textures/interactive/obj_interactive_challengeball_dif.tga",
                   "$CHALLENGE_DATA/Objects/Textures/interactive/obj_interactive_challengeball_asg.tga",
                   "$CHALLENGE_DATA/Objects/Textures/interactive/obj_interactive_challengeball_nor.tga"
