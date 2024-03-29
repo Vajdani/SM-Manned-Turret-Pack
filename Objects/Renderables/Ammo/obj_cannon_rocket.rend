@@ -6,9 +6,9 @@
             "lambert1" : {
                "material" : "DifAsgNor",
                "textureList" : [
-                  "$CHALLENGE_DATA/Objects/Textures/interactive/obj_interactive_challengeball_dif.tga",
-                  "$CHALLENGE_DATA/Objects/Textures/interactive/obj_interactive_challengeball_asg.tga",
-                  "$CHALLENGE_DATA/Objects/Textures/interactive/obj_interactive_challengeball_nor.tga"
+                  "$CONTENT_DATA/Objects/Textures/Ammo/obj_cannon_rocket_dif.tga",
+                  "$CONTENT_DATA/Objects/Textures/Ammo/obj_cannon_rocket_asg.tga",
+                  "$CONTENT_DATA/Objects/Textures/Ammo/obj_cannon_rocket_nor.tga"
                ]
             }
          }
