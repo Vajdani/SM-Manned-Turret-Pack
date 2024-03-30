@@ -219,6 +219,8 @@ function CannonSeat:client_onAction(action, state)
             end
 
             if self.blockStrikeCast then return true end
+        elseif self.spottingStrike then
+            return true
         end
     end
 
@@ -338,7 +340,6 @@ function CannonSeat:cl_startAirStrike()
 
     local parent = self.cl_base:getSingleParent()
     if parent and not parent:getContainer(0):canSpend(self.ammoTypes[2].ammo, 1) then
-        local _, _end = self:getFirePos()
         self:cl_shoot({ canShoot = false })
         return true
     end
