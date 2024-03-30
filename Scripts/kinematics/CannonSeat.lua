@@ -413,3 +413,13 @@ function CannonSeat:cl_onRocketExplode(detonated)
         self:cl_updateHotbar()
     end
 end
+
+function CannonSeat:cl_SetTurretControlsEnabled(state)
+    self.cl_controlsEnabled = state
+    self.harvestable.clientPublicData.controlsEnabled = state
+
+    if self.seated and self.ammoType ~= 2 and self.shootState ~= ShootState.null then
+        self.shootState = ShootState.null
+        self:cl_updateHotbar()
+    end
+end
