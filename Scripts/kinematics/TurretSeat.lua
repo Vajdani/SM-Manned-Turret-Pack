@@ -1,5 +1,6 @@
 ---@class TurretSeat : HarvestableClass
 ---@field base Interactable
+---@field cl_base Interactable
 ---@field ammoTypes AmmoType[]
 ---@field containerToAmmoType { string: number }
 ---@field baseUUID string
@@ -125,6 +126,8 @@ function TurretSeat:sv_seat(args, caller)
 
     caller.publicData = caller.publicData or {}
     caller.publicData.turretSeat = self.harvestable
+
+	self.base.active = true
 end
 
 ---@param caller Player
@@ -144,6 +147,11 @@ function TurretSeat:sv_unSeat(args, caller)
     )
 
     caller.publicData.turretSeat = nil
+	self.base.active = false
+    self.base.power = 0
+    for k, v in pairs(sm.interactable.steering) do
+        self.base:unsetSteeringFlag( v )
+    end
 end
 
 function TurretSeat:server_onProjectile(position, airTime, velocity, projectileName, shooter, damage, customData, normal, uuid)
@@ -332,7 +340,15 @@ function TurretSeat:client_onAction(action, state)
     end
 
     if state then
-        if action == 6 or action == 18 then
+        if action == 1 then
+			self.cl_base:setSteeringFlag( 1 )
+		elseif action == 2 then
+			self.cl_base:setSteeringFlag( 2 )
+        elseif action == 3 then
+			self.cl_base:setSteeringFlag( 4 )
+		elseif action == 4 then
+			self.cl_base:setSteeringFlag( 8 )
+        elseif action == 6 or action == 18 then
             self.shootState = self.shootState == ShootState.toggle and ShootState.null or ShootState.toggle
             self:cl_updateHotbar()
         elseif action == 7 then
@@ -352,6 +368,16 @@ function TurretSeat:client_onAction(action, state)
             end
         elseif action == 15 then
             self:cl_unSeat()
+        end
+    else
+        if action == 1 then
+			self.cl_base:unsetSteeringFlag( 1 )
+		elseif action == 2 then
+			self.cl_base:unsetSteeringFlag( 2 )
+        elseif action == 3 then
+			self.cl_base:unsetSteeringFlag( 4 )
+		elseif action == 4 then
+			self.cl_base:unsetSteeringFlag( 8 )
         end
     end
 

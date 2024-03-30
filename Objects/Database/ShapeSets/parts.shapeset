@@ -22,7 +22,10 @@
          "scripted" : {
             "classname" : "TurretBase",
             "data" : {},
-            "filename" : "$CONTENT_DATA/Scripts/interactables/TurretBase.lua"
+            "filename" : "$CONTENT_DATA/Scripts/interactables/TurretBase.lua",
+            "steering": {
+               "steerAngle": 45.0
+            }
          },
          "sticky" : "-Y",
          "uuid" : "e4497545-5f77-4d59-bfbf-ce5692284322"
@@ -75,7 +78,10 @@
          "scripted" : {
             "classname" : "CannonBase",
             "data" : {},
-            "filename" : "$CONTENT_DATA/Scripts/interactables/CannonBase.lua"
+            "filename" : "$CONTENT_DATA/Scripts/interactables/CannonBase.lua",
+            "steering": {
+               "steerAngle": 45.0
+            }
          },
          "sticky" : "-Y",
          "uuid" : "a0c96d35-37ca-4cf9-82d8-9b9077132918"

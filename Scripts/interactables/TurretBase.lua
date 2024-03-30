@@ -11,9 +11,9 @@
 ---@field cl_turret Harvestable
 TurretBase = class()
 TurretBase.maxParentCount = 1
-TurretBase.maxChildCount = 0
+TurretBase.maxChildCount = -1
 TurretBase.connectionInput = sm.interactable.connectionType.ammo + sm.interactable.connectionType.water + 2^13 + 2^14
-TurretBase.connectionOutput = sm.interactable.connectionType.none
+TurretBase.connectionOutput = sm.interactable.connectionType.seated + sm.interactable.connectionType.power + sm.interactable.connectionType.bearing
 TurretBase.colorNormal = sm.color.new( 0xcb0a00ff )
 TurretBase.colorHighlight = sm.color.new( 0xee0a00ff )
 TurretBase.maxHealth = 1000
@@ -43,6 +43,16 @@ end
 function TurretBase:server_onDestroy()
     if sm.exists(self.turret) then
         self.turret:destroy()
+    end
+end
+
+function TurretBase:server_onFixedUpdate()
+    if not self.interactable.active then return end
+
+    local steerPower = self.interactable:getSteeringPower()
+    if self.prevSteerPower ~= steerPower then
+        self.prevSteerPower = steerPower
+        self.interactable.power = steerPower
     end
 end
 
