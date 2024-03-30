@@ -27,26 +27,22 @@ function CannonRocket:server_onUnload()
 end
 
 function CannonRocket:server_onProjectile()
-    if self.isPrimed then
-        self:sv_explode()
-    end
+    if not self.isPrimed then return end
+    self:sv_explode()
 end
 
 function CannonRocket:server_onMelee()
-    if self.isPrimed then
-        self:sv_explode()
-    end
+    if not self.isPrimed then return end
+    self:sv_explode()
 end
 
 function CannonRocket:server_onExplosion()
-    if self.isPrimed then
-        self:sv_explode()
-    end
+    if not self.isPrimed then return end
+    self:sv_explode()
 end
 
 function CannonRocket:server_onCollision(other, position, selfPointVelocity, otherPointVelocity, normal)
     if not self.isPrimed then return end
-
     self:sv_explode(position)
 end
 

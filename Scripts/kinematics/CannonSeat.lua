@@ -336,7 +336,7 @@ end
 function CannonSeat:cl_startAirStrike()
     if self.blockStrikeCast then return end
 
-    local parent = self.base:getSingleParent()
+    local parent = self.cl_base:getSingleParent()
     if parent and not parent:getContainer(0):canSpend(self.ammoTypes[2].ammo, 1) then
         local _, _end = self:getFirePos()
         self:cl_shoot({ canShoot = false })
