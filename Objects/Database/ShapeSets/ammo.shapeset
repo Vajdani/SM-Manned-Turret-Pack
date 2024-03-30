@@ -43,14 +43,14 @@
          "physicsMaterial" : "Metal",
          "qualityLevel" : 0,
          "renderable" : "$CONTENT_DATA/Objects/Renderables/Ammo/obj_cannon_rocket.rend",
-         "rotationSet" : "PropY",
+         "rotationSet" : "PropYmmZm",
          "scripted" : {
             "classname" : "CannonRocket",
             "data" : {},
             "filename" : "$CONTENT_DATA/Scripts/interactables/CannonRocket.lua"
          },
          "stackSize" : 5,
-         "sticky" : "-Y",
+         "sticky" : "-Y+Z",
          "uuid" : "24d5e812-3902-4ac3-b214-a0c924a5c40f"
       },
       {
