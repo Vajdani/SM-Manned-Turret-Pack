@@ -104,7 +104,8 @@ function TurretBase:sv_takeDamage(damage)
         self.turret:destroy()
 
         if char then
-           char:setTumbling(true)
+            char:setTumbling(true)
+            char:setWorldPosition(self:getSeatPos())
         end
 
         self.destroyed = true
