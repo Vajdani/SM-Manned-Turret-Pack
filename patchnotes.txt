@@ -1,0 +1,21 @@
+-Added Manned Cannon, which comes with 3 fire modes:
+ -Guided Missile
+ -Air Strike
+ -Ratshot
+-Added Guided Missile
+-Added Guided Missile Container
+-Added Ratshot
+-Added Ratshot Container
+-Turrets have partial seat functionality:
+ -Can be used as a driver's seat
+ -Buttons and Switches cannot be used
+-Hid unnecessary elements from turret HUDs
+-Entering a turret now closes the survival HUD if there is one
+-Fixed the player ragdoll not getting spawned at the turret position after getting destroyed
+-Fixed late joiners not getting updated on the turret's data
+-Fixed getting kicked out of the seat while the creation is lifted
+-Adjusted firing positions
+-Lift integration:
+ -Turret seats get highlighted if the creation they are on is highlighted by the lift
+ -Creations can be picked up while aiming at a turret seat
+-Changed how repairing works, it is much harder for it to swallow items now

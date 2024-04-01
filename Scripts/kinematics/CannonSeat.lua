@@ -106,6 +106,11 @@ function CannonSeat:sv_detonateRocket()
     self.rocket = nil
 end
 
+function CannonSeat:sv_startAirStrikeCasting()
+    sm.event.sendToInteractable(self.base, "sv_clearDrivingFlags", true)
+    self:sv_SetTurretControlsEnabled(false)
+end
+
 function CannonSeat:sv_startAirStrike(pos, caller)
     sm.effect.playEffect("Loot - Pickup", pos)
 
@@ -230,7 +235,7 @@ end
 function CannonSeat:client_onUpdate(dt)
     if not sm.exists(self.cl_base) then return end
 
-    local speed = dt * 2.5
+    local speed = dt * 5
     self.recoil_l = math.max(self.recoil_l - speed, 0)
     self.harvestable:setPoseWeight(0, sm.util.easing("easeOutCubic", self.recoil_l))
 
@@ -239,15 +244,13 @@ function CannonSeat:client_onUpdate(dt)
             local horizontal = BoolToNum(self.strikeMoveControls[2]) - BoolToNum(self.strikeMoveControls[1])
             local veritcal = BoolToNum(self.strikeMoveControls[3]) - BoolToNum(self.strikeMoveControls[4])
 
-            if horizontal ~= 0 or veritcal ~= 0 then
-                self.strikeCamOffset = self.strikeCamOffset + (vec3_forward * veritcal + vec3_right * horizontal):safeNormalize(vec3_zero) * dt * 10 * self.strikeZoom
-                local distance = self.strikeCamOffset:length()
-                if distance >= self.airStrikeDistanceLimit then
-                    self.strikeCamOffset = self.strikeCamOffset * (self.airStrikeDistanceLimit / distance)
-                end
-
-                sm.localPlayer.getPlayer().clientPublicData.interactableCameraData.cameraPosition = self:getStrikeCamPos()
+            self.strikeCamOffset = self.strikeCamOffset + (vec3_forward * veritcal + vec3_right * horizontal):safeNormalize(vec3_zero) * dt * 10 * self.strikeZoom
+            local distance = self.strikeCamOffset:length()
+            if distance >= self.airStrikeDistanceLimit then
+                self.strikeCamOffset = self.strikeCamOffset * (self.airStrikeDistanceLimit / distance)
             end
+
+            sm.localPlayer.getPlayer().clientPublicData.interactableCameraData.cameraPosition = self:getStrikeCamPos()
         else
             sm.localPlayer.getPlayer().clientPublicData.customCameraData = { cameraState = 5 }
 
@@ -262,9 +265,8 @@ function CannonSeat:client_onUpdate(dt)
 end
 
 function CannonSeat:getFirePos()
-    local pos = self.harvestable.worldPosition
+    local pos = self.harvestable.worldPosition + self.base.shape.velocity * 0.025
     local rot = self.harvestable.worldRotation
-
     local offsetBase = vec3_forward * 0.2
     return pos + rot * offsetBase, pos + rot * (vec3_up * 2.25 + offsetBase)
 end
@@ -344,7 +346,7 @@ function CannonSeat:cl_startAirStrike()
         return true
     end
 
-    self.network:sendToServer("sv_SetTurretControlsEnabled", false)
+    self.network:sendToServer("sv_startAirStrikeCasting")
     sm.gui.startFadeToBlack(1.0, 0.5)
     sm.gui.endFadeToBlack(0.8)
     sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", { false, true })

@@ -11,7 +11,7 @@
 ---@field cl_turret Harvestable
 TurretBase = class()
 TurretBase.maxParentCount = 1
-TurretBase.maxChildCount = -1
+TurretBase.maxChildCount = 255
 TurretBase.connectionInput = sm.interactable.connectionType.ammo + sm.interactable.connectionType.water + 2^13 + 2^14
 TurretBase.connectionOutput = sm.interactable.connectionType.seated + sm.interactable.connectionType.power + sm.interactable.connectionType.bearing
 TurretBase.colorNormal = sm.color.new( 0xcb0a00ff )
@@ -38,6 +38,16 @@ function TurretBase:server_onCreate()
 
     self:sv_createTurret()
     self.network:setClientData({ health = health, destroyed = self.destroyed, ammoType = self.ammoType }, 2)
+end
+
+function TurretBase:sv_syncToLateJoiner(player)
+    self.network:sendToClient(player, "cl_syncToLateJoiner",
+        {
+            self.turret,
+            { health = self.cl_health, destroyed = self.destroyed, ammoType = self.ammoType }
+        }
+    )
+    sm.event.sendToHarvestable(self.turret, "sv_syncToLateJoiner", player)
 end
 
 function TurretBase:server_onDestroy()
@@ -108,6 +118,8 @@ function TurretBase:sv_takeDamage(damage)
             char:setWorldPosition(self:getSeatPos())
         end
 
+        self:sv_clearDrivingFlags(false)
+
         self.destroyed = true
     elseif newHealth == self.maxHealth and not turretExists then
         self.destroyed = false
@@ -169,6 +181,14 @@ end
 
 function TurretBase:sv_setDirTarget(dir)
     self.network:sendToClients("cl_setDirTarget", dir)
+end
+
+function TurretBase:sv_clearDrivingFlags(active)
+    self.interactable.active = active
+    self.interactable.power = 0
+    for k, v in pairs(sm.interactable.steering) do
+        self.interactable:unsetSteeringFlag( v )
+    end
 end
 
 
@@ -245,6 +265,16 @@ function TurretBase:client_canTinker()
     return self.cl_health < self.maxHealth
 end
 
+function TurretBase:client_getAvailableChildConnectionCount( connectionType )
+    local isLogic = bit.band(connectionType, sm.interactable.connectionType.logic) ~= 0
+    local isSeated = bit.band(connectionType, sm.interactable.connectionType.seated) ~= 0
+    if not (isLogic and isSeated) then
+        return 0
+    end
+
+	return self.maxChildCount - #self.interactable:getChildren(connectionType)
+end
+
 function TurretBase:client_onTinker(char, state)
     if state == g_repairingTurret then return end
 
@@ -278,7 +308,16 @@ end
 function TurretBase:client_onUpdate(dt)
     if not (self.cl_turret and sm.exists(self.cl_turret)) then return end
 
-    self.cl_turret:setPosition(self:getSeatPos())
+    self:cl_checkHighlight()
+    self.cl_turret:setPosition(self:getSeatPos() + (self.lifted and -vec3_up * 1000 or vec3_zero))
+
+    local lifted = self.shape.body:isOnLift()
+    if lifted then
+        self.dirProgress = 0
+        self.dirPrev = nil
+        self.dirTarget = nil
+        self.dir = { x = 0, y = 0 }
+    end
 
     if self.dirTarget then
         self.dirProgress = self.dirProgress + dt
@@ -291,19 +330,23 @@ function TurretBase:client_onUpdate(dt)
             self.dirPrev = nil
             self.dirTarget = nil
         end
-    elseif not self.shape.body:isOnLift() and self.cl_turret:getSeatCharacter() == sm.localPlayer.getPlayer().character and self.cl_turret.clientPublicData.controlsEnabled then
+    elseif not lifted and self.cl_turret:getSeatCharacter() == sm.localPlayer.getPlayer().character and self.cl_turret.clientPublicData.controlsEnabled then
         local x, y = sm.localPlayer.getMouseDelta()
         if x ~= 0 or y ~= 0 then
-            local dir = { x = x , y = y }
+            local dir = { x = x, y = y }
             self.network:sendToServer("sv_updateDir", dir)
             self:cl_updateDir(dir)
         end
     end
 
-    local targetRot = sm.quat.angleAxis(self.dir.x, vec3_forward)
-    targetRot = targetRot * sm.quat.angleAxis(-self.dir.y, vec3_right)
-    --self.turretRot = nlerp(self.turretRot, self.shape.worldRotation * targetRot, dt * 20)
-    self.cl_turret:setRotation(self.shape.worldRotation * targetRot) --self.turretRot)
+    --semi functional worldrot
+    --local worldRot1 = sm.quat.angleAxis(self.dir.x, vec3_up) * sm.quat.angleAxis(-self.dir.y + math.pi * 0.5, vec3_right)
+    self.cl_turret:setRotation(self.shape.worldRotation * sm.quat.angleAxis(self.dir.x, vec3_forward) * sm.quat.angleAxis(-self.dir.y, vec3_right))
+end
+
+function TurretBase:cl_syncToLateJoiner(data)
+    self:client_onClientDataUpdate(data[1], 1)
+    self:client_onClientDataUpdate(data[2], 2)
 end
 
 function TurretBase:client_onClientDataUpdate(data, channel)
@@ -312,6 +355,17 @@ function TurretBase:client_onClientDataUpdate(data, channel)
         self.dir = { x = 0, y = 0 }
 
         self.cl_turret = data
+
+        if self.turretHighlight and sm.exists(self.turretHighlight) then
+            self.turretHighlight:destroy()
+        end
+
+        self.turretHighlight = sm.effect.createEffect("ShapeRenderable", data)
+        self.turretHighlight:setParameter("uuid", sm.uuid.new(self.seatHologramUUID))
+        self.turretHighlight:setParameter("visualization", true)
+        self.turretHighlight:setScale(vec3_one * 0.25)
+        self.turretHighlight:start()
+
         self.interactable:setSubMeshVisible("turretpart1", false)
         self.interactable:setSubMeshVisible("turretpart2", false)
     else
@@ -454,6 +508,31 @@ function TurretBase:cl_onDestroy()
     end
 
     sm.effect.playEffect("PropaneTank - ExplosionSmall", seatPos)
+end
+
+function TurretBase:cl_checkHighlight()
+    local shouldHighlight, isPlaying = sm.game.getCurrentTick() - (self.liftHoverTick or 0) < 2, self.turretHighlight:isPlaying()
+    if shouldHighlight and not isPlaying then
+        self.turretHighlight:start()
+    elseif not shouldHighlight and isPlaying then
+        self.turretHighlight:stop()
+    end
+end
+
+function TurretBase:cl_liftHover()
+    self.liftHoverTick = sm.game.getCurrentTick()
+end
+
+function TurretBase:cl_onLifted(state)
+    self.lifted = state
+
+    if state then
+        self.interactable:setSubMeshVisible("turretpart1", true)
+        self.interactable:setSubMeshVisible("turretpart2", true)
+    else
+        self.interactable:setSubMeshVisible("turretpart1", not self.seatBroken)
+        self.interactable:setSubMeshVisible("turretpart2", not self.gunBroken)
+    end
 end
 
 
