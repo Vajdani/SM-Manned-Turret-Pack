@@ -96,7 +96,7 @@ function CannonSeat:sv_onRocketExplode(detonated)
     self.harvestable.publicData.rocketBoost = 0
     self.rocketControls = { [1] = false, [2] = false, [3] = false, [4] = false }
     self:sv_SetTurretControlsEnabled(true)
-    self.network:sendToClient(self.harvestable:getSeatCharacter():getPlayer(), "cl_onRocketExplode", detonated)
+    self.network:sendToClient(self.sv_seated:getPlayer(), "cl_onRocketExplode", detonated)
 end
 
 function CannonSeat:sv_detonateRocket()
@@ -167,7 +167,7 @@ end
 
 function CannonSeat:sv_endAirStrike()
     self:sv_SetTurretControlsEnabled(true)
-    self.network:sendToClient(self.harvestable:getSeatCharacter():getPlayer(), "cl_endAirStrike")
+    self.network:sendToClient(self.sv_seated:getPlayer(), "cl_endAirStrike")
 end
 
 function CannonSeat:sv_cancelAirStrike()

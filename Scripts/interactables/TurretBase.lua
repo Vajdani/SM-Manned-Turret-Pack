@@ -266,9 +266,8 @@ function TurretBase:client_canTinker()
 end
 
 function TurretBase:client_getAvailableChildConnectionCount( connectionType )
-    local isLogic = bit.band(connectionType, sm.interactable.connectionType.logic) ~= 0
-    local isSeated = bit.band(connectionType, sm.interactable.connectionType.seated) ~= 0
-    if not (isLogic and isSeated) then
+    --Seated, Power, Logic
+    if bit.band(connectionType, 8) ~= 0 and (not bit.band(connectionType, 2) ~= 0 or not bit.band(connectionType, 1) ~= 0) then
         return 0
     end
 
@@ -355,16 +354,6 @@ function TurretBase:client_onClientDataUpdate(data, channel)
         self.dir = { x = 0, y = 0 }
 
         self.cl_turret = data
-
-        if self.turretHighlight and sm.exists(self.turretHighlight) then
-            self.turretHighlight:destroy()
-        end
-
-        self.turretHighlight = sm.effect.createEffect("ShapeRenderable", data)
-        self.turretHighlight:setParameter("uuid", sm.uuid.new(self.seatHologramUUID))
-        self.turretHighlight:setParameter("visualization", true)
-        self.turretHighlight:setScale(vec3_one * 0.25)
-        self.turretHighlight:start()
 
         self.interactable:setSubMeshVisible("turretpart1", false)
         self.interactable:setSubMeshVisible("turretpart2", false)
@@ -517,6 +506,13 @@ function TurretBase:cl_onDestroy()
 end
 
 function TurretBase:cl_checkHighlight()
+    if not sm.exists(self.turretHighlight) then
+        self.turretHighlight = sm.effect.createEffect("ShapeRenderable", self.cl_turret)
+        self.turretHighlight:setParameter("uuid", sm.uuid.new(self.seatHologramUUID))
+        self.turretHighlight:setParameter("visualization", true)
+        self.turretHighlight:setScale(vec3_one * 0.25)
+    end
+
     local shouldHighlight, isPlaying = sm.game.getCurrentTick() - (self.liftHoverTick or 0) < 2, self.turretHighlight:isPlaying()
     if shouldHighlight and not isPlaying then
         self.turretHighlight:start()

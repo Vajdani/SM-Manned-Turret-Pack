@@ -186,7 +186,7 @@ function TurretSeat:server_onExplosion(center, destructionLevel)
 end
 
 function TurretSeat:server_canErase()
-    return self.harvestable.publicData.health >= TurretBase.maxHealth and self.harvestable:getSeatCharacter() == nil
+    return self.harvestable.publicData.health >= TurretBase.maxHealth and self.sv_seated == nil
 end
 
 function TurretSeat:sv_updateAmmoType(ammoType)
