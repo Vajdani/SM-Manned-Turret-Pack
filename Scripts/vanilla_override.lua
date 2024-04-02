@@ -55,9 +55,8 @@ SurvivalPlayer.client_onCreate = newClientCreate
 	end
 end]]
 
-
-
-function Lift.client_onEquippedUpdate( self, primaryState, secondaryState )
+local LiftReplacement = {}
+function LiftReplacement.client_onEquippedUpdate( self, primaryState, secondaryState )
 	if self.tool:isLocal() and self.equipped and sm.localPlayer.getPlayer():getCharacter() then
 		local success, raycastResult = sm.localPlayer.getRaycast( 7.5 )
 		return true, self:client_interact( primaryState, secondaryState, raycastResult )
@@ -65,7 +64,7 @@ function Lift.client_onEquippedUpdate( self, primaryState, secondaryState )
 	return true, false
 end
 
-function Lift:checkForTurret(result)
+function LiftReplacement:checkForTurret(result)
 	if #self.selectedBodies > 0 then return end
 
 	local harvestable = result:getHarvestable()
@@ -76,7 +75,7 @@ function Lift:checkForTurret(result)
 end
 
 ---@param raycastResult RaycastResult
-function Lift.client_interact( self, primaryState, secondaryState, raycastResult )
+function LiftReplacement.client_interact( self, primaryState, secondaryState, raycastResult )
 	local targetBody = nil
 	local blockDelete = false
 
@@ -258,6 +257,14 @@ function Lift.client_interact( self, primaryState, secondaryState, raycastResult
 	end
 
 	return blockDelete
+end
+
+
+
+for k, liftClass in pairs({ Lift, SurvivalLift }) do
+	for _k, v in pairs(LiftReplacement) do
+		liftClass[_k] = v
+	end
 end
 
 

@@ -368,6 +368,9 @@ function TurretBase:client_onClientDataUpdate(data, channel)
 
         self.interactable:setSubMeshVisible("turretpart1", false)
         self.interactable:setSubMeshVisible("turretpart2", false)
+
+        self.seatBroken = false
+        self.gunBroken = false
     else
         local health = data.health
         self.cl_health = health
@@ -424,6 +427,9 @@ function TurretBase:client_onClientDataUpdate(data, channel)
                 end
             end
         elseif health >= self.maxHealth then
+            self.seatBroken = false
+            self.gunBroken = false
+
             if g_repairingTurret then
                 self.network:sendToServer("sv_onRepair", g_repairTool)
             end
@@ -530,8 +536,8 @@ function TurretBase:cl_onLifted(state)
         self.interactable:setSubMeshVisible("turretpart1", true)
         self.interactable:setSubMeshVisible("turretpart2", true)
     else
-        self.interactable:setSubMeshVisible("turretpart1", not self.seatBroken)
-        self.interactable:setSubMeshVisible("turretpart2", not self.gunBroken)
+        self.interactable:setSubMeshVisible("turretpart1", self.seatBroken)
+        self.interactable:setSubMeshVisible("turretpart2", self.gunBroken)
     end
 end
 
