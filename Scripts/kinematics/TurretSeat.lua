@@ -34,7 +34,7 @@ TurretSeat.ammoTypes = {
         fireCooldown = 8,
         spread = 0,
         effect = "Mountedwatercanon - Shoot",
-        ammo = sm.uuid.new( "869d4736-289a-4952-96cd-8a40117a2d28" ),
+        ammo = sm.uuid.new("869d4736-289a-4952-96cd-8a40117a2d28"),
         uuid = projectile_water
     },
     --[[{
@@ -64,8 +64,8 @@ TurretSeat.ammoTypes = {
         fireCooldown = 6,
         spread = 8,
         effect = "SpudgunBasic - BasicMuzzel",
-        ammo = sm.uuid.new( "bfcfac34-db0f-42d6-bd0c-74a7a5c95e82" ),
-        uuid = projectile_potato
+        ammo = sm.uuid.new("bfcfac34-db0f-42d6-bd0c-74a7a5c95e82"),
+        uuid = sm.uuid.new("baf7ff9d-191a-4ea4-beba-e160ceb54daf")
     }
 }
 TurretSeat.containerToAmmoType = {
