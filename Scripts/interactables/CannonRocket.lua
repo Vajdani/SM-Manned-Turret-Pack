@@ -100,13 +100,6 @@ function CannonRocket:client_onCreate()
     self.thrustEffect:setOffsetRotation(sm.quat.angleAxis(math.rad(90), vec3_right))
 end
 
-function CannonRocket:client_onDestroy()
-    if self.isLocal then
-        self.hud:close()
-        self.hud:destroy()
-    end
-end
-
 function CannonRocket:client_onUpdate(dt)
     if not self.isLocal then return end
 
@@ -136,18 +129,5 @@ function CannonRocket:client_onClientDataUpdate(data)
 
     if self.isLocal then
         self.deathTick = data.deathTick
-
-        self.hud = sm.gui.createGuiFromLayout("$CONTENT_DATA/Gui/Layouts/RocketControlHud.layout", false,
-            {
-                isHud = true,
-                isInteractive = false,
-                needsCursor = false,
-                hidesHotbar = false,
-                isOverlapped = false,
-                backgroundAlpha = 0
-            }
-        )
-        --self.hud:playEffect("overlay", "Gui - PlayButtonShine", true)
-        self.hud:open()
     end
 end
