@@ -22,7 +22,7 @@ CannonSeat.ammoTypes = {
     },
     {
         name = "Ratshot",
-        damage = 5,
+        damage = 25,
         velocity = 130,
         fireCooldown = 40,
         spread = 0,
