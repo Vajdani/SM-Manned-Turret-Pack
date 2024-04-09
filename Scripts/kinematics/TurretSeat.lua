@@ -173,6 +173,12 @@ function TurretSeat:sv_unSeat(args, caller)
 	sm.event.sendToInteractable(self.base, "sv_clearDrivingFlags", false)
 end
 
+---@param player Player
+function TurretSeat:sv_unSeat_event(player)
+    self:sv_unSeat(nil, player)
+    self.network:sendToClient(player, "cl_unSeat_graphics")
+end
+
 function TurretSeat:server_onProjectile(position, airTime, velocity, projectileName, shooter, damage, customData, normal, uuid)
     sm.event.sendToInteractable(self.base, "sv_takeDamage", damage)
 end

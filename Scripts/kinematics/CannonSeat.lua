@@ -29,6 +29,13 @@ CannonSeat.ammoTypes = {
         effect = "Cannon - Shoot",
         ammo = sm.uuid.new("e36b172c-ae2d-4697-af44-8041d9cbde0e"),
         uuid = sm.uuid.new("53e5da10-99ea-48d5-98b5-c03d0938811e")
+    },
+    {
+        name = "Player Launcher",
+        velocity = 75,
+        fireCooldown = 40,
+        effect = "Cannon - Shoot",
+        ammo = sm.uuid.new( "ffa3a47e-fc0d-4977-802f-bd15683bbe5c" )
     }
 }
 CannonSeat.containerToAmmoType = {
@@ -175,12 +182,42 @@ function CannonSeat:sv_cancelAirStrike()
     self:sv_endAirStrike()
 end
 
+function CannonSeat:sv_launchPlayer(args, caller)
+    self:sv_unSeat_event(caller)
+    sm.event.sendToHarvestable(self.harvestable, "sv_tryLaunchPlayer", caller)
+end
+
+---@param player Player
+function CannonSeat:sv_tryLaunchPlayer(player)
+    local char = player.character
+    if not sm.exists(char) then
+        sm.event.sendToHarvestable(self.harvestable, "sv_tryLaunchPlayer", player)
+        return
+    end
+
+    char:setWorldPosition(({self:getFirePos()})[2])
+    char:setTumbling(true)
+    char:applyTumblingImpulse(self.harvestable.worldRotation * vec3_up * self.ammoTypes[self.ammoType].velocity * char.mass)
+
+    self.network:sendToClients("cl_shoot", { canShoot = true, ammoType = self.ammoType })
+end
+
 
 
 function CannonSeat:client_onCreate()
     TurretSeat.client_onCreate(self)
 
     self.strikeMoveControls = { [1] = false, [2] = false, [3] = false, [4] = false }
+    self.controlHud = sm.gui.createGuiFromLayout("$CONTENT_DATA/Gui/Layouts/RocketControlHud.layout", false,
+        {
+            isHud = true,
+            isInteractive = false,
+            needsCursor = false,
+            hidesHotbar = false,
+            isOverlapped = false,
+            backgroundAlpha = 0
+        }
+    )
 end
 
 function CannonSeat:client_onDestroy()
@@ -225,6 +262,13 @@ function CannonSeat:client_onAction(action, state)
 
             if self.blockStrikeCast then return true end
         elseif self.spottingStrike then
+            return true
+        end
+    elseif self.ammoType == 4 then
+        if state and (action == 5 or action == 19 or action == 6 or action == 18) then
+            sm.gui.startFadeToBlack(1.0, 0.5)
+            sm.gui.endFadeToBlack(0.8)
+            self.network:sendToServer("sv_launchPlayer")
             return true
         end
     end
@@ -326,6 +370,8 @@ function CannonSeat:cl_shoot(args)
                 cameraPosition = sm.camera.getPosition() + dir * 0.25,
                 cameraDirection = dir
             }
+
+            self.controlHud:open()
         end
     else
         sm.audio.play("Lever off", args.pos)
@@ -375,6 +421,8 @@ function CannonSeat:cl_startAirStrike()
         cameraDirection = -vec3_up
     }
 
+    self.controlHud:open()
+
     self.strikeCamOffset = sm.vec3.zero()
     self.strikeZoom = 1
     self.spottingStrike = true
@@ -391,7 +439,7 @@ function CannonSeat:cl_cancelAirStrike()
         sm.gui.startFadeToBlack(1.0, 0.5)
         sm.gui.endFadeToBlack(0.8)
         sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", true)
-
+        self.controlHud:close()
         self:cl_updateHotbar()
     end
 
@@ -413,6 +461,7 @@ function CannonSeat:cl_onRocketExplode(detonated)
 
     if self.harvestable.clientPublicData.health > 0 then
         sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", true)
+        self.controlHud:close()
         self:cl_updateHotbar()
     end
 end
