@@ -1,39 +1,39 @@
 {
-    "lodList": [
-        {
-            "mesh": "$CONTENT_DATA/Objects/Mesh/AmmoContainer/obj_container_cannon_rockets.fbx",
-            "subMeshMap": {
-                "ammobox": {
-                    "material": "DifAsgNor",
-                    "textureList": [
-                        "$CONTENT_DATA/Objects/Textures/AmmoContainer/obj_container_turret_ammo_dif.tga",
-                        "$CONTENT_DATA/Objects/Textures/AmmoContainer/obj_container_turret_ammo_asg.tga",
-                        "$CONTENT_DATA/Objects/Textures/AmmoContainer/obj_container_turret_ammo_nor.tga"
-                    ]
-                },
-                "connectionpoint": {
-                    "material": "DifAsgNor",
-                    "textureList": [
-                        "$SURVIVAL_DATA/Objects/Textures/containers/obj_interactive_container_connectorpoint_dif.tga",
-                        "$SURVIVAL_DATA/Objects/Textures/containers/obj_interactive_container_connectorpoint_asg.tga",
-                        "$CONTENT_DATA/Objects/Textures/AmmoContainer/obj_interactive_container_connectorpoint_nor.TGA"
-                    ]
-                },
-                "screen": {
-                    "custom": {
-                        "uv0": {
-                            "u": 1.0,
-                            "v": 0.1670
-                        }
-                    },
-                    "material": "UVAnimDifAsgNor",
-                    "textureList": [
-                        "$SURVIVAL_DATA/Objects/Textures/containers/obj_containers_screen_dif.tga",
-                        "$SURVIVAL_DATA/Objects/Textures/containers/obj_containers_screen_asg.tga",
-                        "$CONTENT_DATA/Objects/Textures/AmmoContainer/obj_containers_screen_nor.tga"
-                    ]
-                }
+   "lodList" : [
+      {
+         "mesh" : "$CONTENT_DATA/Objects/Mesh/AmmoContainer/obj_container_cannon_rockets.fbx",
+         "subMeshMap" : {
+            "connectionpoint" : {
+               "material" : "DifAsgNor",
+               "textureList" : [
+                  "$SURVIVAL_DATA/Objects/Textures/containers/obj_interactive_container_connectorpoint_dif.tga",
+                  "$SURVIVAL_DATA/Objects/Textures/containers/obj_interactive_container_connectorpoint_asg.tga",
+                  "$CONTENT_DATA/Objects/Textures/AmmoContainer/obj_interactive_container_connectorpoint_nor.TGA"
+               ]
+            },
+            "containerrocket" : {
+               "material" : "DifAsgNor",
+               "textureList" : [
+                  "$CONTENT_DATA/Objects/Textures/AmmoContainer/obj_container_cannon_rocket_dif.tga",
+                  "$CONTENT_DATA/Objects/Textures/AmmoContainer/obj_container_cannon_rocket_asg.tga",
+                  "$CONTENT_DATA/Objects/Textures/AmmoContainer/obj_container_cannon_rocket_nor.tga"
+               ]
+            },
+            "screen" : {
+               "custom" : {
+                  "uv0" : {
+                     "u" : 1.0,
+                     "v" : 0.1669999957084656
+                  }
+               },
+               "material" : "UVAnimDifAsgNor",
+               "textureList" : [
+                  "$SURVIVAL_DATA/Objects/Textures/containers/obj_containers_screen_dif.tga",
+                  "$SURVIVAL_DATA/Objects/Textures/containers/obj_containers_screen_asg.tga",
+                  "$CONTENT_DATA/Objects/Textures/AmmoContainer/obj_containers_screen_nor.tga"
+               ]
             }
-        }
-    ]
+         }
+      }
+   ]
 }

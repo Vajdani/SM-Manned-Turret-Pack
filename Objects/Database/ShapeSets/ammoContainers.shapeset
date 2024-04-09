@@ -64,14 +64,14 @@
       },
       {
          "box" : {
-            "x" : 4,
+            "x" : 5,
             "y" : 3,
-            "z" : 2
+            "z" : 3
          },
-         "color" : "ff0000",
+         "color" : "949476",
          "flammable" : false,
          "name" : "obj_container_cannon_rockets",
-         "physicsMaterial" : "Metal",
+         "physicsMaterial" : "Plastic",
          "ratings" : {
             "buoyancy" : 6,
             "density" : 5,
