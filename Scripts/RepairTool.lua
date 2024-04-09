@@ -1,17 +1,3 @@
-local gameHooked = false
-local oldEffect = sm.effect.createEffect
-function effectHook(name, object, bone)
-    if not gameHooked and name == "SurvivalMusic" then
-        gameHooked = true
-        dofile("$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Scripts/vanilla_override.lua")
-    end
-
-	return oldEffect(name, object, bone)
-end
-sm.effect.createEffect = effectHook
-
-
-
 dofile "$GAME_DATA/Scripts/game/AnimationUtil.lua"
 dofile "$SURVIVAL_DATA/Scripts/util.lua"
 dofile "$SURVIVAL_DATA/Scripts/game/survival_harvestable.lua"

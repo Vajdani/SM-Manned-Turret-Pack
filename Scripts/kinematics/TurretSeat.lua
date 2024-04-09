@@ -34,7 +34,7 @@ TurretSeat.ammoTypes = {
         fireCooldown = 8,
         spread = 0,
         effect = "Mountedwatercanon - Shoot",
-        ammo = sm.uuid.new( "869d4736-289a-4952-96cd-8a40117a2d28" ),
+        ammo = sm.uuid.new("869d4736-289a-4952-96cd-8a40117a2d28"),
         uuid = projectile_water
     },
     --[[{
@@ -64,8 +64,8 @@ TurretSeat.ammoTypes = {
         fireCooldown = 6,
         spread = 8,
         effect = "SpudgunBasic - BasicMuzzel",
-        ammo = sm.uuid.new( "bfcfac34-db0f-42d6-bd0c-74a7a5c95e82" ),
-        uuid = projectile_potato
+        ammo = sm.uuid.new("bfcfac34-db0f-42d6-bd0c-74a7a5c95e82"),
+        uuid = sm.uuid.new("baf7ff9d-191a-4ea4-beba-e160ceb54daf")
     }
 }
 TurretSeat.containerToAmmoType = {
@@ -89,6 +89,28 @@ function TurretSeat:server_onCreate()
     self.harvestable.publicData = { health = TurretBase.maxHealth, controlsEnabled = true }
 end
 
+function TurretSeat:sv_syncToLateJoiner(player)
+    self.network:sendToClient(player, "cl_syncToLateJoiner", { self.base, self.ammoType })
+end
+
+function TurretSeat:server_onFixedUpdate()
+    if not self.sv_seated then return end
+
+    if not sm.exists(self.sv_seated) then
+        self.sv_seated = nil
+        return
+    end
+
+    local downed = self.sv_seated:isDowned()
+    if self.prevDowned ~= downed then
+        self.prevDowned = downed
+
+        if downed then
+            self:sv_OnPlayerDeath(self.sv_seated:getPlayer())
+        end
+    end
+end
+
 function TurretSeat:sv_OnPlayerDeath(player)
     self:sv_OnPlayerSuddenUnSeated()
     self.network:sendToClient(player, "cl_unSeat_graphics")
@@ -97,7 +119,8 @@ end
 function TurretSeat:sv_OnPlayerSuddenUnSeated() end
 
 function TurretSeat:server_onUnload()
-    sm.event.sendToInteractable(self.cl_base, "sv_respawnSeat")
+    if not sm.exists(self.base) then return end
+    sm.event.sendToInteractable(self.base, "sv_respawnSeat")
 end
 
 ---@param player Player
@@ -122,7 +145,6 @@ function TurretSeat:sv_seat(args, caller)
     local char = caller.character
     self.harvestable:setSeatCharacter(char)
     self.sv_seated = char
-    self.sv_seatTick = sm.game.getServerTick()
 
     caller.publicData = caller.publicData or {}
     caller.publicData.turretSeat = self.harvestable
@@ -134,6 +156,7 @@ end
 function TurretSeat:sv_unSeat(args, caller)
     --self:sv_toggleLight(false)
 
+    self.sv_seated = nil
     self.harvestable:setSeatCharacter(caller.character)
 
     local rot = self.harvestable.worldRotation
@@ -147,11 +170,7 @@ function TurretSeat:sv_unSeat(args, caller)
     )
 
     caller.publicData.turretSeat = nil
-	self.base.active = false
-    self.base.power = 0
-    for k, v in pairs(sm.interactable.steering) do
-        self.base:unsetSteeringFlag( v )
-    end
+	sm.event.sendToInteractable(self.base, "sv_clearDrivingFlags", false)
 end
 
 function TurretSeat:server_onProjectile(position, airTime, velocity, projectileName, shooter, damage, customData, normal, uuid)
@@ -167,7 +186,7 @@ function TurretSeat:server_onExplosion(center, destructionLevel)
 end
 
 function TurretSeat:server_canErase()
-    return self.harvestable.publicData.health >= TurretBase.maxHealth and self.harvestable:getSeatCharacter() == nil
+    return self.harvestable.publicData.health >= TurretBase.maxHealth and self.sv_seated == nil
 end
 
 function TurretSeat:sv_updateAmmoType(ammoType)
@@ -258,9 +277,15 @@ function TurretSeat:client_onDestroy()
     end
 end
 
+function TurretSeat:cl_syncToLateJoiner(data)
+    self:client_onClientDataUpdate(data[1], 1)
+    self:client_onClientDataUpdate(data[2], 2)
+end
+
 function TurretSeat:client_onClientDataUpdate(data, channel)
     if channel == 1 then
         self.cl_base = data
+        self.harvestable.clientPublicData.base = data
     else
         self.ammoType = data
     end
@@ -502,7 +527,7 @@ end
 
 
 function TurretSeat:getFirePos()
-    local pos = self.harvestable.worldPosition
+    local pos = self.harvestable.worldPosition + self.base.shape.velocity * 0.025
     local rot = self.harvestable.worldRotation
     if self.shotCounter%2==0 then
         local offsetBase =  vec3_right * 0.27 + vec3_forward * 0.35

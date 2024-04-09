@@ -78,6 +78,29 @@
          "radius" : 0.250,
          "spin" : 7.0,
          "uuid" : "53e5da10-99ea-48d5-98b5-c03d0938811e"
-      }
+      },
+      {
+			"uuid": "baf7ff9d-191a-4ea4-beba-e160ceb54daf",
+			"name": "potato_copy",
+			"mass": 3.0,
+			"radius": 0.25,
+			"friction": 0.2,
+			"spin": 7.0,
+			"mesh": "$GAME_DATA/Projectiles/Renderables/potato.rend",
+			"effect": "PotatoProjectile - Hit",
+			"audiomass": 250.0,
+			"effectmaterial": "Potato",
+			"destruction":
+			{
+				"destructionLevels":
+				[
+					{
+						"qualityLevel": 1,
+						"chance": 1.0
+					}
+				]
+			},
+			"enableImpactEffect": true
+		}
    ]
 }

@@ -14,9 +14,9 @@ dofile "$SURVIVAL_DATA/Scripts/game/survival_projectiles.lua"
 vec3_right    = sm.vec3.new(1,0,0)
 vec3_forward  = sm.vec3.new(0,1,0)
 vec3_up       = sm.vec3.new(0,0,1)
-vec3_zero = sm.vec3.zero()
-vec3_one = sm.vec3.one()
-camOffset = sm.vec3.new(0,0,0.575)
+vec3_zero     = sm.vec3.zero()
+vec3_one      = sm.vec3.one()
+camOffset     = sm.vec3.new(0,0,0.575)
 
 ShootState = {
     null = 0,
