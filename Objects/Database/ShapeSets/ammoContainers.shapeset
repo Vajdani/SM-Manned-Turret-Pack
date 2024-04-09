@@ -95,14 +95,14 @@
       },
       {
          "box" : {
-            "x" : 4,
+            "x" : 5,
             "y" : 3,
-            "z" : 2
+            "z" : 3
          },
-         "color" : "ffff00",
+         "color" : "6e8041",
          "flammable" : false,
          "name" : "obj_container_cannon_ratshot",
-         "physicsMaterial" : "Metal",
+         "physicsMaterial" : "Plastic",
          "ratings" : {
             "buoyancy" : 6,
             "density" : 5,
