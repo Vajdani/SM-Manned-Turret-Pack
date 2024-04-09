@@ -56,9 +56,9 @@
       {
          "consumable" : true,
          "cylinder" : {
-            "axis" : "Z",
-            "depth" : 1,
-            "diameter" : 1
+            "axis" : "Y",
+            "depth" : 3,
+            "diameter" : 2
          },
          "name" : "obj_cannon_ratshot",
          "physicsMaterial" : "Metal",
