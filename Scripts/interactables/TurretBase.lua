@@ -209,6 +209,10 @@ function TurretBase:client_onCreate()
 
     self.seatBroken = false
     self.gunBroken = false
+
+    self.bearingSettings = {}
+	self.bearingSettings.updateDelay = 0.0
+	self.bearingSettings.updateSettings = {}
 end
 
 function TurretBase:client_onDestroy()
@@ -535,6 +539,150 @@ function TurretBase:cl_onLifted(state)
         self.interactable:setSubMeshVisible("turretpart1", self.seatBroken)
         self.interactable:setSubMeshVisible("turretpart2", self.gunBroken)
     end
+end
+
+
+
+local SpeedPerStep = 1 / math.rad( 27 ) / 3
+function TurretBase:client_onFixedUpdate( timeStep )
+	if self.bearingSettings.updateDelay > 0.0 then
+		self.bearingSettings.updateDelay = math.max( 0.0, self.bearingSettings.updateDelay - timeStep )
+
+		if self.bearingSettings.updateDelay == 0 then
+			self:cl_applyBearingSettings()
+			self.bearingSettings.updateSettings = {}
+			self.bearingSettings.updateGuiCooldown = 0.2
+		end
+	else
+		if self.bearingSettings.updateGuiCooldown then
+			self.bearingSettings.updateGuiCooldown = self.bearingSettings.updateGuiCooldown - timeStep
+			if self.bearingSettings.updateGuiCooldown <= 0 then
+				self.bearingSettings.updateGuiCooldown = nil
+			end
+		end
+		if not self.bearingSettings.updateGuiCooldown then
+			self:cl_updateBearingGuiValues()
+		end
+	end
+end
+
+function TurretBase:client_canInteractThroughJoint()
+    return self.shape.body.connectable
+end
+
+function TurretBase:client_onInteractThroughJoint( character, state, joint )
+    self.bearingSettings.bearingGui = sm.gui.createSteeringBearingGui()
+    self.bearingSettings.bearingGui:open()
+    self.bearingSettings.bearingGui:setOnCloseCallback( "cl_onGuiClosed" )
+
+    self.bearingSettings.currentJoint = joint
+
+    self.bearingSettings.bearingGui:setSliderCallback("LeftAngle", "cl_onLeftAngleChanged")
+    self.bearingSettings.bearingGui:setSliderData("LeftAngle", 120, self.interactable:getSteeringJointLeftAngleLimit( joint ) - 1 )
+
+    self.bearingSettings.bearingGui:setSliderCallback("RightAngle", "cl_onRightAngleChanged")
+    self.bearingSettings.bearingGui:setSliderData("RightAngle", 120, self.interactable:getSteeringJointRightAngleLimit( joint ) - 1 )
+
+    local leftSpeedValue = self.interactable:getSteeringJointLeftAngleSpeed( joint ) / SpeedPerStep
+    local rightSpeedValue = self.interactable:getSteeringJointRightAngleSpeed( joint ) / SpeedPerStep
+
+    self.bearingSettings.bearingGui:setSliderCallback("LeftSpeed", "cl_onLeftSpeedChanged")
+    self.bearingSettings.bearingGui:setSliderData("LeftSpeed", 10, leftSpeedValue - 1)
+
+    self.bearingSettings.bearingGui:setSliderCallback("RightSpeed", "cl_onRightSpeedChanged")
+    self.bearingSettings.bearingGui:setSliderData("RightSpeed", 10, rightSpeedValue - 1)
+
+    local unlocked = self.interactable:getSteeringJointUnlocked( joint )
+
+    if unlocked then
+        self.bearingSettings.bearingGui:setButtonState( "Off", true )
+    else
+        self.bearingSettings.bearingGui:setButtonState( "On", true )
+    end
+
+    self.bearingSettings.bearingGui:setButtonCallback( "On", "cl_onLockButtonClicked" )
+    self.bearingSettings.bearingGui:setButtonCallback( "Off", "cl_onLockButtonClicked" )
+end
+
+function TurretBase:cl_onLeftAngleChanged( sliderName, sliderPos )
+	self.bearingSettings.updateSettings.leftAngle = sliderPos + 1
+	self.bearingSettings.updateDelay = 0.1
+end
+
+function TurretBase:cl_onRightAngleChanged( sliderName, sliderPos )
+	self.bearingSettings.updateSettings.rightAngle = sliderPos + 1
+	self.bearingSettings.updateDelay = 0.1
+end
+
+function TurretBase:cl_onLeftSpeedChanged( sliderName, sliderPos )
+	self.bearingSettings.updateSettings.leftSpeed = ( sliderPos + 1 ) * SpeedPerStep
+	self.bearingSettings.updateDelay = 0.1
+end
+
+function TurretBase:cl_onRightSpeedChanged( sliderName, sliderPos )
+	self.bearingSettings.updateSettings.rightSpeed = ( sliderPos + 1 ) * SpeedPerStep
+	self.bearingSettings.updateDelay = 0.1
+end
+
+function TurretBase:cl_onLockButtonClicked( buttonName )
+	self.bearingSettings.updateSettings.unlocked = buttonName == "Off"
+	self.bearingSettings.updateDelay = 0.1
+end
+
+function TurretBase:cl_onGuiClosed()
+	if self.bearingSettings.updateDelay > 0.0 then
+		self:cl_applyBearingSettings()
+		self.bearingSettings.updateSettings = {}
+		self.bearingSettings.updateDelay = 0.0
+		self.bearingSettings.currentJoint = nil
+	end
+	self.bearingSettings.bearingGui:destroy()
+	self.bearingSettings.bearingGui = nil
+end
+
+function TurretBase:cl_applyBearingSettings( )
+
+	assert( self.bearingSettings.currentJoint )
+
+	if self.bearingSettings.updateSettings.leftAngle then
+		self.interactable:setSteeringJointLeftAngleLimit( self.bearingSettings.currentJoint, self.bearingSettings.updateSettings.leftAngle )
+	end
+
+	if self.bearingSettings.updateSettings.rightAngle then
+		self.interactable:setSteeringJointRightAngleLimit( self.bearingSettings.currentJoint, self.bearingSettings.updateSettings.rightAngle )
+	end
+
+	if self.bearingSettings.updateSettings.leftSpeed then
+		self.interactable:setSteeringJointLeftAngleSpeed( self.bearingSettings.currentJoint, self.bearingSettings.updateSettings.leftSpeed )
+	end
+
+	if self.bearingSettings.updateSettings.rightSpeed then
+		self.interactable:setSteeringJointRightAngleSpeed( self.bearingSettings.currentJoint, self.bearingSettings.updateSettings.rightSpeed )
+	end
+
+	if self.bearingSettings.updateSettings.unlocked ~= nil then
+		self.interactable:setSteeringJointUnlocked( self.bearingSettings.currentJoint, self.bearingSettings.updateSettings.unlocked )
+	end
+end
+
+function TurretBase:cl_updateBearingGuiValues()
+	if self.bearingSettings.bearingGui and self.bearingSettings.bearingGui:isActive() then
+
+		local leftSpeed, rightSpeed, leftAngle, rightAngle, unlocked = self.interactable:getSteeringJointSettings( self.bearingSettings.currentJoint )
+
+		if leftSpeed and rightSpeed and leftAngle and rightAngle and unlocked ~= nil then
+			self.bearingSettings.bearingGui:setSliderPosition( "LeftAngle", leftAngle - 1 )
+			self.bearingSettings.bearingGui:setSliderPosition( "RightAngle", rightAngle - 1 )
+			self.bearingSettings.bearingGui:setSliderPosition( "LeftSpeed", ( leftSpeed / SpeedPerStep ) - 1 )
+			self.bearingSettings.bearingGui:setSliderPosition( "RightSpeed", ( rightSpeed / SpeedPerStep ) - 1 )
+
+			if unlocked then
+				self.bearingSettings.bearingGui:setButtonState( "Off", true )
+			else
+				self.bearingSettings.bearingGui:setButtonState( "On", true )
+			end
+		end
+	end
 end
 
 
