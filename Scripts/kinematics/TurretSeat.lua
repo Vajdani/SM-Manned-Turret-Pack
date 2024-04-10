@@ -222,7 +222,7 @@ function TurretSeat:sv_shoot(ammoType, caller)
     end
 
     local dir = rot * vec3_up
-    local canShoot = self:canShoot(ammoType)
+    local canShoot = self:canShoot(ammoType, true)
     if canShoot then
         if ammoData.isPart then
             local projectileRot = rot * sm.quat.angleAxis(math.rad(90), vec3_right) * sm.quat.angleAxis(math.rad(180), vec3_forward)
@@ -279,7 +279,7 @@ function TurretSeat:client_onDestroy()
     self.hotbar:destroy()
 
     if self.seated then
-        sm.localPlayer.getPlayer().clientPublicData.customCameraData = nil
+        sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = nil
     end
 end
 
@@ -337,7 +337,7 @@ function TurretSeat:cl_seat()
     self:cl_updateHotbar()
     sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", true)
     sm.camera.setCameraPullback(0,0)
-    sm.localPlayer.getPlayer().clientPublicData.customCameraData = { cameraState = 5 }
+    sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = { cameraState = 5 }
 end
 
 function TurretSeat:cl_unSeat()
@@ -351,7 +351,7 @@ function TurretSeat:cl_unSeat_graphics()
     self.seated = false
     self.hotbar:close()
     sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", false)
-    sm.localPlayer.getPlayer().clientPublicData.customCameraData = nil
+    sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = nil
 end
 
 function TurretSeat:client_onAction(action, state)
@@ -450,13 +450,15 @@ function TurretSeat:client_onUpdate(dt)
     self.harvestable:setPoseWeight(1, sm.util.easing("easeOutCubic", self.recoil_r))
 
     if self.seated then
-        sm.localPlayer.getPlayer().clientPublicData.customCameraData = { cameraState = 5 }
+        sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = { cameraState = 5 }
 
         local parent = self.cl_base:getSingleParent()
         if parent then
             local container = parent:getContainer(0)
             local uuid = self.ammoTypes[self.ammoType].ammo
             sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>%d / %d</p>"):format(sm.container.totalQuantity(container, uuid), container:getSize() * container:getMaxStackSize()))
+        elseif sm.game.getEnableAmmoConsumption() then
+            sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>No ammunition</p>"))
         end
     end
 end
@@ -556,12 +558,16 @@ function TurretSeat:getAmmoType(parent)
     return 1
 end
 
-function TurretSeat:canShoot(ammoType)
+function TurretSeat:canShoot(ammoType, consume)
     local parent = self.base:getSingleParent()
     if parent then
-        sm.container.beginTransaction()
-        sm.container.spend(parent:getContainer(0), self.ammoTypes[ammoType].ammo, 1)
-        return sm.container.endTransaction()
+        if consume then
+            sm.container.beginTransaction()
+            sm.container.spend(parent:getContainer(0), self.ammoTypes[ammoType].ammo, 1)
+            return sm.container.endTransaction()
+        else
+            return parent:getContainer(0):canSpend(self.ammoTypes[ammoType].ammo, 1)
+        end
     end
 
     return not sm.game.getEnableAmmoConsumption()

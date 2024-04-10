@@ -220,15 +220,6 @@ function CannonSeat:client_onCreate()
     )
 end
 
-function CannonSeat:client_onDestroy()
-    self.hotbar:destroy()
-
-    if self.seated then
-        sm.localPlayer.getPlayer().clientPublicData.customCameraData = nil
-        sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = nil
-    end
-end
-
 function CannonSeat:client_onAction(action, state)
     if self.ammoType == 1 then
         if not self.cl_controlsEnabled then
@@ -255,7 +246,7 @@ function CannonSeat:client_onAction(action, state)
             if self.spottingStrike then
                 self:cl_strikeControls(action)
                 return true
-            elseif (action == 5 or action == 19 or action == 6 or action == 18) then
+            elseif (action == 5 or action == 19 or action == 6 or action == 18) and self:canShoot(self.ammoType) then
                 self:cl_startAirStrike()
                 return true
             end
@@ -296,13 +287,15 @@ function CannonSeat:client_onUpdate(dt)
 
             sm.localPlayer.getPlayer().clientPublicData.interactableCameraData.cameraPosition = self:getStrikeCamPos()
         else
-            sm.localPlayer.getPlayer().clientPublicData.customCameraData = { cameraState = 5 }
+            sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = { cameraState = 5 }
 
             local parent = self.cl_base:getSingleParent()
             if parent then
                 local container = parent:getContainer(0)
                 local uuid = self.ammoTypes[self.ammoType].ammo
                 sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>%d / %d</p>"):format(sm.container.totalQuantity(container, uuid), container:getSize() * container:getMaxStackSize()))
+            elseif sm.game.getEnableAmmoConsumption() and self.ammoType ~= 4 then
+                sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>No ammunition</p>"))
             end
         end
     end
