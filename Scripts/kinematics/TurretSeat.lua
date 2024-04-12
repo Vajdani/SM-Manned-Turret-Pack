@@ -465,17 +465,17 @@ end
 
 function TurretSeat:cl_updateHotbar()
     self.hotbar:setGridItem( "ButtonGrid", 0, {
-        itemId = "1e8d93a4-506b-470d-9ada-9c0a321e2db5",
+        itemId = "68a120d9-ba02-413a-a7c7-723d71172f47",
         active = self.shootState == ShootState.hold
     })
 
     self.hotbar:setGridItem( "ButtonGrid", 1, {
-        itemId = "7cf717d7-d167-4f2d-a6e7-6b2c70aa3986",
+        itemId = "d6cbdd2c-f6a3-4e2c-a818-2c6112c1b5e7",
         active = self.shootState == ShootState.toggle
     })
 
     self.hotbar:setGridItem( "ButtonGrid", 2, {
-        itemId = "ed27f5e2-cac5-4a32-a5d9-49f116acc6af",
+        itemId = "9a42c98b-a8a1-4bc3-a45e-d0964325ca6d",
         active = self.lightActive
     })
 

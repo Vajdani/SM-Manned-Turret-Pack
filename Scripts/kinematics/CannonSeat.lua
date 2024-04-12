@@ -391,19 +391,19 @@ function CannonSeat:cl_startAirStrike()
     sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", { false, true })
 
     self.hotbar:setGridItem( "ButtonGrid", 0, {
-        itemId = "1e8d93a4-506b-470d-9ada-9c0a321e2db5",
+        itemId = "68a120d9-ba02-413a-a7c7-723d71172f47",
         active = false
     })
     self.hotbar:setGridItem( "ButtonGrid", 1, {
-        itemId = "068a89ca-504e-4782-9ede-48f710aeea73",
+        itemId = "509d50c0-357c-4485-8f24-2f448c5e8e91",
         active = false
     })
     self.hotbar:setGridItem( "ButtonGrid", 2, {
-        itemId = "add3acc6-a6fd-44e8-a384-a7a16ce13c81",
+        itemId = "a983d039-0b6b-43b4-8fef-682eab698a3f",
         active = false
     })
     self.hotbar:setGridItem( "ButtonGrid", 3, {
-        itemId = "20dcd41c-0a11-4668-9b00-97f278ce21af",
+        itemId = "74306663-d10b-4738-aa31-c2459b758765",
         active = false
     })
 

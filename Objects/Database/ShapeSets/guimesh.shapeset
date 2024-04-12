@@ -1,0 +1,172 @@
+{
+   "partList" : [
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "name" : "obj_guimesh_zoom_plus",
+         "physicsMaterial" : "Default",
+         "renderable" : {
+            "lodList" : [
+               {
+                  "mesh" : "$CONTENT_DATA/Objects/Mesh/GuiMesh/obj_guimesh_zoom_plus.fbx",
+                  "subMeshList" : [
+                     {
+                        "material" : "DifAsg",
+                        "textureList" : [
+                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_dif.tga",
+                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_asg.tga"
+                        ]
+                     }
+                  ]
+               }
+            ]
+         },
+         "rotationSet" : "Default",
+         "showInInventory" : false,
+         "uuid" : "74306663-d10b-4738-aa31-c2459b758765"
+      },
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "name" : "obj_guimesh_zoom_minus",
+         "physicsMaterial" : "Default",
+         "renderable" : {
+            "lodList" : [
+               {
+                  "mesh" : "$CONTENT_DATA/Objects/Mesh/GuiMesh/obj_guimesh_zoom_minus.fbx",
+                  "subMeshList" : [
+                     {
+                        "material" : "DifAsg",
+                        "textureList" : [
+                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_dif.tga",
+                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_asg.tga"
+                        ]
+                     }
+                  ]
+               }
+            ]
+         },
+         "rotationSet" : "Default",
+         "showInInventory" : false,
+         "uuid" : "a983d039-0b6b-43b4-8fef-682eab698a3f"
+      },
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "name" : "obj_guimesh_stopfire",
+         "physicsMaterial" : "Default",
+         "renderable" : {
+            "lodList" : [
+               {
+                  "mesh" : "$CONTENT_DATA/Objects/Mesh/GuiMesh/obj_guimesh_stopfire.fbx",
+                  "subMeshList" : [
+                     {
+                        "material" : "DifAsg",
+                        "textureList" : [
+                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_dif.tga",
+                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_asg.tga"
+                        ]
+                     }
+                  ]
+               }
+            ]
+         },
+         "rotationSet" : "Default",
+         "showInInventory" : false,
+         "uuid" : "509d50c0-357c-4485-8f24-2f448c5e8e91"
+      },
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "name" : "obj_guimesh_fire",
+         "physicsMaterial" : "Default",
+         "renderable" : {
+            "lodList" : [
+               {
+                  "mesh" : "$CONTENT_DATA/Objects/Mesh/GuiMesh/obj_guimesh_fire.fbx",
+                  "subMeshList" : [
+                     {
+                        "material" : "DifAsg",
+                        "textureList" : [
+                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_dif.tga",
+                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_asg.tga"
+                        ]
+                     }
+                  ]
+               }
+            ]
+         },
+         "rotationSet" : "Default",
+         "showInInventory" : false,
+         "uuid" : "68a120d9-ba02-413a-a7c7-723d71172f47"
+      },
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "name" : "obj_guimesh_lockfire",
+         "physicsMaterial" : "Default",
+         "renderable" : {
+            "lodList" : [
+               {
+                  "mesh" : "$CONTENT_DATA/Objects/Mesh/GuiMesh/obj_guimesh_lockfire.fbx",
+                  "subMeshList" : [
+                     {
+                        "material" : "DifAsg",
+                        "textureList" : [
+                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_dif.tga",
+                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_asg.tga"
+                        ]
+                     }
+                  ]
+               }
+            ]
+         },
+         "rotationSet" : "Default",
+         "showInInventory" : false,
+         "uuid" : "d6cbdd2c-f6a3-4e2c-a818-2c6112c1b5e7"
+      },
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "name" : "obj_guimesh_headlight",
+         "physicsMaterial" : "Default",
+         "renderable" : {
+            "lodList" : [
+               {
+                  "mesh" : "$CONTENT_DATA/Objects/Mesh/GuiMesh/obj_guimesh_headlight.fbx",
+                  "subMeshList" : [
+                     {
+                        "material" : "DifAsg",
+                        "textureList" : [
+                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_dif.tga",
+                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_asg.tga"
+                        ]
+                     }
+                  ]
+               }
+            ]
+         },
+         "rotationSet" : "Default",
+         "showInInventory" : false,
+         "uuid" : "9a42c98b-a8a1-4bc3-a45e-d0964325ca6d"
+      }
+   ]
+}

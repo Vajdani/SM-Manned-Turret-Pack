@@ -4,7 +4,7 @@
       "$CONTENT_DATA/Objects/Database/ShapeSets/ammo.shapeset",
       "$CONTENT_DATA/Objects/Database/ShapeSets/ammoContainers.shapeset",
       "$CONTENT_DATA/Objects/Database/ShapeSets/effect_parts.shapeset",
-
-      "$SURVIVAL_DATA/Objects/Database/ShapeSets/consumable.json"
+      "$SURVIVAL_DATA/Objects/Database/ShapeSets/consumable.json",
+      "$CONTENT_DATA/Objects/Database/ShapeSets/guimesh.shapeset"
    ]
 }
