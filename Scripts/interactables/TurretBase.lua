@@ -41,10 +41,12 @@ function TurretBase:server_onCreate()
 end
 
 function TurretBase:sv_syncToLateJoiner(player)
+    print("base sync:", player)
     self.network:sendToClient(player, "cl_syncToLateJoiner",
         {
             self.turret,
-            { health = self.cl_health, destroyed = self.destroyed, ammoType = self.ammoType }
+            { health = self.cl_health, destroyed = self.destroyed, ammoType = self.ammoType },
+            self.dir
         }
     )
     sm.event.sendToHarvestable(self.turret, "sv_syncToLateJoiner", player)
@@ -190,6 +192,7 @@ function TurretBase:sv_clearDrivingFlags(active)
         self.interactable:unsetSteeringFlag( v )
     end
 end
+
 
 
 function TurretBase:client_onCreate()
@@ -350,6 +353,7 @@ end
 function TurretBase:cl_syncToLateJoiner(data)
     self:client_onClientDataUpdate(data[1], 1)
     self:client_onClientDataUpdate(data[2], 2)
+    self:cl_updateDir(data[3])
 end
 
 function TurretBase:client_onClientDataUpdate(data, channel)

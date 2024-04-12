@@ -38,15 +38,24 @@ function TurretAssistor:server_onFixedUpdate()
         self.players = players
     elseif oldLen < newLen then
         print("more players")
-        local joiner = players[newLen]
-        for k, body in pairs(sm.body.getAllBodies()) do
-            for _k, int in pairs(body:getInteractables()) do
-                if int.publicData.health then
-                    sm.event.sendToInteractable(int, "sv_syncToLateJoiner", joiner)
-                end
+        for k, player in pairs(players) do
+            if not isAnyOf(player, self.players) then
+                print("new player:", player:getName())
+                self:sv_sendDataToJoiner(player)
             end
         end
 
         self.players = players
+    end
+end
+
+function TurretAssistor:sv_sendDataToJoiner(player)
+    for k, body in pairs(sm.body.getAllBodies()) do
+        for _k, int in pairs(body:getInteractables()) do
+            if IsTurretBase(int.shape) then
+                print("sent to", int)
+                sm.event.sendToInteractable(int, "sv_syncToLateJoiner", player)
+            end
+        end
     end
 end

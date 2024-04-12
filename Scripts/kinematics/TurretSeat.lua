@@ -90,6 +90,7 @@ function TurretSeat:server_onCreate()
 end
 
 function TurretSeat:sv_syncToLateJoiner(player)
+    print("seat sync:", player)
     self.network:sendToClient(player, "cl_syncToLateJoiner", { self.base, self.ammoType })
 end
 
