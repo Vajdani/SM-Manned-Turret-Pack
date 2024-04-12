@@ -164,17 +164,13 @@ end
 ---@param slot number
 ---@param caller Player
 function TurretBase:sv_onRepair(slot, caller)
-    if type(slot) == "number" then
-        local inv = sm.game.getLimitedInventory() and caller:getInventory() or caller:getHotbar()
-        caller.publicData = caller.publicData or {}
-        caller.publicData.itemBeforeRepair = { slot = slot, item = inv:getItem(slot) }
+    local inv = sm.game.getLimitedInventory() and caller:getInventory() or caller:getHotbar()
+    caller.publicData = caller.publicData or {}
+    caller.publicData.itemBeforeRepair = { slot = slot, item = inv:getItem(slot) }
 
-        sm.container.beginTransaction()
-        inv:setItem(slot, sm.uuid.new("68f9a1ef-dbbc-40c9-8006-0779ececcbf5"), 1)
-        sm.container.endTransaction()
-    else
-        self.network:sendToClient(caller, "cl_onRepairEnd", slot)
-    end
+    sm.container.beginTransaction()
+    inv:setItem(slot, sm.uuid.new("68f9a1ef-dbbc-40c9-8006-0779ececcbf5"), 1)
+    sm.container.endTransaction()
 end
 
 function TurretBase:sv_onRepairToolDestroy(player)
@@ -224,6 +220,10 @@ end
 
 function TurretBase:client_onDestroy()
     self.healthBar:destroy()
+
+    if g_repairingTurret and g_turretBase == self.interactable then
+        self:cl_onRepairEnd()
+    end
 end
 
 function TurretBase:client_canErase()
@@ -291,27 +291,29 @@ function TurretBase:client_onTinker(char, state)
     if state then
         g_repairingTurret = true
         g_turretBase = self.interactable
-    end
 
-    if sm.game.getLimitedInventory() then
-        self.network:sendToServer("sv_onRepair", state and sm.localPlayer.getSelectedHotbarSlot() or g_repairTool)
-    else
-        local inv = sm.localPlayer.getHotbar()
-        local selectedSlot = sm.localPlayer.getSelectedHotbarSlot()
-        local activeItem = sm.localPlayer.getActiveItem()
-        for i = 1, inv.size do
-            local hotbarSlot = i - 1
-            local row = math.ceil(i/10) - 1
-            if i > 10 then
-                hotbarSlot = hotbarSlot - row * 10
-            end
+        if sm.game.getLimitedInventory() then
+            self.network:sendToServer("sv_onRepair", sm.localPlayer.getSelectedHotbarSlot())
+        else
+            local inv = sm.localPlayer.getHotbar()
+            local selectedSlot = sm.localPlayer.getSelectedHotbarSlot()
+            local activeItem = sm.localPlayer.getActiveItem()
+            for i = 1, inv.size do
+                local hotbarSlot = i - 1
+                local row = math.ceil(i/10) - 1
+                if i > 10 then
+                    hotbarSlot = hotbarSlot - row * 10
+                end
 
-            local containerSlot = i - 1
-            if hotbarSlot == selectedSlot and inv:getItem(containerSlot).uuid == activeItem then
-                self.network:sendToServer("sv_onRepair", state and containerSlot or g_repairTool)
-                break
+                local containerSlot = i - 1
+                if hotbarSlot == selectedSlot and inv:getItem(containerSlot).uuid == activeItem then
+                    self.network:sendToServer("sv_onRepair", containerSlot)
+                    break
+                end
             end
         end
+    else
+        self:cl_onRepairEnd()
     end
 end
 
@@ -432,7 +434,7 @@ function TurretBase:client_onClientDataUpdate(data, channel)
             self.gunBroken = false
 
             if g_repairingTurret then
-                self.network:sendToServer("sv_onRepair", g_repairTool)
+                self:cl_onRepairEnd()
             end
 
             if data.prevDestroyed == true then
@@ -486,9 +488,9 @@ function TurretBase:cl_n_toggleHud(toggle, forceSurvivalOff)
     end
 end
 
-function TurretBase:cl_onRepairEnd(tool)
-    if not sm.exists(tool) then return end
-    sm.event.sendToTool(tool, "cl_markUnforce")
+function TurretBase:cl_onRepairEnd()
+    if not sm.exists(g_repairTool) then return end
+    sm.event.sendToTool(g_repairTool, "cl_markUnforce")
 end
 
 function TurretBase:cl_onRepairToolDestroy()

@@ -324,7 +324,10 @@ local function _updateFpAnimations( self, data, equipped, dt )
                     end
 
 					if endRepair and g_repairingTurret then
-						self.network:sendToServer("sv_onRepairEnd", g_turretBase)
+						if not self.hasSentEnd then
+							self.hasSentEnd = true
+							self.network:sendToServer("sv_onRepairEnd", g_turretBase)
+						end
 					else
 						animation.eventPlayed = false
 					end
