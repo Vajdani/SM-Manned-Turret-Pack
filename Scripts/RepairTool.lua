@@ -311,7 +311,7 @@ local function _updateFpAnimations( self, data, equipped, dt )
                         animation.time = 0
                     else
                         if animation.nextAnimation then
-                            if not animation.blockHeal then
+                            if not animation.blockHeal and sm.exists(g_turretBase) then
                                 self.network:sendToServer("sv_healTurret", g_turretBase.shape)
                             end
 
@@ -326,7 +326,7 @@ local function _updateFpAnimations( self, data, equipped, dt )
 					if endRepair and g_repairingTurret then
 						if not self.hasSentEnd then
 							self.hasSentEnd = true
-							self.network:sendToServer("sv_onRepairEnd", g_turretBase)
+							self:cl_onRepairEnd()
 						end
 					else
 						animation.eventPlayed = false
@@ -440,6 +440,14 @@ function RepairTool:cl_markUnforce()
 	self.markedUnforce = true
 end
 
+function RepairTool:cl_onRepairEnd()
+	sm.tool.forceTool(nil)
+	g_repairingTurret = false
+    g_turretBase = nil
+
+	self.network:sendToServer("sv_onRepairEnd")
+end
+
 
 function RepairTool:sv_healTurret(turret)
     if not turret or not sm.exists(turret) then return end
@@ -448,11 +456,7 @@ function RepairTool:sv_healTurret(turret)
     sm.event.sendToInteractable(turret.interactable, "sv_takeDamage", -math.ceil(TurretBase.maxHealth/12))
 end
 
-function RepairTool:sv_onRepairEnd(base, caller)
-	if base then
-		sm.event.sendToInteractable(base, "sv_onRepairToolDestroy", caller)
-	end
-
+function RepairTool:sv_onRepairEnd(args, caller)
 	local inv = sm.game.getLimitedInventory() and caller:getInventory() or caller:getHotbar()
 	local data = caller.publicData.itemBeforeRepair
 

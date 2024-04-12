@@ -173,10 +173,6 @@ function TurretBase:sv_onRepair(slot, caller)
     sm.container.endTransaction()
 end
 
-function TurretBase:sv_onRepairToolDestroy(player)
-    self.network:sendToClient(player, "cl_onRepairToolDestroy")
-end
-
 function TurretBase:sv_setDirTarget(dir)
     self.network:sendToClients("cl_setDirTarget", dir)
 end
@@ -491,12 +487,6 @@ end
 function TurretBase:cl_onRepairEnd()
     if not sm.exists(g_repairTool) then return end
     sm.event.sendToTool(g_repairTool, "cl_markUnforce")
-end
-
-function TurretBase:cl_onRepairToolDestroy()
-    sm.tool.forceTool(nil)
-	g_repairingTurret = false
-    g_turretBase = nil
 end
 
 function TurretBase:cl_onDestroy()
