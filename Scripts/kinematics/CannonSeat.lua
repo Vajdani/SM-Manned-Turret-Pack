@@ -63,6 +63,8 @@ function CannonSeat:server_onDestroy()
 end
 
 function CannonSeat:server_onFixedUpdate()
+    TurretSeat.server_onFixedUpdate(self)
+
     if self.airStrike then
         if self.airStrike:tick() then
             self.airStrike = nil
@@ -218,6 +220,12 @@ function CannonSeat:client_onCreate()
             backgroundAlpha = 0
         }
     )
+end
+
+function CannonSeat:client_onDestroy()
+    TurretSeat.client_onDestroy(self)
+
+    self.controlHud:destroy()
 end
 
 function CannonSeat:client_onAction(action, state)
