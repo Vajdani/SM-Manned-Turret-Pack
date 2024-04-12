@@ -167,6 +167,34 @@
          "rotationSet" : "Default",
          "showInInventory" : false,
          "uuid" : "9a42c98b-a8a1-4bc3-a45e-d0964325ca6d"
+      },
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "name" : "obj_guimesh_playerlaunch",
+         "physicsMaterial" : "Default",
+         "renderable" : {
+            "lodList" : [
+               {
+                  "mesh" : "$CONTENT_DATA/Objects/Mesh/GuiMesh/obj_guimesh_simple.fbx",
+                  "subMeshList" : [
+                     {
+                        "material" : "DifAsgAlpha",
+                        "textureList" : [
+                           "$CONTENT_DATA/Objects/Textures/GuiMesh/gui_playerlaunch_dif.tga",
+                           "$CONTENT_DATA/Objects/Textures/GuiMesh/gui_playerlaunch_asg.tga"
+                        ]
+                     }
+                  ]
+               }
+            ]
+         },
+         "rotationSet" : "Default",
+         "showInInventory" : false,
+         "uuid" : "242b84e4-c008-4780-a2dd-abacea821637"
       }
    ]
 }
