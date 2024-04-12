@@ -22,7 +22,7 @@ CannonSeat.ammoTypes = {
     },
     {
         name = "Ratshot",
-        damage = 25,
+        damage = 50,
         velocity = 130,
         fireCooldown = 40,
         spread = 0,
@@ -285,8 +285,8 @@ function CannonSeat:client_onUpdate(dt)
                 self.strikeCamOffset = self.strikeCamOffset * (self.airStrikeDistanceLimit / distance)
             end
 
-            sm.localPlayer.getPlayer().clientPublicData.interactableCameraData.cameraPosition = self:getStrikeCamPos()
-        else
+            sm.localPlayer.getPlayer().clientPublicData.interactableCameraData.cameraPosition = self:getStrikeCamPos(dt)
+        elseif self.cl_controlsEnabled then
             sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = { cameraState = 5 }
 
             local parent = self.cl_base:getSingleParent()
@@ -308,8 +308,16 @@ function CannonSeat:getFirePos()
     return pos + rot * offsetBase, pos + rot * (vec3_up * 2.25 + offsetBase)
 end
 
-function CannonSeat:getStrikeCamPos()
-    return self.cl_base.shape.worldPosition + vec3_up * 10 * self.strikeZoom + self.strikeCamOffset
+local strikeFilter = sm.physics.filter.staticBody + sm.physics.filter.dynamicBody + sm.physics.filter.terrainAsset + sm.physics.filter.terrainSurface
+function CannonSeat:getStrikeCamPos(dt)
+    local baseShape = self.cl_base.shape
+    local basePos = baseShape:getInterpolatedWorldPosition() + baseShape.velocity * (dt or 0) + self.strikeCamOffset
+    local hit, result = sm.physics.raycast(basePos + vec3_up * 1000, basePos, baseShape, strikeFilter)
+    if hit then
+        return result.pointWorld + vec3_up * 10 * self.strikeZoom
+    end
+
+    return basePos + vec3_up * 10 * self.strikeZoom
 end
 
 function CannonSeat:cl_strikeControls(action)
@@ -349,7 +357,7 @@ function CannonSeat:cl_shoot(args)
             sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", { false, true })
 
             self.hotbar:setGridItem( "ButtonGrid", 0, {
-                itemId = "24001201-40dd-4950-b99f-17d878a9e07b",
+                itemId = "68a120d9-ba02-413a-a7c7-723d71172f47",
                 active = false
             })
             self.hotbar:setGridItem( "ButtonGrid", 1, nil)

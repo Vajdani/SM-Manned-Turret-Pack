@@ -137,7 +137,8 @@ function TurretSeat:server_onRemoved(player)
 end
 
 function TurretSeat:sv_seatRespawn(player)
-    self.network:sendToClient(player, "cl_seat", player.character)
+    self:sv_seat(nil, player)
+    self.network:sendToClient(player, "cl_seat_partial")
 end
 
 ---@param caller Player
@@ -330,7 +331,10 @@ end
 
 function TurretSeat:cl_seat()
     self.network:sendToServer("sv_seat")
+    self:cl_seat_partial()
+end
 
+function TurretSeat:cl_seat_partial()
     self.seated = true
     self.hotbar:open()
     self.ammoType = self:getAmmoType(self.cl_base:getSingleParent())
@@ -425,6 +429,11 @@ function TurretSeat:client_onFixedUpdate()
     end
 
     if not self.seated then return end
+
+    if self.cl_base.body:isOnLift() and self.shootState ~= ShootState.null then
+        self.shootState = ShootState.null
+        self:cl_updateHotbar()
+    end
 
     local parent = self.cl_base:getSingleParent()
     if parent ~= self.parent then

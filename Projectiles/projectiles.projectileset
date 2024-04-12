@@ -54,16 +54,24 @@
                   "qualityLevel" : 1
                },
                {
-                  "chance" : 0.40,
+                  "chance" : 0.75,
                   "qualityLevel" : 2
                },
                {
-                  "chance" : 0.20,
+                  "chance" : 0.60,
                   "qualityLevel" : 3
                },
                {
-                  "chance" : 0.10,
+                  "chance" : 0.50,
                   "qualityLevel" : 4
+               },
+               {
+                  "chance" : 0.25,
+                  "qualityLevel" : 5
+               },
+               {
+                  "chance" : 0.1,
+                  "qualityLevel" : 6
                }
             ]
          },

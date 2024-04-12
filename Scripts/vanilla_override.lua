@@ -1,6 +1,8 @@
 dofile( "$GAME_DATA/Scripts/game/BasePlayer.lua" )
 dofile( "$SURVIVAL_DATA/Scripts/game/SurvivalPlayer.lua" )
 
+dofile("$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Scripts/util.lua")
+
 oldClientCreate = oldClientCreate or SurvivalPlayer.client_onCreate
 function newClientCreate( self )
 	oldClientCreate(self)
@@ -74,6 +76,12 @@ function LiftReplacement:checkForTurret(result)
 	end
 end
 
+function LiftReplacement:liftTurrets(state)
+	for k, v in pairs(self.turrets) do
+		sm.event.sendToInteractable(v, "cl_onLifted", state)
+	end
+end
+
 ---@param raycastResult RaycastResult
 function LiftReplacement.client_interact( self, primaryState, secondaryState, raycastResult )
 	local targetBody = nil
@@ -86,9 +94,7 @@ function LiftReplacement.client_interact( self, primaryState, secondaryState, ra
 
 	--Clear states
 	if secondaryState == 1 and #self.selectedBodies > 0 then
-		for k, v in pairs(self.turrets) do
-			sm.event.sendToInteractable(v, "cl_onLifted", false)
-		end
+		self:liftTurrets(false)
 		self.turrets = {}
 
 		self.hoverBodies = {}
@@ -150,10 +156,7 @@ function LiftReplacement.client_interact( self, primaryState, secondaryState, ra
 				end
 
 				for _k, int in pairs(body:getInteractables()) do
-					local shape = int.shape
-					local hit, result = sm.physics.raycast(shape.worldPosition, shape.worldPosition + shape.at * 2)
-					local harvestable = result:getHarvestable()
-					if harvestable and (harvestable.clientPublicData or {}).base then
+					if IsTurretBase(int.shape) then
 						table.insert(turrets, int)
 					end
 				end
@@ -195,16 +198,11 @@ function LiftReplacement.client_interact( self, primaryState, secondaryState, ra
 	if primaryState == sm.tool.interactState.start then
 
 		if isSelectable and #self.selectedBodies == 0 then
-			for k, v in pairs(self.turrets) do
-				sm.event.sendToInteractable(v, "cl_onLifted", true)
-			end
-
+			self:liftTurrets(true)
 			self.selectedBodies = self.hoverBodies
 			self.hoverBodies = {}
 		elseif isPlaceable then
-			for k, v in pairs(self.turrets) do
-				sm.event.sendToInteractable(v, "cl_onLifted", false)
-			end
+			self:liftTurrets(false)
 			self.turrets = {}
 
 			local placeLiftParams = { player = sm.localPlayer.getPlayer(), selectedBodies = self.selectedBodies, liftPos = self.liftPos, liftLevel = liftLevel, rotationIndex = self.rotationIndex }
@@ -257,6 +255,19 @@ function LiftReplacement.client_interact( self, primaryState, secondaryState, ra
 	end
 
 	return blockDelete
+end
+
+function LiftReplacement:client_onUnequip()
+	if self.turrets then
+		self:liftTurrets(false)
+	end
+	self.turrets = {}
+
+	self.equipped = false
+	sm.visualization.setCreationBodies( {} )
+	sm.visualization.setCreationVisible( false )
+	sm.visualization.setLiftVisible( false )
+	self.forced = false
 end
 
 
