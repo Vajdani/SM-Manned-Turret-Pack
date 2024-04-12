@@ -569,7 +569,7 @@ function TurretSeat:getAmmoType(parent)
 end
 
 function TurretSeat:canShoot(ammoType, consume)
-    local parent = self.base:getSingleParent()
+    local parent = self.cl_base:getSingleParent()
     if parent then
         if consume then
             sm.container.beginTransaction()
