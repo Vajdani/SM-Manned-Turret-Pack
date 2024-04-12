@@ -76,9 +76,15 @@ function LiftReplacement:checkForTurret(result)
 	end
 end
 
-function LiftReplacement:liftTurrets(state)
-	for k, v in pairs(self.turrets) do
-		sm.event.sendToInteractable(v, "cl_onLifted", state)
+function LiftReplacement:liftTurrets(state, onLift)
+	if onLift then
+		for k, v in pairs(self.turrets) do
+			sm.event.sendToInteractable(v, "cl_n_putOnLift")
+		end
+	else
+		for k, v in pairs(self.turrets) do
+			sm.event.sendToInteractable(v, "cl_onLifted", state)
+		end
 	end
 end
 
@@ -202,7 +208,7 @@ function LiftReplacement.client_interact( self, primaryState, secondaryState, ra
 			self.selectedBodies = self.hoverBodies
 			self.hoverBodies = {}
 		elseif isPlaceable then
-			self:liftTurrets(false)
+			self:liftTurrets(false, true)
 			self.turrets = {}
 
 			local placeLiftParams = { player = sm.localPlayer.getPlayer(), selectedBodies = self.selectedBodies, liftPos = self.liftPos, liftLevel = liftLevel, rotationIndex = self.rotationIndex }

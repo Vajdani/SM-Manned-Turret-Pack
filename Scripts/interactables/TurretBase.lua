@@ -546,9 +546,11 @@ function TurretBase:cl_onLifted(state)
     else
         self.interactable:setSubMeshVisible("turretpart1", self.seatBroken)
         self.interactable:setSubMeshVisible("turretpart2", self.gunBroken)
-
-        self.network:sendToServer("sv_putOnLift")
     end
+end
+
+function TurretBase:cl_n_putOnLift()
+    self.network:sendToServer("sv_putOnLift")
 end
 
 function TurretBase:cl_putOnLift()
