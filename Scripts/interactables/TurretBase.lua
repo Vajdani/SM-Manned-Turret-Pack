@@ -193,6 +193,10 @@ function TurretBase:sv_clearDrivingFlags(active)
     end
 end
 
+function TurretBase:sv_putOnLift()
+    self.network:sendToClients("cl_putOnLift")
+end
+
 
 
 function TurretBase:client_onCreate()
@@ -542,7 +546,15 @@ function TurretBase:cl_onLifted(state)
     else
         self.interactable:setSubMeshVisible("turretpart1", self.seatBroken)
         self.interactable:setSubMeshVisible("turretpart2", self.gunBroken)
+
+        self.network:sendToServer("sv_putOnLift")
     end
+end
+
+function TurretBase:cl_putOnLift()
+    self.lifted = false
+    self.interactable:setSubMeshVisible("turretpart1", self.seatBroken)
+    self.interactable:setSubMeshVisible("turretpart2", self.gunBroken)
 end
 
 
