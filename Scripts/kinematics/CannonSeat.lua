@@ -217,7 +217,7 @@ function CannonSeat:client_onCreate()
     TurretSeat.client_onCreate(self)
 
     self.strikeMoveControls = { [1] = false, [2] = false, [3] = false, [4] = false }
-    self.controlHud = ControlHud():init()
+    self.controlHud = ControlHud():init(40, 1/30)
 end
 
 function CannonSeat:client_onDestroy()

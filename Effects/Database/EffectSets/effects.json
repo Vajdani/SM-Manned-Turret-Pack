@@ -170,5 +170,29 @@
 			"shakeStrength": 0.01,
 			"size": 0.5
 		}
+	},
+	"ControlHud - Open":
+	{
+		"effectList":
+		[
+			{
+				"type": "audio",
+				"name": "event:/props/mapinspector/mi_on",
+				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
+				"delay": 0.0
+			}
+		]
+	},
+	"ControlHud - Close":
+	{
+		"effectList":
+		[
+			{
+				"type": "audio",
+				"name": "event:/props/mapinspector/mi_off",
+				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
+				"delay": 0.0
+			}
+		]
 	}
 }
