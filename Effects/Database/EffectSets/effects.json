@@ -39,6 +39,14 @@
 			"shakeStrength": 0.005
 		}
 	},
+	"Turret - FailedShoot": {
+		"effectList": [
+			{
+				"name": "event:/vehicle/resourcecollector_insert",
+				"type": "audio"
+			}
+		]
+	},
 	"RepairTool - Weld": {
 		"effectList": [
 			{

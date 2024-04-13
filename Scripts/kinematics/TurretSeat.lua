@@ -93,7 +93,6 @@ function TurretSeat:server_onCreate()
 end
 
 function TurretSeat:sv_syncToLateJoiner(player)
-    print("seat sync:", player)
     self.network:sendToClient(player, "cl_syncToLateJoiner", { self.base, self.ammoType })
 end
 
@@ -216,14 +215,10 @@ function TurretSeat:sv_shoot(ammoType, caller)
     local ammoData = self.ammoTypes[ammoType]
     local startPos, endPos = self:getFirePos()
     local rot = self.harvestable.worldRotation
-    local hit, result = sm.physics.spherecast(startPos, endPos, 0.2, self.harvestable, rayFilter)
+    local hit, result = sm.physics.spherecast(startPos, endPos, 0.1, self.harvestable, rayFilter)
     if hit then
-        if ammoData.isPart then
-            self.network:sendToClients("cl_shoot", { canShoot = false, pos = endPos })
-            return
-        else
-            endPos = result.pointWorld - result.normalWorld * 0.1
-        end
+        self.network:sendToClients("cl_shoot", { canShoot = false, pos = endPos })
+        return
     end
 
     local dir = rot * vec3_up
@@ -527,12 +522,7 @@ function TurretSeat:cl_shoot(args)
 
         sm.effect.playEffect(self.ammoTypes[args.ammoType].effect, args.pos, vec3_zero, sm.vec3.getRotation(vec3_up, args.dir))
     else
-        sm.audio.play("Lever off", args.pos)
-
-        if self.seated then
-            self.shootState = ShootState.null
-            self:cl_updateHotbar()
-        end
+        sm.effect.playEffect("Turret - FailedShoot", args.pos)
     end
 end
 
@@ -564,10 +554,10 @@ function TurretSeat:getFirePos()
     local rot = self.harvestable.worldRotation
     if self.shotCounter%2==0 then
         local offsetBase =  vec3_right * 0.27 + vec3_forward * 0.35
-        return pos + rot * offsetBase, pos + rot * (vec3_up * 1.8 + offsetBase)
+        return pos + rot * offsetBase, pos + rot * (vec3_up * 1.7 + offsetBase)
     else
         local offsetBase = -vec3_right * 0.27 + vec3_forward * 0.35
-        return pos + rot * offsetBase, pos + rot * (vec3_up * 1.8 + offsetBase)
+        return pos + rot * offsetBase, pos + rot * (vec3_up * 1.7 + offsetBase)
     end
 end
 

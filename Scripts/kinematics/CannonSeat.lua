@@ -25,7 +25,7 @@ CannonSeat.ammoTypes = {
     {
         name = "Ratshot",
         damage = 50,
-        velocity = 130,
+        velocity = 250,
         recoilStrength = 3,
         fireCooldown = 40,
         spread = 0,
@@ -319,7 +319,7 @@ function CannonSeat:getFirePos()
     local pos = self.harvestable.worldPosition + (self.base or self.cl_base).shape.velocity * 0.025
     local rot = self.harvestable.worldRotation
     local offsetBase = vec3_forward * 0.2
-    return pos + rot * offsetBase, pos + rot * (vec3_up * 2.25 + offsetBase)
+    return pos + rot * offsetBase, pos + rot * (vec3_up * 2 + offsetBase)
 end
 
 local strikeFilter = sm.physics.filter.staticBody + sm.physics.filter.dynamicBody + sm.physics.filter.terrainAsset + sm.physics.filter.terrainSurface
@@ -389,12 +389,7 @@ function CannonSeat:cl_shoot(args)
             self.controlHud:open()
         end
     else
-        sm.audio.play("Lever off", args.pos)
-
-        if self.seated then
-            self.shootState = ShootState.null
-            self:cl_updateHotbar()
-        end
+        sm.effect.playEffect("Turret - FailedShoot", args.pos)
     end
 end
 

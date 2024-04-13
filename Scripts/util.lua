@@ -96,15 +96,3 @@ end
 function BoolToNum(bool)
     return bool and 1 or 0
 end
-
-local turretBases = {
-    ["e4497545-5f77-4d59-bfbf-ce5692284322"] = true, --Manned Turret
-    ["a0c96d35-37ca-4cf9-82d8-9b9077132918"] = true, --Manned Cannon
-}
-
----@param shape Shape
----@return boolean
-function IsTurretBase(shape)
-    --print(sm.item.getFeatureData(shape.uuid))
-    return turretBases[tostring(shape.uuid)] == true
-end

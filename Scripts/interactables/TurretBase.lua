@@ -38,10 +38,14 @@ function TurretBase:server_onCreate()
 
     self:sv_createTurret()
     self.network:setClientData({ health = health, destroyed = self.destroyed, ammoType = self.ammoType }, 2)
+
+    self.interactable.publicData = {
+        isTurretBase = true,
+        maxHealth = self.maxHealth
+    }
 end
 
 function TurretBase:sv_syncToLateJoiner(player)
-    print("base sync:", player)
     self.network:sendToClient(player, "cl_syncToLateJoiner",
         {
             self.turret,
@@ -68,7 +72,7 @@ function TurretBase:server_onFixedUpdate()
     end
 end
 
-function TurretBase:sv_respawnSeat(args, caller)
+function TurretBase:sv_respawnSeat()
     self:sv_createTurret()
 
     local contacts = sm.physics.getSphereContacts(self:getSeatPos(), 1)
@@ -190,7 +194,7 @@ function TurretBase:sv_putOnLift()
 end
 
 
-
+sm.MANNEDTURRET_turretBases_clientPublicData = sm.MANNEDTURRET_turretBases_clientPublicData or {}
 function TurretBase:client_onCreate()
     self.healthBar = sm.gui.createSurvivalHudGui()
     self.healthBar:setVisible("WaterBar", false)
@@ -212,9 +216,15 @@ function TurretBase:client_onCreate()
     self.bearingSettings = {}
 	self.bearingSettings.updateDelay = 0.0
 	self.bearingSettings.updateSettings = {}
+
+
+    sm.MANNEDTURRET_turretBases_clientPublicData[self.interactable.id] = {
+        isTurretBase = true
+    }
 end
 
 function TurretBase:client_onDestroy()
+    sm.MANNEDTURRET_turretBases_clientPublicData[self.interactable.id] = nil
     self.healthBar:destroy()
 
     if g_repairingTurret and g_turretBase == self.interactable then

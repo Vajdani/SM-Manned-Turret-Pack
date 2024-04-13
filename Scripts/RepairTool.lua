@@ -453,7 +453,8 @@ function RepairTool:sv_healTurret(turret)
     if not turret or not sm.exists(turret) then return end
 
 	sm.effect.playEffect("Turret - RepairEvent", turret.worldPosition + turret.at * 0.1)
-    sm.event.sendToInteractable(turret.interactable, "sv_takeDamage", -math.ceil(TurretBase.maxHealth/12))
+	local int = turret.interactable
+    sm.event.sendToInteractable(int, "sv_takeDamage", -math.ceil(int.publicData.maxHealth/12))
 end
 
 function RepairTool:sv_onRepairEnd(args, caller)
