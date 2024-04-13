@@ -64,7 +64,9 @@ function CannonRocket:server_onFixedUpdate(dt)
 end
 
 function CannonRocket:sv_explode(position)
-    sm.event.sendToHarvestable(self.seat, "sv_onRocketExplode", position == nil)
+    if sm.exists(self.seat) then
+        sm.event.sendToHarvestable(self.seat, "sv_onRocketExplode", position == nil)
+    end
 
     sm.physics.explode( position or self.shape.worldPosition, 7, 5, 7, 15, "PropaneTank - ExplosionBig", self.shape )
     self.shape:destroyShape()
@@ -76,7 +78,7 @@ function CannonRocket:sv_controlRocket(dt)
 
     self.thrustActivate = math.min(self.thrustActivate + dt, 1)
     local wrampUp = sm.util.easing("easeInSine", self.thrustActivate) * 10
-    local controlData = self.seat.publicData
+    local controlData = sm.exists(self.seat) and self.seat.publicData or { rocketBoost = 0, rocketRoll = 0 }
     sm.physics.applyImpulse(shape, ((fwd * wrampUp * 2) - ( shape.velocity * 0.3 ) + fwd * controlData.rocketBoost * wrampUp) * shape.mass, true)
 
     local body = shape.body

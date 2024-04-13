@@ -11,6 +11,7 @@ TurretSeat.ammoTypes = {
         name = "AA Rounds",
         damage = 100,
         velocity = 300,
+        recoilStrength = 1,
         fireCooldown = 6,
         spread = 5,
         effect = "Turret - Shoot",
@@ -21,6 +22,7 @@ TurretSeat.ammoTypes = {
         name = "Explosive Rounds",
         damage = 10,
         velocity = 130,
+        recoilStrength = 1,
         fireCooldown = 15,
         spread = 8,
         effect = "Turret - Shoot",
@@ -61,6 +63,7 @@ TurretSeat.ammoTypes = {
         name = "Potatoes",
         damage = 56,
         velocity = 200,
+        recoilStrength = 0.1,
         fireCooldown = 6,
         spread = 8,
         effect = "SpudgunBasic - BasicMuzzel",
@@ -213,7 +216,7 @@ function TurretSeat:sv_shoot(ammoType, caller)
     local ammoData = self.ammoTypes[ammoType]
     local startPos, endPos = self:getFirePos()
     local rot = self.harvestable.worldRotation
-    local hit, result = sm.physics.raycast(startPos, endPos, self.harvestable, rayFilter)
+    local hit, result = sm.physics.spherecast(startPos, endPos, 0.2, self.harvestable, rayFilter)
     if hit then
         if ammoData.isPart then
             self.network:sendToClients("cl_shoot", { canShoot = false, pos = endPos })
@@ -226,16 +229,28 @@ function TurretSeat:sv_shoot(ammoType, caller)
     local dir = rot * vec3_up
     local canShoot = self:canShoot(ammoType, true)
     if canShoot then
+        local finalFirePos
         if ammoData.isPart then
             local projectileRot = rot * sm.quat.angleAxis(math.rad(90), vec3_right) * sm.quat.angleAxis(math.rad(180), vec3_forward)
-            local projectile = sm.shape.createPart(ammoData.uuid, endPos - projectileRot * sm.item.getShapeOffset(ammoData.uuid), projectileRot)
+            finalFirePos = endPos - projectileRot * sm.item.getShapeOffset(ammoData.uuid)
+            local projectile = sm.shape.createPart(ammoData.uuid, finalFirePos, projectileRot)
             self:sv_OnPartFire(ammoType, ammoData, projectile, caller)
         else
-            sm.projectile.projectileAttack( ammoData.uuid, ammoData.damage, endPos + dir * (hit and 0 or 0.25), sm.noise.gunSpread(dir, ammoData.spread) * ammoData.velocity, caller )
+            finalFirePos = endPos + dir * (hit and 0 or 0.25)
+            sm.projectile.projectileAttack( ammoData.uuid, ammoData.damage, finalFirePos, sm.noise.gunSpread(dir, ammoData.spread) * ammoData.velocity, caller )
         end
+
+        self:sv_applyFiringImpulse(ammoData, dir, finalFirePos)
     end
 
     self.network:sendToClients("cl_shoot", { canShoot = canShoot, pos = endPos, dir = dir, shotCount = self.shotCounter, ammoType = ammoType })
+end
+
+function TurretSeat:sv_applyFiringImpulse(ammoData, dir, finalFirePos)
+    if ammoData.recoilStrength then
+        local baseShape = self.base.shape
+        sm.physics.applyImpulse(baseShape, -dir * ammoData.recoilStrength * baseShape.mass, true, baseShape:transformPoint(finalFirePos))
+    end
 end
 
 function TurretSeat:sv_toggleLight(toggle)
@@ -475,17 +490,17 @@ end
 
 function TurretSeat:cl_updateHotbar()
     self.hotbar:setGridItem( "ButtonGrid", 0, {
-        itemId = "68a120d9-ba02-413a-a7c7-723d71172f47",
+        itemId = HotbarIcon.shoot,
         active = self.shootState == ShootState.hold
     })
 
     self.hotbar:setGridItem( "ButtonGrid", 1, {
-        itemId = "d6cbdd2c-f6a3-4e2c-a818-2c6112c1b5e7",
+        itemId = HotbarIcon.shoot_toggle,
         active = self.shootState == ShootState.toggle
     })
 
     self.hotbar:setGridItem( "ButtonGrid", 2, {
-        itemId = "9a42c98b-a8a1-4bc3-a45e-d0964325ca6d",
+        itemId = HotbarIcon.light,
         active = self.lightActive
     })
 
@@ -545,7 +560,7 @@ end
 
 
 function TurretSeat:getFirePos()
-    local pos = self.harvestable.worldPosition + self.base.shape.velocity * 0.025
+    local pos = self.harvestable.worldPosition + (self.base or self.cl_base).shape.velocity * 0.025
     local rot = self.harvestable.worldRotation
     if self.shotCounter%2==0 then
         local offsetBase =  vec3_right * 0.27 + vec3_forward * 0.35
@@ -569,7 +584,7 @@ function TurretSeat:getAmmoType(parent)
 end
 
 function TurretSeat:canShoot(ammoType, consume)
-    local parent = self.cl_base:getSingleParent()
+    local parent = (self.base or self.cl_base):getSingleParent()
     if parent then
         if consume then
             sm.container.beginTransaction()

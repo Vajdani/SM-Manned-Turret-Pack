@@ -6,6 +6,7 @@ CannonSeat.ammoTypes = {
     {
         name = "Guided Missile",
         velocity = 50,
+        recoilStrength = 1,
         fireCooldown = 40,
         effect = "Cannon - Shoot",
         ammo = sm.uuid.new("24d5e812-3902-4ac3-b214-a0c924a5c40f"),
@@ -15,6 +16,7 @@ CannonSeat.ammoTypes = {
     {
         name = "Air Strike",
         velocity = 50,
+        recoilStrength = 1,
         fireCooldown = 40,
         effect = "Cannon - Shoot",
         ammo = sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"),
@@ -24,6 +26,7 @@ CannonSeat.ammoTypes = {
         name = "Ratshot",
         damage = 50,
         velocity = 130,
+        recoilStrength = 3,
         fireCooldown = 40,
         spread = 0,
         effect = "Cannon - Shoot",
@@ -33,9 +36,10 @@ CannonSeat.ammoTypes = {
     {
         name = "Player Launcher",
         velocity = 75,
+        recoilStrength = 1,
         fireCooldown = 40,
         effect = "Cannon - Shoot",
-        ammo = sm.uuid.new( "ffa3a47e-fc0d-4977-802f-bd15683bbe5c" )
+        ammo = sm.uuid.new( HotbarIcon.pLauncher )
     }
 }
 CannonSeat.containerToAmmoType = {
@@ -160,11 +164,13 @@ function CannonSeat:sv_startAirStrike(pos, caller)
             if not self:fire(self.position) then return true end
         end,
         fire = function(self, position)
-            if not self.turretSelf:canShoot(2) then
+            local turretSelf = self.turretSelf
+            if not turretSelf:canShoot(2) then
                 return false
             end
 
             sm.projectile.projectileAttack(projectile_explosivetape, 100, position, -vec3_up * 100, caller)
+            turretSelf:sv_applyFiringImpulse(turretSelf.ammoTypes[2], turretSelf.harvestable.worldRotation * vec3_up, ({turretSelf:getFirePos()})[2])
             return true
         end
     }
@@ -310,7 +316,7 @@ function CannonSeat:client_onUpdate(dt)
 end
 
 function CannonSeat:getFirePos()
-    local pos = self.harvestable.worldPosition + self.base.shape.velocity * 0.025
+    local pos = self.harvestable.worldPosition + (self.base or self.cl_base).shape.velocity * 0.025
     local rot = self.harvestable.worldRotation
     local offsetBase = vec3_forward * 0.2
     return pos + rot * offsetBase, pos + rot * (vec3_up * 2.25 + offsetBase)
@@ -365,7 +371,7 @@ function CannonSeat:cl_shoot(args)
             sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", { false, true })
 
             self.hotbar:setGridItem( "ButtonGrid", 0, {
-                itemId = "68a120d9-ba02-413a-a7c7-723d71172f47",
+                itemId = HotbarIcon.shoot,
                 active = false
             })
             self.hotbar:setGridItem( "ButtonGrid", 1, nil)
@@ -407,19 +413,19 @@ function CannonSeat:cl_startAirStrike()
     sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", { false, true })
 
     self.hotbar:setGridItem( "ButtonGrid", 0, {
-        itemId = "68a120d9-ba02-413a-a7c7-723d71172f47",
+        itemId = HotbarIcon.shoot,
         active = false
     })
     self.hotbar:setGridItem( "ButtonGrid", 1, {
-        itemId = "509d50c0-357c-4485-8f24-2f448c5e8e91",
+        itemId = HotbarIcon.cancel,
         active = false
     })
     self.hotbar:setGridItem( "ButtonGrid", 2, {
-        itemId = "a983d039-0b6b-43b4-8fef-682eab698a3f",
+        itemId = HotbarIcon.zoomOut,
         active = false
     })
     self.hotbar:setGridItem( "ButtonGrid", 3, {
-        itemId = "74306663-d10b-4738-aa31-c2459b758765",
+        itemId = HotbarIcon.zoomIn,
         active = false
     })
 

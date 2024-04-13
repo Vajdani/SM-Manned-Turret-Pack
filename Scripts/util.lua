@@ -2,6 +2,7 @@
 ---@field name string
 ---@field damage? number
 ---@field velocity? number
+---@field recoilStrength? number
 ---@field fireCooldown number
 ---@field spread? number
 ---@field effect EffectName|string
@@ -19,9 +20,19 @@ vec3_one      = sm.vec3.one()
 camOffset     = sm.vec3.new(0,0,0.575)
 
 ShootState = {
-    null = 0,
-    hold = 1,
-    toggle = 2
+    null    = 0,
+    hold    = 1,
+    toggle  = 2
+}
+
+HotbarIcon = {
+    shoot        = "68a120d9-ba02-413a-a7c7-723d71172f47",
+    shoot_toggle = "d6cbdd2c-f6a3-4e2c-a818-2c6112c1b5e7",
+    light        = "9a42c98b-a8a1-4bc3-a45e-d0964325ca6d",
+    cancel       = "509d50c0-357c-4485-8f24-2f448c5e8e91",
+    zoomIn       = "a983d039-0b6b-43b4-8fef-682eab698a3f",
+    zoomOut      = "74306663-d10b-4738-aa31-c2459b758765",
+    pLauncher    = "242b84e4-c008-4780-a2dd-abacea821637",
 }
 
 local repairTick = 0
