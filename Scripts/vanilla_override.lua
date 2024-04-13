@@ -1,8 +1,6 @@
 dofile( "$GAME_DATA/Scripts/game/BasePlayer.lua" )
 dofile( "$SURVIVAL_DATA/Scripts/game/SurvivalPlayer.lua" )
 
-dofile("$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Scripts/util.lua")
-
 oldClientCreate = oldClientCreate or SurvivalPlayer.client_onCreate
 function newClientCreate( self )
 	oldClientCreate(self)

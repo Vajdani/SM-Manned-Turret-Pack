@@ -1,13 +1,15 @@
--Added Manned Cannon, which comes with 3 fire modes:
+-Added Manned Cannon, which comes with 4 fire modes:
  -Guided Missile
  -Air Strike
  -Ratshot
+ -Player Launcher
 -Added Guided Missile
 -Added Guided Missile Container
 -Added Ratshot
 -Added Ratshot Container
 -Turrets have partial seat functionality:
  -Can be used as a driver's seat
+ -Bearings can be adjusted like on level 5 seats
  -Buttons and Switches cannot be used
 -Hid unnecessary elements from turret HUDs
 -Entering a turret now closes the survival HUD if there is one
@@ -19,3 +21,4 @@
  -Turret seats get highlighted if the creation they are on is highlighted by the lift
  -Creations can be picked up while aiming at a turret seat
 -Changed how repairing works, it is much harder for it to swallow items now
+-Added an impulse to firing
