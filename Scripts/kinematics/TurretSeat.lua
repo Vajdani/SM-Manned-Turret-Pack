@@ -152,8 +152,6 @@ function TurretSeat:sv_seat(args, caller)
 
     caller.publicData = caller.publicData or {}
     caller.publicData.turretSeat = self.harvestable
-
-	self.base.active = true
 end
 
 ---@param caller Player

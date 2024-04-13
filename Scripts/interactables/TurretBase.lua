@@ -63,7 +63,12 @@ function TurretBase:server_onDestroy()
 end
 
 function TurretBase:server_onFixedUpdate()
-    if not self.interactable.active then return end
+    local active = sm.exists(self.turret) and self.turret:getSeatCharacter() ~= nil or false
+    if active ~= self.interactable.active then
+        self.interactable.active = active
+    end
+
+    if not active then return end
 
     local steerPower = self.interactable:getSteeringPower()
     if self.prevSteerPower ~= steerPower then
