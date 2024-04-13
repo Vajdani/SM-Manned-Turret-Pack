@@ -1,4 +1,5 @@
 dofile "TurretSeat.lua"
+dofile "$CONTENT_DATA/Scripts/ControlHud.lua"
 
 ---@class CannonSeat : TurretSeat
 CannonSeat = class(TurretSeat)
@@ -216,16 +217,7 @@ function CannonSeat:client_onCreate()
     TurretSeat.client_onCreate(self)
 
     self.strikeMoveControls = { [1] = false, [2] = false, [3] = false, [4] = false }
-    self.controlHud = sm.gui.createGuiFromLayout("$CONTENT_DATA/Gui/Layouts/RocketControlHud.layout", false,
-        {
-            isHud = true,
-            isInteractive = false,
-            needsCursor = false,
-            hidesHotbar = false,
-            isOverlapped = false,
-            backgroundAlpha = 0
-        }
-    )
+    self.controlHud = ControlHud():init()
 end
 
 function CannonSeat:client_onDestroy()
@@ -311,6 +303,10 @@ function CannonSeat:client_onUpdate(dt)
             elseif sm.game.getEnableAmmoConsumption() and self.ammoType ~= 4 then
                 sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>No ammunition</p>"))
             end
+        end
+
+        if self.controlHud:isActive() then
+            self.controlHud:update(dt)
         end
     end
 end
