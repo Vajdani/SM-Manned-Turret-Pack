@@ -50,6 +50,7 @@ CannonSeat.containerToAmmoType = {
 }
 CannonSeat.baseUUID = "a0c96d35-37ca-4cf9-82d8-9b9077132918"
 CannonSeat.airStrikeDistanceLimit = 100
+CannonSeat.beaconScale = sm.vec3.new(0.5, 50, 0.5)
 
 
 
@@ -126,8 +127,6 @@ function CannonSeat:sv_startAirStrikeCasting()
 end
 
 function CannonSeat:sv_startAirStrike(pos, caller)
-    sm.effect.playEffect("Loot - Pickup", pos)
-
     local shape = self.base.shape
     local dir = (pos - shape.worldPosition):normalize()
     local fwd = shape.up
@@ -178,12 +177,13 @@ function CannonSeat:sv_startAirStrike(pos, caller)
 
     if not strike:start() then
         self.airStrike = strike
+        self.network:sendToClients("cl_updateAirStrikeBeacon", pos)
     end
 end
 
 function CannonSeat:sv_endAirStrike()
     self:sv_SetTurretControlsEnabled(true)
-    self.network:sendToClient(self.sv_seated:getPlayer(), "cl_endAirStrike")
+    self.network:sendToClients("cl_updateAirStrikeBeacon")
 end
 
 function CannonSeat:sv_cancelAirStrike()
@@ -224,6 +224,25 @@ function CannonSeat:client_onDestroy()
     TurretSeat.client_onDestroy(self)
 
     self.controlHud:destroy()
+
+    if sm.exists(self.airStrikeRadius) then
+        self.airStrikeRadius:destroy()
+    end
+end
+
+function CannonSeat:client_onClientDataUpdate(data, channel)
+    if channel == 1 then
+        self.cl_base = data
+        self.harvestable.clientPublicData.base = data
+
+        if sm.exists(self.airStrikeRadius) then
+            self.airStrikeRadius:destroy()
+        end
+
+        self.airStrikeRadius = sm.effect.createEffect("Cannon - AirStrike - Radius", self.cl_base)
+    else
+        self.ammoType = data
+    end
 end
 
 function CannonSeat:client_onAction(action, state)
@@ -429,16 +448,21 @@ function CannonSeat:cl_startAirStrike()
 
     self.controlHud:open()
 
+    self.airStrikeRadius:setScale(vec3_one * self.airStrikeDistanceLimit)
+    self.airStrikeRadius:start()
+
     self.strikeCamOffset = sm.vec3.zero()
     self.strikeZoom = 1
     self.spottingStrike = true
 end
 
-function CannonSeat:cl_cancelAirStrike()
-    if self.blockStrikeCast then
-        self.network:sendToServer("sv_cancelAirStrike")
-    else
-        self.network:sendToServer("sv_SetTurretControlsEnabled", true)
+function CannonSeat:cl_cancelAirStrike(ignore)
+    if not ignore then
+        if self.blockStrikeCast then
+            self.network:sendToServer("sv_cancelAirStrike")
+        else
+            self.network:sendToServer("sv_SetTurretControlsEnabled", true)
+        end
     end
 
     if sm.localPlayer.getPlayer().clientPublicData.interactableCameraData then
@@ -446,6 +470,7 @@ function CannonSeat:cl_cancelAirStrike()
         sm.gui.endFadeToBlack(0.8)
         sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", true)
         self.controlHud:close()
+        self.airStrikeRadius:stop()
         self:cl_updateHotbar()
     end
 
@@ -454,8 +479,35 @@ function CannonSeat:cl_cancelAirStrike()
 end
 
 function CannonSeat:cl_endAirStrike()
-    self:cl_cancelAirStrike()
+    self:cl_cancelAirStrike(true)
     self.blockStrikeCast = false
+end
+
+function CannonSeat:cl_updateAirStrikeBeacon(pos)
+    if pos then
+        local rot = sm.vec3.getRotation(vec3_forward, vec3_up)
+        self.airStrikeBeacon = sm.effect.createEffect("Cannon - AirStrike - Beacon")
+        self.airStrikeBeacon:setPosition(pos + vec3_up * self.beaconScale.y * 0.5)
+        self.airStrikeBeacon:setRotation(rot)
+        self.airStrikeBeacon:setScale(self.beaconScale)
+        self.airStrikeBeacon:start()
+
+        self.airStrikeBeaconRange = sm.effect.createEffect("Cannon - AirStrike - BeaconRange")
+        self.airStrikeBeaconRange:setPosition(pos + vec3_up * 0.1)
+        self.airStrikeBeaconRange:setRotation(rot)
+        self.airStrikeBeaconRange:setScale(vec3_one * 3 * 5)
+        self.airStrikeBeaconRange:start()
+    else
+        self.airStrikeBeacon:stop()
+        self.airStrikeBeacon:destroy()
+
+        self.airStrikeBeaconRange:stop()
+        self.airStrikeBeaconRange:destroy()
+
+        if self.seated then
+            self:cl_endAirStrike()
+        end
+    end
 end
 
 function CannonSeat:cl_onRocketExplode(detonated)

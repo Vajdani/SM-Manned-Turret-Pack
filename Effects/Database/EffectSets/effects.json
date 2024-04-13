@@ -194,5 +194,41 @@
 				"delay": 0.0
 			}
 		]
+	},
+	"Cannon - AirStrike - Radius":
+	{
+		"effectList":
+		[
+			{
+				"type": "renderable",
+				"name": "$CONTENT_DATA/Effects/Renderables/radius_visualizer.rend",
+				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
+				"delay": 0.0
+			}
+		]
+	},
+	"Cannon - AirStrike - Beacon":
+	{
+		"effectList":
+		[
+			{
+				"type": "renderable",
+				"name": "$CONTENT_DATA/Effects/Renderables/strike_beacon.rend",
+				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
+				"delay": 0.0
+			}
+		]
+	},
+	"Cannon - AirStrike - BeaconRange":
+	{
+		"effectList":
+		[
+			{
+				"type": "renderable",
+				"name": "$CONTENT_DATA/Effects/Renderables/beacon_range_visualizer.rend",
+				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
+				"delay": 0.0
+			}
+		]
 	}
 }

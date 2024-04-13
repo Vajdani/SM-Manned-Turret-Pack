@@ -1,0 +1,15 @@
+{
+   "lodList" : [
+      {
+         "mesh" : "$CONTENT_DATA/Effects/Mesh/radius_visualizer.fbx",
+         "subMeshList" : [
+            {
+               "material" : "ConnectJoint",
+               "textureList" : [
+                  "$GAME_DATA/Textures/white.png"
+               ]
+            }
+         ]
+      }
+   ]
+}

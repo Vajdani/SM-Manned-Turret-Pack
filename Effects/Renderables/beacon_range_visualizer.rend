@@ -1,0 +1,15 @@
+{
+   "lodList" : [
+      {
+         "mesh" : "$CONTENT_DATA/Effects/Mesh/radius_visualizer.fbx",
+         "subMeshList" : [
+            {
+               "material" : "LightCone",
+               "textureList" : [
+                  "$CONTENT_DATA/Effects/Textures/strike_beacon.tga"
+               ]
+            }
+         ]
+      }
+   ]
+}
