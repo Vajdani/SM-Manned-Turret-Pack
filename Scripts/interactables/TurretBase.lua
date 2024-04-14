@@ -398,8 +398,8 @@ function TurretBase:client_onClientDataUpdate(data, channel)
             if data.prevDestroyed == false then
                 self.healthBar:close()
 
-                self.turretRot = self.shape.worldRotation
-                self.dir = { x = 0, y = 0 }
+                --self.turretRot = self.shape.worldRotation
+                --self.dir = { x = 0, y = 0 }
             end
 
             if not self.repairVisualization or not sm.exists(self.repairVisualization) then

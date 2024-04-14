@@ -226,7 +226,7 @@ function TurretSeat:sv_shoot(ammoType, caller)
     if canShoot then
         local finalFirePos
         if sm.item.isPart(ammoData.uuid) then
-            local projectileRot = rot * sm.quat.angleAxis(math.rad(90), vec3_right) * sm.quat.angleAxis(math.rad(180), vec3_forward)
+            local projectileRot = rot * turret_projectile_rotation_adjustment
             finalFirePos = endPos - projectileRot * sm.item.getShapeOffset(ammoData.uuid)
             local projectile = sm.shape.createPart(ammoData.uuid, finalFirePos, projectileRot)
 

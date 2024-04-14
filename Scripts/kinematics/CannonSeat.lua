@@ -75,6 +75,10 @@ function CannonSeat:server_onDestroy()
     if self.rocket then
         sm.event.sendToInteractable(self.rocket.interactable, "sv_explode")
     end
+
+    if self:isOverrideAmmoType() and self.ammoType.index == 1 then --Is Nuke
+        sm.event.sendToInteractable(self.base, "sv_spawnNukeOnDestroy", self.ammoType.previous)
+    end
 end
 
 function CannonSeat:server_onFixedUpdate()
@@ -546,7 +550,7 @@ function CannonSeat:cl_updateLoadedNuke(state)
         self.nukeEffect:setParameter("color", sm.item.getShapeDefaultColor(nukeUUID))
 
         self.nukeEffect:setOffsetPosition(vec3_up * 2.085 + vec3_forward * 0.22)
-        self.nukeEffect:setOffsetRotation(sm.quat.angleAxis(math.rad(90), vec3_right) * sm.quat.angleAxis(math.rad(180), vec3_forward))
+        self.nukeEffect:setOffsetRotation(turret_projectile_rotation_adjustment)
         self.nukeEffect:setScale(vec3_one * 0.2)
 
         self.nukeEffect:start()

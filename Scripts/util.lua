@@ -19,6 +19,8 @@ vec3_zero     = sm.vec3.zero()
 vec3_one      = sm.vec3.one()
 camOffset     = sm.vec3.new(0,0,0.575)
 
+turret_projectile_rotation_adjustment = sm.quat.angleAxis(math.rad(90), vec3_right) * sm.quat.angleAxis(math.rad(180), vec3_forward)
+
 ShootState = {
     null    = 0,
     hold    = 1,

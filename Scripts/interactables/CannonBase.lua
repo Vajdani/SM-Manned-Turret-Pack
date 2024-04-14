@@ -13,3 +13,23 @@ CannonBase.explosionDebrisData = {
     { uuid = sm.uuid.new("187dbc85-b8af-4a08-9bb7-0dc764e927c0"), offset = sm.vec3.new(2.13494,     0.363002,     2.99947) * 0.25 },
     { uuid = sm.uuid.new("1cc59da0-8408-4b76-bac1-cea1e7e7ece6"), offset = sm.vec3.new(0,           0.847786,     1.69998) * 0.25 },
 }
+
+
+
+function CannonBase:sv_spawnNukeOnDestroy(prevAmmoType)
+    local ammoData = CannonSeat.overrideAmmoTypes[1]
+    local turretRot = self.shape.worldRotation * sm.quat.angleAxis(self.dir.x, vec3_forward) * sm.quat.angleAxis(-self.dir.y, vec3_right)
+    local projectileRot = turretRot * turret_projectile_rotation_adjustment
+    local startPos, endPos = CannonSeat.getFirePos(
+        {
+            harvestable = {
+                worldPosition = self:getSeatPos(),
+                worldRotation = turretRot
+            },
+            base = self.interactable
+        }
+    )
+
+    sm.shape.createPart(ammoData.uuid, endPos - projectileRot * sm.item.getShapeOffset(ammoData.uuid), projectileRot)
+    self:sv_e_setAmmoType(prevAmmoType)
+end
