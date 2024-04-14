@@ -36,7 +36,7 @@
         "title": "Explosive Round"
     },
     "24d5e812-3902-4ac3-b214-a0c924a5c40f": {
-        "description": "Used as ammo for the Manned Cannon.",
+        "description": "Used as ammo for the Manned Cannon.\n\nWhile controlling the rocket:\n-#df7f00Mouse#919191: Yaw/Pitch\n-#df7f00W/S#919191: Boost/Slow down\n-#df7f00A/D#919191: Roll",
         "title": "Guided Missile"
     },
     "e36b172c-ae2d-4697-af44-8041d9cbde0e": {

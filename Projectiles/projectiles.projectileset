@@ -88,6 +88,7 @@
          "uuid" : "53e5da10-99ea-48d5-98b5-c03d0938811e"
       },
       {
+         "attachedEffect" : "",
 			"uuid": "baf7ff9d-191a-4ea4-beba-e160ceb54daf",
 			"name": "potato_copy",
 			"mass": 3.0,
@@ -98,6 +99,7 @@
 			"effect": "PotatoProjectile - Hit",
 			"audiomass": 250.0,
 			"effectmaterial": "Potato",
+         "enableGravity" : true,
 			"destruction":
 			{
 				"destructionLevels":

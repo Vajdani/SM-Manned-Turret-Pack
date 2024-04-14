@@ -6,7 +6,7 @@
 ---@field fireCooldown number
 ---@field spread? number
 ---@field effect EffectName|string
----@field isPart? boolean
+---@field ignoreAmmoConsumption? boolean
 ---@field ammo Uuid
 ---@field uuid Uuid
 

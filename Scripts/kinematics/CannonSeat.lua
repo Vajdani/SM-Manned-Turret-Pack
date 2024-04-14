@@ -6,17 +6,14 @@ CannonSeat = class(TurretSeat)
 CannonSeat.ammoTypes = {
     {
         name = "Guided Missile",
-        velocity = 50,
         recoilStrength = 1,
         fireCooldown = 40,
         effect = "Cannon - Shoot",
         ammo = sm.uuid.new("24d5e812-3902-4ac3-b214-a0c924a5c40f"),
-        uuid = sm.uuid.new("24d5e812-3902-4ac3-b214-a0c924a5c40f"),
-        isPart = true
+        uuid = sm.uuid.new("24d5e812-3902-4ac3-b214-a0c924a5c40f")
     },
     {
         name = "Air Strike",
-        velocity = 50,
         recoilStrength = 1,
         fireCooldown = 40,
         effect = "Cannon - Shoot",
@@ -41,6 +38,18 @@ CannonSeat.ammoTypes = {
         fireCooldown = 40,
         effect = "Cannon - Shoot",
         ammo = sm.uuid.new( HotbarIcon.pLauncher )
+    }
+}
+CannonSeat.overrideAmmoTypes = {
+    {
+        name = "Nuke",
+        velocity = 100,
+        recoilStrength = 3,
+        fireCooldown = 40,
+        effect = "Cannon - Shoot",
+        ammo = sm.uuid.new("47b43e6e-280d-497e-9896-a3af721d89d2"),
+        uuid = sm.uuid.new("47b43e6e-280d-497e-9896-a3af721d89d2"),
+        ignoreAmmoConsumption = true
     }
 }
 CannonSeat.containerToAmmoType = {
@@ -98,10 +107,16 @@ function CannonSeat:sv_rocketBoostUpdate(data)
 end
 
 function CannonSeat:sv_OnPartFire(ammoType, ammoData, part, player)
-    if ammoType == 1 then
+    if ammoType == 1 then --Guided Missile
         part.interactable.publicData = { owner = player, seat = self.harvestable }
         self.rocket = part
         self:sv_SetTurretControlsEnabled(false)
+    elseif self:isOverrideAmmoType(ammoType) then
+        local id = ammoType.index
+        if id == 1 then --Nuke
+            self:sv_unSetOverrideAmmoType()
+            self.network:sendToClients("cl_updateLoadedNuke", false)
+        end
     end
 end
 
@@ -170,7 +185,7 @@ function CannonSeat:sv_startAirStrike(pos, caller)
             end
 
             sm.projectile.projectileAttack(projectile_explosivetape, 100, position, -vec3_up * 100, caller)
-            turretSelf:sv_applyFiringImpulse(turretSelf.ammoTypes[2], turretSelf.harvestable.worldRotation * vec3_up, ({turretSelf:getFirePos()})[2])
+            turretSelf:sv_applyFiringImpulse(turretSelf:getAmmoData(2), turretSelf.harvestable.worldRotation * vec3_up, ({turretSelf:getFirePos()})[2])
             return true
         end
     }
@@ -206,9 +221,13 @@ function CannonSeat:sv_tryLaunchPlayer(player)
 
     char:setWorldPosition(({self:getFirePos()})[2])
     char:setTumbling(true)
-    char:applyTumblingImpulse(self.harvestable.worldRotation * vec3_up * self.ammoTypes[self.ammoType].velocity * char.mass)
+    char:applyTumblingImpulse(self.harvestable.worldRotation * vec3_up * self:getAmmoData().velocity * char.mass)
 
     self.network:sendToClients("cl_shoot", { canShoot = true, ammoType = self.ammoType })
+end
+
+function CannonSeat:sv_loadNuke()
+    self:sv_setOverrideAmmoType(1)
 end
 
 
@@ -231,17 +250,18 @@ function CannonSeat:client_onDestroy()
 end
 
 function CannonSeat:client_onClientDataUpdate(data, channel)
-    if channel == 1 then
-        self.cl_base = data
-        self.harvestable.clientPublicData.base = data
+    TurretSeat.client_onClientDataUpdate(self, data, channel)
 
+    if channel == 1 then
         if sm.exists(self.airStrikeRadius) then
             self.airStrikeRadius:destroy()
         end
 
         self.airStrikeRadius = sm.effect.createEffect("Cannon - AirStrike - Radius", self.cl_base)
-    else
-        self.ammoType = data
+    elseif channel == 2 then
+        if self:isOverrideAmmoType(data) and data.index == 1 then
+            self:cl_updateLoadedNuke(true)
+        end
     end
 end
 
@@ -314,14 +334,7 @@ function CannonSeat:client_onUpdate(dt)
         elseif self.cl_controlsEnabled then
             sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = { cameraState = 5 }
 
-            local parent = self.cl_base:getSingleParent()
-            if parent then
-                local container = parent:getContainer(0)
-                local uuid = self.ammoTypes[self.ammoType].ammo
-                sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>%d / %d</p>"):format(sm.container.totalQuantity(container, uuid), container:getSize() * container:getMaxStackSize()))
-            elseif sm.game.getEnableAmmoConsumption() and self.ammoType ~= 4 then
-                sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>No ammunition</p>"))
-            end
+            self:cl_displayAmmoInfo()
         end
 
         if self.controlHud:isActive() then
@@ -333,7 +346,7 @@ end
 function CannonSeat:getFirePos()
     local pos = self.harvestable.worldPosition + (self.base or self.cl_base).shape.velocity * 0.025
     local rot = self.harvestable.worldRotation
-    local offsetBase = vec3_forward * 0.2
+    local offsetBase = vec3_forward * 0.22
     return pos + rot * offsetBase, pos + rot * (vec3_up * 2 + offsetBase)
 end
 
@@ -377,7 +390,7 @@ function CannonSeat:cl_shoot(args)
         self.recoil_l = 1
 
         local ammoType = args.ammoType or self.ammoType
-        sm.effect.playEffect(self.ammoTypes[ammoType].effect, args.pos or ({self:getFirePos()})[2], vec3_zero, sm.vec3.getRotation(vec3_up, args.dir or self.harvestable.worldRotation * vec3_up))
+        sm.effect.playEffect(self:getAmmoData(ammoType).effect, args.pos or ({self:getFirePos()})[2], vec3_zero, sm.vec3.getRotation(vec3_up, args.dir or self.harvestable.worldRotation * vec3_up))
 
         if self.seated and ammoType == 1 then
 			sm.audio.play("Blueprint - Build")
@@ -412,7 +425,7 @@ function CannonSeat:cl_startAirStrike()
     if self.blockStrikeCast then return end
 
     local parent = self.cl_base:getSingleParent()
-    if parent and not parent:getContainer(0):canSpend(self.ammoTypes[2].ammo, 1) then
+    if parent and not parent:getContainer(0):canSpend(self:getAmmoData(2).ammo, 1) then
         self:cl_shoot({ canShoot = false })
         return true
     end
@@ -521,6 +534,26 @@ function CannonSeat:cl_onRocketExplode(detonated)
         sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", true)
         self.controlHud:close()
         self:cl_updateHotbar()
+    end
+end
+
+function CannonSeat:cl_updateLoadedNuke(state)
+    if state then
+        self.nukeEffect = sm.effect.createEffect("ShapeRenderable", self.harvestable)
+
+        local nukeUUID = self.overrideAmmoTypes[1].uuid
+        self.nukeEffect:setParameter("uuid", nukeUUID)
+        self.nukeEffect:setParameter("color", sm.item.getShapeDefaultColor(nukeUUID))
+
+        self.nukeEffect:setOffsetPosition(vec3_up * 2.085 + vec3_forward * 0.22)
+        self.nukeEffect:setOffsetRotation(sm.quat.angleAxis(math.rad(90), vec3_right) * sm.quat.angleAxis(math.rad(180), vec3_forward))
+        self.nukeEffect:setScale(vec3_one * 0.2)
+
+        self.nukeEffect:start()
+    	sm.effect.playEffect( "Resourcecollector - TakeOut", self.harvestable.worldPosition )
+    else
+        self.nukeEffect:stop()
+        self.nukeEffect:destroy()
     end
 end
 

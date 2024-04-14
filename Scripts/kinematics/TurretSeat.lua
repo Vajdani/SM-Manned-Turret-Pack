@@ -2,6 +2,7 @@
 ---@field base Interactable
 ---@field cl_base Interactable
 ---@field ammoTypes AmmoType[]
+---@field overrideAmmoTypes AmmoType[]
 ---@field containerToAmmoType { string: number }
 ---@field baseUUID string
 TurretSeat = class()
@@ -71,6 +72,7 @@ TurretSeat.ammoTypes = {
         uuid = sm.uuid.new("baf7ff9d-191a-4ea4-beba-e160ceb54daf")
     }
 }
+TurretSeat.overrideAmmoTypes = {}
 TurretSeat.containerToAmmoType = {
     ["756594d6-6fdd-4f60-9289-a2416287f942"] = 1,
     ["037e3ecb-e0a6-402b-8187-a7264863c64f"] = 2,
@@ -210,7 +212,7 @@ function TurretSeat:sv_shoot(ammoType, caller)
 
     self.shotCounter = self.shotCounter + 1
 
-    local ammoData = self.ammoTypes[ammoType]
+    local ammoData = self:getAmmoData(ammoType)
     local startPos, endPos = self:getFirePos()
     local rot = self.harvestable.worldRotation
     local hit, result = sm.physics.spherecast(startPos, endPos, 0.1, self.harvestable, rayFilter)
@@ -220,13 +222,18 @@ function TurretSeat:sv_shoot(ammoType, caller)
     end
 
     local dir = rot * vec3_up
-    local canShoot = self:canShoot(ammoType, true)
+    local canShoot = self:canShoot(ammoType, true) or ammoData.ignoreAmmoConsumption
     if canShoot then
         local finalFirePos
-        if ammoData.isPart then
+        if sm.item.isPart(ammoData.uuid) then
             local projectileRot = rot * sm.quat.angleAxis(math.rad(90), vec3_right) * sm.quat.angleAxis(math.rad(180), vec3_forward)
             finalFirePos = endPos - projectileRot * sm.item.getShapeOffset(ammoData.uuid)
             local projectile = sm.shape.createPart(ammoData.uuid, finalFirePos, projectileRot)
+
+            if ammoData.velocity then
+                sm.physics.applyImpulse(projectile, dir * projectile.mass * ammoData.velocity, true)
+            end
+
             self:sv_OnPartFire(ammoType, ammoData, projectile, caller)
         else
             finalFirePos = endPos + dir * (hit and 0 or 0.25)
@@ -255,6 +262,15 @@ function TurretSeat:sv_SetTurretControlsEnabled(state)
     self.sv_controlsEnabled = state
     self.harvestable.publicData.controlsEnabled = state
     self.network:sendToClients("cl_SetTurretControlsEnabled", state)
+end
+
+function TurretSeat:sv_setOverrideAmmoType(id)
+    local previous = self:isOverrideAmmoType() and self.ammoType.previous or self.ammoType
+    self:sv_updateAmmoType({ index = id, previous = previous })
+end
+
+function TurretSeat:sv_unSetOverrideAmmoType()
+    self:sv_updateAmmoType(self.ammoType.previous)
 end
 
 ---@param ammoType number
@@ -304,6 +320,10 @@ function TurretSeat:client_onClientDataUpdate(data, channel)
         self.harvestable.clientPublicData.base = data
     else
         self.ammoType = data
+
+        if self.seated then --Override fix
+            self:cl_updateHotbar()
+        end
     end
 end
 
@@ -399,16 +419,22 @@ function TurretSeat:client_onAction(action, state)
             self.lightActive = not self.lightActive
             self:cl_updateHotbar()
             self.network:sendToServer("sv_toggleLight", self.lightActive)
-        elseif action == 8 and #self.ammoTypes > 1 and not sm.game.getEnableAmmoConsumption() and self.cl_base:getSingleParent() == nil then
-            if self.shootState == ShootState.null then
-                local ammoType = self.ammoType < #self.ammoTypes and self.ammoType + 1 or 1
-                sm.gui.displayAlertText("Ammunition selected: #df7f00"..self.ammoTypes[ammoType].name, 2)
-                sm.audio.play("PaintTool - ColorPick")
+        elseif action == 8 then
+            if self:isOverrideAmmoType() then
+                return true
+            end
 
-                self.ammoType = ammoType
-                self:cl_updateHotbar()
+            if #self.ammoTypes > 1 and not sm.game.getEnableAmmoConsumption() and self.cl_base:getSingleParent() == nil then
+                if self.shootState == ShootState.null then
+                    local ammoType = self.ammoType < #self.ammoTypes and self.ammoType + 1 or 1
+                    sm.gui.displayAlertText("Ammunition selected: #df7f00"..self:getAmmoData(ammoType).name, 2)
+                    sm.audio.play("PaintTool - ColorPick")
 
-                self.network:sendToServer("sv_updateAmmoType", ammoType)
+                    self.ammoType = ammoType
+                    self:cl_updateHotbar()
+
+                    self.network:sendToServer("sv_updateAmmoType", ammoType)
+                end
             end
         elseif action == 15 then
             self:cl_unSeat()
@@ -452,7 +478,7 @@ function TurretSeat:client_onFixedUpdate()
 
     self.shootTimer = math.max(self.shootTimer - 1, 0)
     if self.shootState ~= ShootState.null and self.shootTimer <= 0 then
-        self.shootTimer = self.ammoTypes[self.ammoType].fireCooldown
+        self.shootTimer = self:getAmmoData().fireCooldown
         self.network:sendToServer("sv_shoot", self.ammoType)
     end
 end
@@ -470,14 +496,7 @@ function TurretSeat:client_onUpdate(dt)
     if self.seated then
         sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = { cameraState = 5 }
 
-        local parent = self.cl_base:getSingleParent()
-        if parent then
-            local container = parent:getContainer(0)
-            local uuid = self.ammoTypes[self.ammoType].ammo
-            sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>%d / %d</p>"):format(sm.container.totalQuantity(container, uuid), container:getSize() * container:getMaxStackSize()))
-        elseif sm.game.getEnableAmmoConsumption() then
-            sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>No ammunition</p>"))
-        end
+        self:cl_displayAmmoInfo()
     end
 end
 
@@ -504,9 +523,22 @@ function TurretSeat:cl_updateHotbar()
         })
     else
         self.hotbar:setGridItem( "ButtonGrid", 3, {
-            itemId = tostring(self.ammoTypes[self.ammoType].ammo),
+            itemId = tostring(self:getAmmoData().ammo),
             active = false
         })
+    end
+end
+
+function TurretSeat:cl_displayAmmoInfo()
+    local ammoData = self:getAmmoData()
+    if ammoData.ignoreAmmoConsumption then return end
+
+    local parent = self.cl_base:getSingleParent()
+    if parent then
+        local container = parent:getContainer(0)
+        sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>%d / %d</p>"):format(sm.container.totalQuantity(container, ammoData.uuid), container:getSize() * container:getMaxStackSize()))
+    elseif sm.game.getEnableAmmoConsumption() then
+        sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>No ammunition</p>"))
     end
 end
 
@@ -518,7 +550,7 @@ function TurretSeat:cl_shoot(args)
             self.recoil_r = 1
         end
 
-        sm.effect.playEffect(self.ammoTypes[args.ammoType].effect, args.pos, vec3_zero, sm.vec3.getRotation(vec3_up, args.dir))
+        sm.effect.playEffect(self:getAmmoData(args.ammoType).effect, args.pos, vec3_zero, sm.vec3.getRotation(vec3_up, args.dir))
     else
         sm.effect.playEffect("Turret - FailedShoot", args.pos)
     end
@@ -559,7 +591,15 @@ function TurretSeat:getFirePos()
     end
 end
 
+function TurretSeat:isOverrideAmmoType(ammoType)
+    return type(ammoType or self.ammoType) == "table"
+end
+
 function TurretSeat:getAmmoType(parent)
+    if self:isOverrideAmmoType() then
+        return self.ammoType
+    end
+
     if parent then
         return self.containerToAmmoType[tostring(parent.shape.uuid)]
     end
@@ -571,15 +611,24 @@ function TurretSeat:getAmmoType(parent)
     return 1
 end
 
+function TurretSeat:getAmmoData(ammoType)
+    ammoType = ammoType or self.ammoType
+    if self:isOverrideAmmoType(ammoType) then
+        return self.overrideAmmoTypes[ammoType.index]
+    end
+
+    return self.ammoTypes[ammoType]
+end
+
 function TurretSeat:canShoot(ammoType, consume)
     local parent = (self.base or self.cl_base):getSingleParent()
     if parent then
         if consume then
             sm.container.beginTransaction()
-            sm.container.spend(parent:getContainer(0), self.ammoTypes[ammoType].ammo, 1)
+            sm.container.spend(parent:getContainer(0), self:getAmmoData(ammoType).ammo, 1)
             return sm.container.endTransaction()
         else
-            return parent:getContainer(0):canSpend(self.ammoTypes[ammoType].ammo, 1)
+            return parent:getContainer(0):canSpend(self:getAmmoData(ammoType).ammo, 1)
         end
     end
 

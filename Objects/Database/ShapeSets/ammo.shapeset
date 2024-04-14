@@ -67,6 +67,37 @@
          "stackSize" : 10,
          "sticky" : "-Y",
          "uuid" : "e36b172c-ae2d-4697-af44-8041d9cbde0e"
+      },
+      {
+         "color" : "9f2600",
+         "consumable" : true,
+         "cylinder" : {
+            "axis" : "Y",
+            "depth" : 4,
+            "diameter" : 3
+         },
+         "friction" : 0.250,
+         "name" : "obj_cannon_nuke",
+         "physicsMaterial" : "Metal",
+         "qualityLevel" : 0,
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/Ammo/obj_cannon_nuke.rend",
+         "rotationSet" : "PropY",
+         "autoTool": "e6b6a84a-ab65-4f1d-a80d-5481e0ca17f2",
+         "scripted" : {
+            "filename": "$GAME_DATA/Scripts/game/Explosive.lua",
+				"classname": "Explosive",
+				"data": {
+					"destructionLevel": 20,
+					"destructionRadius": 25,
+					"impulseRadius": 50,
+					"impulseMagnitude": 1000,
+					"effectExplosion": "PropaneTank - ExplosionSmall",
+					"effectActivate": "PropaneTank - ActivateSmall"
+				}
+         },
+         "stackSize" : 5,
+         "sticky" : "-Y",
+         "uuid" : "47b43e6e-280d-497e-9896-a3af721d89d2"
       }
    ]
 }

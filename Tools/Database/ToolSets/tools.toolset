@@ -23,6 +23,18 @@
          },
          "uuid" : "490263e5-4642-406b-8f8c-14fa6a430eb1",
          "autoTool": true
+      },
+      {
+         "name" : "CannonNuke_Tool",
+         "previewRenderable" : "$GAME_DATA/Character/Char_Tools/Char_smallhammer/char_smallhammer_fp.rend",
+         "previewRotation": [ 1, 0, 0, 0, 0, -1, 0, 1, 0 ],
+         "script" : {
+            "class" : "CannonNuke_Tool",
+            "data" : {},
+            "file" : "$CONTENT_DATA/Scripts/interactables/CannonNuke.lua"
+         },
+         "uuid" : "e6b6a84a-ab65-4f1d-a80d-5481e0ca17f2",
+         "autoTool": true
       }
    ]
 }
