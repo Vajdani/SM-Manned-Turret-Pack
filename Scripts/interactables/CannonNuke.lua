@@ -19,7 +19,7 @@ CannonNuke_Tool = class()
 local nukeUUID = sm.uuid.new("47b43e6e-280d-497e-9896-a3af721d89d2")
 
 local renderables = {
-	"$SURVIVAL_DATA/Character/Char_bucket/char_bucket_empty.rend"
+	"$CONTENT_DATA/Tools/Renderables/char_nuke.rend"
 }
 local renderablesTp = {
     "$SURVIVAL_DATA/Character/Char_Male/Animations/char_male_tp_bucket.rend",
@@ -140,13 +140,6 @@ function CannonNuke_Tool:client_onUpdate( dt )
 		end
 		return
 	end
-	--[[if self.isLocal then
-		local activeItem = sm.localPlayer.getActiveItem()
-		if self.activeItem ~= activeItem then
-			self.activeItem = activeItem
-			self.network:sendToServer( "server_network_updateBucketRenderables", activeItem )
-		end
-	end]]
 
 	local crouchWeight = isCrouching and 1.0 or 0.0
 	local normalWeight = 1.0 - crouchWeight

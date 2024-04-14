@@ -1,0 +1,26 @@
+{
+	"lodList": [
+		{
+			"mesh": "$CONTENT_DATA/Tools/Mesh/char_nuke.dae",
+			"includes": [
+				"POSITION",
+				"UV0",
+				"NORMAL",
+				"TANGENTS",
+				"BLEND_INDICES",
+				"BLEND_WEIGHTS"
+			],
+			"subMeshMap": {
+				"nuke": {
+					"textureList": [
+						"$CONTENT_DATA/Objects/Textures/Ammo/obj_cannon_nuke_dif.tga",
+						"$CONTENT_DATA/Objects/Textures/Ammo/obj_cannon_nuke_asg.tga",
+						"$CONTENT_DATA/Objects/Textures/Ammo/obj_cannon_nuke_nor.tga"
+					],
+					"material": "DifAsgNor"
+				}
+			},
+			"maxViewDistance": 1000.0
+		}
+	]
+}
