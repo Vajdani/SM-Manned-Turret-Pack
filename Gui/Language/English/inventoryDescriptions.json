@@ -1,14 +1,14 @@
 {
     "e4497545-5f77-4d59-bfbf-ce5692284322": {
-        "description": "Can be used as a  #df7f00regular seat#919191. It has #df7f001000 health points#919191, and can be #df7f00damaged #919191via #ffffffprojectiles#919191, #ffffffmelee attacks#919191 and #ffffffexplosions#919191.\n\nThe guns can #df7f00fire multiple types of projectiles#919191, it just depends on the #df7f00connected container#919191! (#ffffffAA Rounds#919191, #ffffffExplosive Rounds#919191, #ffffffWater#919191, #ffffffPotatoes#919191)\n\n(#ffffffIn creative#919191: Press the bind for the #df7f00ammo icon#919191 to #df7f00switch ammo types#919191)",
+        "description": "Can be used as a  #df7f00regular seat#919191. It has #df7f001000 health points#919191, and can be #df7f00damaged #919191via #ffffffprojectiles#919191, #ffffffmelee attacks#919191 and #ffffffexplosions#919191.\n\nThe guns can #df7f00fire multiple types of projectiles#919191, it just depends on the #df7f00connected container#919191! (#ffffffAA Rounds#919191, #ffffffExplosive Rounds#919191, #ffffffWater#919191, #ffffffPotatoes#919191)\n\n(#ffffffIn creative#919191: Press the bind for the #df7f00ammo icon#919191 to #df7f00switch ammunition types#919191)",
         "title": "Manned Turret"
     },
     "a0c96d35-37ca-4cf9-82d8-9b9077132918": {
-        "description": "Can be used as a  #df7f00regular seat#919191. It has #df7f001000 health points#919191, and can be #df7f00damaged #919191via #ffffffprojectiles#919191, #ffffffmelee attacks#919191 and #ffffffexplosions#919191.\n\nThe cannon can #df7f00fire multiple types of projectiles#919191, it just depends on the #df7f00connected container#919191! (#ffffffGuided Missiles#919191, #ffffffAir Strikes#919191, #ffffffRatshot#919191)\n\n(#ffffffIn creative#919191: Press the bind for the #df7f00ammo icon#919191 to #df7f00switch ammo types#919191)",
+        "description": "Can be used as a  #df7f00regular seat#919191. It has #df7f001000 health points#919191, and can be #df7f00damaged #919191via #ffffffprojectiles#919191, #ffffffmelee attacks#919191 and #ffffffexplosions#919191.\n\nThe cannon can #df7f00fire multiple types of projectiles#919191, it just depends on the #df7f00connected container#919191! (#ffffffGuided Missiles#919191, #ffffffAir Strikes#919191, #ffffffRatshot#919191)\n\n(#ffffffIn creative#919191: Press the bind for the #df7f00ammo icon#919191 to #df7f00switch ammunition types#919191)",
         "title": "Manned Cannon"
     },
     "891bd0f5-f387-4020-a2b4-1bace9932ec0": {
-        "description": "A mounted version of the Manned Turret's guns! Connect a #df7f00logic input to fire#919191!\n\nIt can #df7f00fire multiple types of projectiles#919191, it just depends on the #df7f00connected container#919191! (#ffffffAA Rounds#919191, #ffffffExplosive Rounds#919191, #ffffffWater#919191, #ffffffPotatoes#919191)\n\n(#ffffffIn creative#919191: #df7f00Interact with the cannon#919191 to #df7f00switch ammo types#919191)",
+        "description": "A mounted version of the Manned Turret's guns! Connect a #df7f00logic input to fire#919191!\n\nIt can #df7f00fire multiple types of projectiles#919191, it just depends on the #df7f00connected container#919191! (#ffffffAA Rounds#919191, #ffffffExplosive Rounds#919191, #ffffffWater#919191, #ffffffPotatoes#919191)\n\n(#ffffffIn creative#919191: #df7f00Interact with the cannon#919191 to #df7f00switch ammunition types#919191)",
         "title": "Mounted Turret Gun"
     },
     "756594d6-6fdd-4f60-9289-a2416287f942": {
@@ -28,19 +28,23 @@
         "title": "Ratshot Container"
     },
     "cabf45e9-a47d-4086-8f5f-4f806d5ec3a2": {
-        "description": "Used as ammo for the Manned Turret.\n\n'We fire the whole bullet! That's 65% more bullet per bullet!'",
+        "description": "Used as ammunition for the Manned Turret.\n\n'We fire the whole bullet! That's 65% more bullet per bullet!'",
         "title": "AA Round"
     },
     "4c69fa44-dd0d-42ce-9892-e61d13922bd2": {
-        "description": "Used as ammo for the Manned Turret.\n\n'We fire the whole bullet! That's 65% more bullet per bullet!'",
+        "description": "Used as ammunition for the Manned Turret.\n\n'We fire the whole bullet! That's 65% more bullet per bullet!'",
         "title": "Explosive Round"
     },
     "24d5e812-3902-4ac3-b214-a0c924a5c40f": {
-        "description": "Used as ammo for the Manned Cannon.\n\nWhile controlling the rocket:\n-#df7f00Mouse#919191: Yaw/Pitch\n-#df7f00W/S#919191: Boost/Slow down\n-#df7f00A/D#919191: Roll",
+        "description": "Used as ammunition for the Manned Cannon.\n\nWhile controlling the rocket:\n-#df7f00Mouse#919191: Yaw/Pitch\n-#df7f00W/S#919191: Boost/Slow down\n-#df7f00A/D#919191: Roll",
         "title": "Guided Missile"
     },
     "e36b172c-ae2d-4697-af44-8041d9cbde0e": {
-        "description": "Used as ammo for the Manned Cannon.",
+        "description": "Used as ammunition for the Manned Cannon.",
         "title": "Ratshot Round"
+    },
+    "47b43e6e-280d-497e-9896-a3af721d89d2": {
+        "description": "Used as ammunition for the Manned Cannon.\n\nClick on the Cannon while holding the bomb to load the bomb into the barrel.",
+        "title": "Nuclear Bomb"
     }
 }

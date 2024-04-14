@@ -231,11 +231,36 @@
 			
 			{
 				"itemId" : "8d3b98de-c981-4f05-abfe-d22ee4781d33",
-				"quantity" : 1.0
+				"quantity" : 5.0
 			}
 
 		],
 		"itemId" : "e36b172c-ae2d-4697-af44-8041d9cbde0e",
 		"quantity" : 10.0
+	},
+
+	{
+		"craftTime" : 5.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "8aedf6c2-94e1-4506-89d4-a0227c552f1e",
+				"quantity" : 50.0
+			},
+			
+			{
+				"itemId" : "24001201-40dd-4950-b99f-17d878a9e07b",
+				"quantity" : 2
+			},
+			
+			{
+				"itemId" : "d4d68946-aa03-4b8f-b1af-96b81ad4e305",
+				"quantity" : 20.0
+			}
+
+		],
+		"itemId" : "47b43e6e-280d-497e-9896-a3af721d89d2", 
+		"quantity" : 1.0
 	}
 ]
