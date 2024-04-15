@@ -53,7 +53,10 @@ function TurretBase:sv_syncToLateJoiner(player)
             self.dir
         }
     )
-    sm.event.sendToHarvestable(self.turret, "sv_syncToLateJoiner", player)
+
+    if sm.exists(self.turret) then
+        sm.event.sendToHarvestable(self.turret, "sv_syncToLateJoiner", player)
+    end
 end
 
 function TurretBase:server_onDestroy()
