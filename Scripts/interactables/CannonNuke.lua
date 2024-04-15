@@ -313,7 +313,7 @@ function CannonNuke_Tool:sv_n_onUse(params)
     local dir = params.dir
     local rot = sm.vec3.getRotation(vec3_forward, dir)
     local nuke = sm.shape.createPart(nukeUUID, params.firePos + dir - rot * sm.item.getShapeOffset(nukeUUID), rot, true, true )
-    sm.physics.applyImpulse(nuke, dir * nuke.mass * 10, true)
+    sm.physics.applyImpulse(nuke, (self.tool:getOwner().character.velocity + dir * 10) * nuke.mass, true)
 
     self.network:sendToClients( "cl_n_onUse" )
 end
