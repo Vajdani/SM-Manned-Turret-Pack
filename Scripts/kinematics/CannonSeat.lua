@@ -559,6 +559,8 @@ function CannonSeat:cl_updateLoadedNuke(state)
         self.nukeEffect:stop()
         self.nukeEffect:destroy()
     end
+
+    self.harvestable.clientPublicData.hasNukeLoaded = state
 end
 
 function CannonSeat:cl_SetTurretControlsEnabled(state)

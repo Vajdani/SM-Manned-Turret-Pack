@@ -238,14 +238,11 @@ function CannonNuke_Tool:client_onEquippedUpdate( lmb, rmb, f )
         local cannon = result:getHarvestable()
         local isCannon = cannon and cannon.uuid == cannonUUID
         if isCannon then
-            sm.gui.setInteractionText("", sm.gui.getKeyBinding("Create", true), "Load Nuke")
-        else
-            sm.gui.setInteractionText("", sm.gui.getKeyBinding("Create", true), "Toss Nuke")
-        end
+			if not cannon.clientPublicData.hasNukeLoaded then
+            	sm.gui.setInteractionText("", sm.gui.getKeyBinding("Create", true), "Load Nuke")
 
-        if lmb == 1 then
-            if isCannon then
-                self.network:sendToServer(
+				if lmb == 1 then
+					self.network:sendToServer(
                     "sv_loadNuke",
                     {
                         cannon = cannon,
@@ -255,9 +252,16 @@ function CannonNuke_Tool:client_onEquippedUpdate( lmb, rmb, f )
                         }
                     }
                 )
-            else
+				end
+			else
+            	sm.gui.setInteractionText("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>A nuke is already loaded!</p>")
+			end
+        else
+            sm.gui.setInteractionText("", sm.gui.getKeyBinding("Create", true), "Toss Nuke")
+
+			if lmb == 1 then
                 self:cl_toss()
-            end
+			end
         end
 
         return true, false
