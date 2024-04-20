@@ -277,6 +277,7 @@ if not gameHooked then
 			print("omg player join!")
 		end
 		v.server_onPlayerJoined = newOnPlayerJoined
+		print("hooked game")
 	end
 
 	gameHooked = true

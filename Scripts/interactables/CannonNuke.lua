@@ -1,3 +1,41 @@
+dofile "$GAME_DATA/Scripts/game/Explosive.lua"
+
+---@class CannonNuke : ShapeClass
+CannonNuke = class(Explosive)
+
+---@param caller Player
+function CannonNuke:sv_pickup(slot, caller)
+	sm.container.beginTransaction()
+	if sm.game.getLimitedInventory() then
+		sm.container.collect(caller:getInventory(), self.shape.uuid, 1)
+	else
+		sm.container.collectToSlot(caller:getHotbar(), slot, self.shape.uuid, 1)
+	end
+	sm.container.endTransaction()
+
+	sm.effect.playEffect("Part - Removed", self.shape.worldPosition)
+	self.shape:destroyShape()
+end
+
+
+
+function CannonNuke:client_canInteract()
+	local canPickup = (sm.game.getLimitedInventory() and sm.localPlayer.getPlayer():getInventory() or sm.localPlayer.getPlayer():getHotbar()):canCollect(self.shape.uuid, 1)
+	if canPickup then
+		sm.gui.setInteractionText("", sm.gui.getKeyBinding("Use", true), "Pick up")
+	end
+
+	return canPickup
+end
+
+function CannonNuke:client_onInteract(char, state)
+	if not state then return end
+
+	self.network:sendToServer("sv_pickup", sm.localPlayer.getSelectedHotbarSlot())
+end
+
+
+
 dofile( "$GAME_DATA/Scripts/game/AnimationUtil.lua")
 dofile( "$SURVIVAL_DATA/Scripts/util.lua" )
 dofile( "$SURVIVAL_DATA/Scripts/game/survival_shapes.lua" )

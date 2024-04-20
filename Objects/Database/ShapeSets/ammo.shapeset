@@ -82,8 +82,8 @@
          "rotationSet" : "PropY",
          "autoTool": "e6b6a84a-ab65-4f1d-a80d-5481e0ca17f2",
          "scripted" : {
-            "filename": "$GAME_DATA/Scripts/game/Explosive.lua",
-				"classname": "Explosive",
+            "filename": "$CONTENT_DATA/Scripts/interactables/CannonNuke.lua",
+				"classname": "CannonNuke",
 				"data": {
 					"destructionLevel": 20,
 					"destructionRadius": 25,
