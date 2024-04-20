@@ -297,7 +297,7 @@ function CannonNuke_Tool:client_onEquippedUpdate( lmb, rmb, f )
         else
             sm.gui.setInteractionText("", sm.gui.getKeyBinding("Create", true), "Toss Nuke")
 
-			if lmb == 1 then
+			if lmb == 1 or lmb == 2 then
                 self:cl_toss()
 			end
         end

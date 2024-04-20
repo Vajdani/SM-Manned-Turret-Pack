@@ -256,13 +256,7 @@ end
 function CannonSeat:client_onClientDataUpdate(data, channel)
     TurretSeat.client_onClientDataUpdate(self, data, channel)
 
-    if channel == 1 then
-        if sm.exists(self.airStrikeRadius) then
-            self.airStrikeRadius:destroy()
-        end
-
-        self.airStrikeRadius = sm.effect.createEffect("Cannon - AirStrike - Radius", self.cl_base)
-    elseif channel == 2 then
+    if channel == 2 then
         if self:isOverrideAmmoType(data) and data.index == 1 then
             self:cl_updateLoadedNuke(true)
         end
@@ -340,6 +334,9 @@ function CannonSeat:client_onUpdate(dt)
                 cameraPosition = self:getStrikeCamPos(dt),
                 cameraDirection = -vec3_up
             })
+
+            local base = self.cl_base.shape
+            self.airStrikeRadius:setPosition(base:getInterpolatedWorldPosition() + base.velocity * dt)
         elseif self.cl_controlsEnabled then
             SetPlayerCamOverride({ cameraState = 5 })
 
@@ -461,6 +458,8 @@ function CannonSeat:cl_startAirStrike()
 
     self.controlHud:open()
 
+    self.airStrikeRadius = sm.effect.createEffect("Cannon - AirStrike - Radius")
+    self.airStrikeRadius:setRotation(quat_right_90deg)
     self.airStrikeRadius:setScale(vec3_one * self.airStrikeDistanceLimit)
     self.airStrikeRadius:start()
 
