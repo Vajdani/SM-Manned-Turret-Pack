@@ -334,9 +334,14 @@ function CannonSeat:client_onUpdate(dt)
                 self.strikeCamOffset = self.strikeCamOffset * (self.airStrikeDistanceLimit / distance)
             end
 
-            sm.localPlayer.getPlayer().clientPublicData.interactableCameraData.cameraPosition = self:getStrikeCamPos(dt)
+            SetPlayerCamOverride({
+                cameraState = 3,
+                cameraFov = 45,
+                cameraPosition = self:getStrikeCamPos(dt),
+                cameraDirection = -vec3_up
+            })
         elseif self.cl_controlsEnabled then
-            sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = { cameraState = 5 }
+            SetPlayerCamOverride({ cameraState = 5 })
 
             self:cl_displayAmmoInfo()
         end
@@ -378,13 +383,11 @@ function CannonSeat:cl_strikeControls(action)
         if self.strikeZoom > 1 then
             self.strikeZoom = self.strikeZoom - 1
             sm.audio.play("ConnectTool - Rotate", self:getStrikeCamPos())
-            sm.localPlayer.getPlayer().clientPublicData.interactableCameraData.cameraPosition = self:getStrikeCamPos()
         end
     elseif action == 8 then
         if self.strikeZoom < 5 then
             self.strikeZoom = self.strikeZoom + 1
             sm.audio.play("ConnectTool - Rotate", self:getStrikeCamPos())
-            sm.localPlayer.getPlayer().clientPublicData.interactableCameraData.cameraPosition = self:getStrikeCamPos()
         end
     end
 end
@@ -410,13 +413,13 @@ function CannonSeat:cl_shoot(args)
             self.hotbar:setGridItem( "ButtonGrid", 2, nil)
             self.hotbar:setGridItem( "ButtonGrid", 3, nil)
 
-            local dir = self.harvestable.worldRotation * vec3_up
-            sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = {
+            local rot = self.harvestable.worldRotation 
+            SetPlayerCamOverride({
                 cameraState = 3,
                 cameraFov = 45,
-                cameraPosition = sm.camera.getPosition() + dir * 0.25,
-                cameraDirection = dir
-            }
+                cameraPosition = sm.camera.getPosition() + rot * vec3_up * 0.25,
+                cameraRotation = rot * turret_projectile_rotation_adjustment
+            })
 
             self.controlHud:open()
         end
@@ -456,13 +459,6 @@ function CannonSeat:cl_startAirStrike()
         active = false
     })
 
-    sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = {
-        cameraState = 3,
-        cameraFov = 45,
-        cameraPosition = self.cl_base.shape.worldPosition + vec3_up * 10,
-        cameraDirection = -vec3_up
-    }
-
     self.controlHud:open()
 
     self.airStrikeRadius:setScale(vec3_one * self.airStrikeDistanceLimit)
@@ -471,6 +467,13 @@ function CannonSeat:cl_startAirStrike()
     self.strikeCamOffset = sm.vec3.zero()
     self.strikeZoom = 1
     self.spottingStrike = true
+
+    SetPlayerCamOverride({
+        cameraState = 3,
+        cameraFov = 45,
+        cameraPosition = self:getStrikeCamPos(),
+        cameraDirection = -vec3_up
+    })
 end
 
 function CannonSeat:cl_cancelAirStrike(ignore)
@@ -482,7 +485,7 @@ function CannonSeat:cl_cancelAirStrike(ignore)
         end
     end
 
-    if sm.localPlayer.getPlayer().clientPublicData.interactableCameraData then
+    if self.spottingStrike then
         sm.gui.startFadeToBlack(1.0, 0.5)
         sm.gui.endFadeToBlack(0.8)
         sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", true)
@@ -491,7 +494,7 @@ function CannonSeat:cl_cancelAirStrike(ignore)
         self:cl_updateHotbar()
     end
 
-    sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = nil
+    SetPlayerCamOverride()
     self.spottingStrike = false
 end
 
@@ -532,7 +535,7 @@ function CannonSeat:cl_onRocketExplode(detonated)
     sm.gui.startFadeToBlack(1.0, 0.5)
     sm.gui.endFadeToBlack(0.8)
 
-    sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = nil
+    SetPlayerCamOverride()
 
     if self.harvestable.clientPublicData.health > 0 then
         sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", true)

@@ -305,7 +305,7 @@ function TurretSeat:client_onDestroy()
     self.hotbar:destroy()
 
     if self.seated then
-        sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = nil
+        SetPlayerCamOverride()
     end
 end
 
@@ -370,7 +370,7 @@ function TurretSeat:cl_seat_partial()
     self:cl_updateHotbar()
     sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", true)
     sm.camera.setCameraPullback(0,0)
-    sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = { cameraState = 5 }
+    SetPlayerCamOverride({ cameraState = 5 })
 end
 
 function TurretSeat:cl_unSeat()
@@ -384,7 +384,7 @@ function TurretSeat:cl_unSeat_graphics()
     self.seated = false
     self.hotbar:close()
     sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", false)
-    sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = nil
+    SetPlayerCamOverride()
 end
 
 function TurretSeat:client_onAction(action, state)
@@ -494,7 +494,7 @@ function TurretSeat:client_onUpdate(dt)
     self.harvestable:setPoseWeight(1, sm.util.easing("easeOutCubic", self.recoil_r))
 
     if self.seated then
-        sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = { cameraState = 5 }
+        SetPlayerCamOverride({ cameraState = 5 })
 
         self:cl_displayAmmoInfo()
     end

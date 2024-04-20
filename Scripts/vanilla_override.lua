@@ -1,60 +1,25 @@
 dofile( "$GAME_DATA/Scripts/game/BasePlayer.lua" )
-dofile( "$SURVIVAL_DATA/Scripts/game/SurvivalPlayer.lua" )
+if not SurvivalPlayer then
+	dofile( "$SURVIVAL_DATA/Scripts/game/SurvivalPlayer.lua" )
+end
 
 oldClientCreate = oldClientCreate or SurvivalPlayer.client_onCreate
-function newClientCreate( self )
+local function newClientCreate( self )
 	oldClientCreate(self)
 
 	if g_survivalHud then
 		sm.SURVIVALHUD = g_survivalHud
 	end
+
+	if self.cl_localPlayerUpdate then --Not a reliable check
+		sm.BASEPLAYERENABLED = true
+	end
 end
 SurvivalPlayer.client_onCreate = newClientCreate
 
---[[function SurvivalPlayer.sv_takeDamage( self, damage, source )
-	if damage > 0 then
-		damage = damage * GetDifficultySettings().playerTakeDamageMultiplier
-		local character = self.player:getCharacter()
-		local lockingInteractable = character:getLockingInteractable()
-		if lockingInteractable and lockingInteractable:hasSeat() then
-			lockingInteractable:setSeatCharacter( character )
-		end
 
-		if not g_godMode and self.sv.damageCooldown:done() then
-			if self.sv.saved.isConscious then
-				self.sv.saved.stats.hp = math.max( self.sv.saved.stats.hp - damage, 0 )
 
-				print( "'SurvivalPlayer' took:", damage, "damage.", self.sv.saved.stats.hp, "/", self.sv.saved.stats.maxhp, "HP" )
-
-				if source then
-					self.network:sendToClients( "cl_n_onEvent", { event = source, pos = character:getWorldPosition(), damage = damage * 0.01 } )
-				else
-					self.player:sendCharacterEvent( "hit" )
-				end
-
-				if self.sv.saved.stats.hp <= 0 then
-					print( "'SurvivalPlayer' knocked out!" )
-					self.sv.respawnInteractionAttempted = false
-					self.sv.saved.isConscious = false
-					character:setTumbling( true )
-					character:setDowned( true )
-
-                    local data = self.player.publicData or {}
-                    local seat = data.turretSeat
-                    if seat then
-                        sm.event.sendToHarvestable(seat, "sv_OnPlayerDeath", self.player)
-                    end
-				end
-
-				self.storage:save( self.sv.saved )
-				self.network:setClientData( self.sv.saved )
-			end
-		else
-			print( "'SurvivalPlayer' resisted", damage, "damage" )
-		end
-	end
-end]]
-
+sm.MANNEDTURRET_turretBases_clientPublicData = sm.MANNEDTURRET_turretBases_clientPublicData or {}
 local LiftReplacement = {}
 function LiftReplacement.client_onEquippedUpdate( self, primaryState, secondaryState )
 	if self.tool:isLocal() and self.equipped and sm.localPlayer.getPlayer():getCharacter() then
@@ -299,3 +264,20 @@ function newClass(_class)
     return oldClass()
 end
 class = newClass
+
+
+
+gameHooked = gameHooked or false
+if not gameHooked then
+	for k, v in pairs({ CreativeGame, SurvivalGame, Game }) do
+		local oldOnPlayerJoined = v.server_onPlayerJoined
+		local function newOnPlayerJoined( self, player, newPlayer )
+			oldOnPlayerJoined( self, player, newPlayer )
+
+			print("omg player join!")
+		end
+		v.server_onPlayerJoined = newOnPlayerJoined
+	end
+
+	gameHooked = true
+end

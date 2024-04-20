@@ -54,6 +54,34 @@ function getHealthDisplay(health)
     return ("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>Health: [%s%s#444444]</p>"):format(string.rep("#00f000|", green), string.rep("#ff0000|", 10 - green))
 end
 
+function SetPlayerCamOverride(data)
+    if sm.BASEPLAYERENABLED then
+        sm.localPlayer.getPlayer().clientPublicData.interactableCameraData = data
+        return
+    end
+
+    if not data then
+        sm.camera.setCameraState( 0 )
+        return
+    end
+
+    if data.cameraState then
+        sm.camera.setCameraState( data.cameraState )
+    end
+    if data.cameraPosition then
+        sm.camera.setPosition( data.cameraPosition )
+    end
+    if data.cameraRotation then
+        sm.camera.setRotation( data.cameraRotation )
+    end
+    if data.cameraDirection then
+        sm.camera.setDirection( data.cameraDirection )
+    end
+    if data.cameraFov then
+        sm.camera.setFov( data.cameraFov )
+    end
+end
+
 ---Get the yaw and pitch from a normalized directional vector
 ---@param direction Vec3 The normalized directional vector
 ---@return number yaw The yaw

@@ -202,7 +202,7 @@ function TurretBase:sv_putOnLift()
 end
 
 
-sm.MANNEDTURRET_turretBases_clientPublicData = sm.MANNEDTURRET_turretBases_clientPublicData or {}
+
 function TurretBase:client_onCreate()
     self.healthBar = sm.gui.createSurvivalHudGui()
     self.healthBar:setVisible("WaterBar", false)
