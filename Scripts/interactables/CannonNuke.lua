@@ -276,23 +276,30 @@ function CannonNuke_Tool:client_onEquippedUpdate( lmb, rmb, f )
         local cannon = result:getHarvestable()
         local isCannon = cannon and cannon.uuid == cannonUUID
         if isCannon then
-			if not cannon.clientPublicData.hasNukeLoaded then
-            	sm.gui.setInteractionText("", sm.gui.getKeyBinding("Create", true), "Load Nuke")
+			local cPub = cannon.clientPublicData
+			if not cPub.controlsEnabled then
+            	sm.gui.setInteractionText("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>Cannon is in use!</p>")
+				return true, false
+			end
 
-				if lmb == 1 then
-					self.network:sendToServer(
-                    "sv_loadNuke",
-                    {
-                        cannon = cannon,
-                        consumeData = {
-                            selectedSlot = sm.localPlayer.getSelectedHotbarSlot(),
-                            container = sm.game.getLimitedInventory() and sm.localPlayer.getInventory() or sm.localPlayer.getHotbar()
-                        }
-                    }
-                )
-				end
-			else
+			if cPub.hasNukeLoaded then
             	sm.gui.setInteractionText("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>A nuke is already loaded!</p>")
+				return true, false
+			end
+
+			sm.gui.setInteractionText("", sm.gui.getKeyBinding("Create", true), "Load Nuke")
+
+			if lmb == 1 then
+				self.network:sendToServer(
+					"sv_loadNuke",
+					{
+						cannon = cannon,
+						consumeData = {
+							selectedSlot = sm.localPlayer.getSelectedHotbarSlot(),
+							container = sm.game.getLimitedInventory() and sm.localPlayer.getInventory() or sm.localPlayer.getHotbar()
+						}
+					}
+				)
 			end
         else
             sm.gui.setInteractionText("", sm.gui.getKeyBinding("Create", true), "Toss Nuke")
