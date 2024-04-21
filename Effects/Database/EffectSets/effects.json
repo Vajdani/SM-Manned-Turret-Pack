@@ -280,87 +280,16 @@
 	},
 	"Nuke - Explode":
 	{
-		"maxInstances": 64,
-		"parameterList":
-		{
-			"size": 1000,
-			"color": "00cc34",
-			"radius": 100.0,
-			"intensity": 100.0,
-			"shakeStrength": 2.5,
-			"shakeRadius": 100.0
+		"maxInstances":32,"parameterList":{"size":512.0,"color":"ffff00","radius":30.0,"intensity":8.0,"shakeStrength":2.0,"shakeRadius":90.0},
+		"parameterCurves":{
+			//"radius":{"timeline":[{"time":0.4,"value":30.0},{"time":1.2,"value":0.0}]},
+			"intensity":{"timeline":[{"time":0.4,"value":8.0},{"time":1.2,"value":0.0}]}
 		},
-		"parameterCurves":
-		{
-			"radius":
-			{
-				"timeline":
-				[
-					{ "time":0.0, "value":0.0 },
-					{ "time":0.1, "value":100.0 },
-					{ "time":1.0, "value":90.0 },
-					{ "time":2.0, "value":75.0 },
-					{ "time":3.0, "value":35.0 },
-					{ "time":4.0, "value":0.0 }
-				]
-			},
-			"intensity":
-			{
-				"timeline":
-				[
-					{ "time":0.0, "value":0.0 },
-					{ "time":0.1, "value":100.0 },
-					{ "time":1.0, "value":90.0 },
-					{ "time":2.0, "value":75.0 },
-					{ "time":3.0, "value":35.0 },
-					{ "time":4.0, "value":0.0 }
-				]
-			}
-		},
-		"effectList":
-		[
-			{
-				"type": "particle",
-				"name": "p_nuke_explosion",
-				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
-				"attached": true,
-				"delay": 0.0
-			},
-			{
-				"type": "audio",
-				"name": "Gas Explosion",
-				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
-				"parameters":
-				[
-					"size"
-				],
-				"delay": 0.0
-			},
-			{
-				"type": "pointLight",
-				"name": "",
-				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
-				"parameters":
-				[
-					"color",
-					"radius",
-					"intensity"
-				],
-				"duration": 5.0,
-				"delay": 0.0
-			},
-			{
-				"type": "cameraShake",
-				"name": "",
-				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
-				"parameters":
-				[
-					"shakeStrength",
-					"shakeRadius"
-				],
-				"duration": 2.5,
-				"delay": 0.0
-			}
+		"effectList":[
+			{"type":"audio","name":"Gas Explosion","offset":{"x":0.0,"y":0.0,"z":0.0},"parameters":["size"],"delay":0.0},
+			{"type":"cameraShake","name":"","offset":{"x":0.0,"y":0.0,"z":0.0},"parameters":["shakeStrength","shakeRadius"],"duration":0.1,"delay":0.0},
+			{"type":"pointLight","name":"","offset":{"x":0.0,"y":0.0,"z":0.5},"parameters":["color","radius","intensity"],"duration":1.2,"delay":0.0},
+			{"type":"particle","name":"p_nukeNew_explosion","delay":0.0}
 		]
 	}
 }
