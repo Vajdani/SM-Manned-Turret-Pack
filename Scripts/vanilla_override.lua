@@ -125,7 +125,7 @@ function LiftReplacement.client_interact( self, primaryState, secondaryState, ra
 				end
 
 				for _k, int in pairs(body:getInteractables()) do
-					if (sm.MANNEDTURRET_turretBases_clientPublicData[int.id] or {}).isTurretBase == true then
+					if (sm.MANNEDTURRET_turretBases_clientPublicData[int.id] or {}).isTurret == true then
 						table.insert(turrets, int)
 					end
 				end

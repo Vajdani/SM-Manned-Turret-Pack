@@ -49,7 +49,7 @@ end
 function TurretAssistor:sv_sendDataToJoiner(player)
     for k, body in pairs(sm.body.getAllBodies()) do
         for _k, int in pairs(body:getInteractables()) do
-            if int.type == "scripted" and (int.publicData or {}).isTurretBase == true then
+            if int.type == "scripted" and (int.publicData or {}).isTurret == true then
                 sm.event.sendToInteractable(int, "sv_syncToLateJoiner", player)
             end
         end

@@ -1,6 +1,8 @@
 {
    "particleSystemList" : [
       "turret_repair/turret_repair_hit_bolts.json",
-      "cannon_shoot_flash.json"
+      "cannon_shoot_flash.json",
+      "p_lightning.json",
+      "p_nuke_explosion.json"
    ]
 }

@@ -91,7 +91,13 @@ function TurretSeat:server_onCreate()
 
     self.sv_controlsEnabled = true
 
-    self.harvestable.publicData = { health = TurretBase.maxHealth, controlsEnabled = true }
+    self.harvestable.publicData = {
+        isTurret = true,
+        base = self.base,
+        health = self.base.publicData.maxHealth,
+        maxHealth = self.base.publicData.maxHealth,
+        controlsEnabled = true
+    }
 end
 
 function TurretSeat:sv_syncToLateJoiner(player)
@@ -196,7 +202,7 @@ function TurretSeat:server_onExplosion(center, destructionLevel)
 end
 
 function TurretSeat:server_canErase()
-    return self.harvestable.publicData.health >= TurretBase.maxHealth and self.sv_seated == nil
+    return self.harvestable.publicData.health >= self.base.publicData.maxHealth and self.sv_seated == nil
 end
 
 function TurretSeat:sv_updateAmmoType(ammoType)
@@ -328,7 +334,7 @@ function TurretSeat:client_onClientDataUpdate(data, channel)
 end
 
 function TurretSeat:client_canErase()
-    local canErase = not g_repairingTurret and self.harvestable.clientPublicData.health >= TurretBase.maxHealth and self.harvestable:getSeatCharacter() == nil
+    local canErase = not g_repairingTurret and self.harvestable.clientPublicData.health >= sm.MANNEDTURRET_turretBases_clientPublicData[self.cl_base.id].maxHealth and self.harvestable:getSeatCharacter() == nil
     if not canErase then
         sm.gui.setInteractionText("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>Unable to pick up turret</p>")
     end
@@ -345,7 +351,7 @@ function TurretSeat:client_canInteract()
     end
 
     local health = self.harvestable.clientPublicData.health
-    local canRepair = health < TurretBase.maxHealth
+    local canRepair = health < sm.MANNEDTURRET_turretBases_clientPublicData[self.cl_base.id].maxHealth
     if canRepair then
         sm.gui.setInteractionText("", getHealthDisplay(health))
     end

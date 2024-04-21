@@ -86,11 +86,11 @@
 				"classname": "CannonNuke",
 				"data": {
 					"destructionLevel": 20,
-					"destructionRadius": 25,
+					"destructionRadius": 40,
 					"impulseRadius": 50,
 					"impulseMagnitude": 1000,
-					"effectExplosion": "PropaneTank - ExplosionSmall",
-					"effectActivate": "PropaneTank - ActivateSmall"
+					"effectExplosion": "Nuke - Explode",
+					"effectActivate": "PropaneTank - ActivateBig"
 				}
          },
          "stackSize" : 5,

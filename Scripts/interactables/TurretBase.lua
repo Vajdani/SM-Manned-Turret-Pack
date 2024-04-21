@@ -40,7 +40,8 @@ function TurretBase:server_onCreate()
     self.network:setClientData({ health = health, destroyed = self.destroyed, ammoType = self.ammoType }, 2)
 
     self.interactable.publicData = {
-        isTurretBase = true,
+        isTurret = true,
+        health = self.maxHealth,
         maxHealth = self.maxHealth
     }
 end
@@ -142,6 +143,7 @@ function TurretBase:sv_takeDamage(damage)
 
     print(string.format("[TURRET ID[%s]] Took %s damage: %s / %s HP", self.shape.id, damage, newHealth, self.maxHealth))
     self.cl_health = newHealth
+    self.interactable.publicData.health = newHealth
     if turretExists then
         self.turret.publicData.health = newHealth
     end
@@ -227,7 +229,8 @@ function TurretBase:client_onCreate()
 
 
     sm.MANNEDTURRET_turretBases_clientPublicData[self.interactable.id] = {
-        isTurretBase = true
+        isTurret = true,
+        maxHealth = self.maxHealth
     }
 end
 

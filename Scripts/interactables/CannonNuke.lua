@@ -381,7 +381,7 @@ function CannonNuke_Tool:cl_onUse()
 		setFpAnimation( self.fpAnimations, "use", 0.25 )
     end
 
-	sm.effect.playHostedEffect("Bucket - Throw", self.tool:getOwner():getCharacter() )
+	sm.audio.play( "Sledgehammer - Swing", self.tool:getOwner():getCharacter().worldPosition )
 end
 
 
