@@ -220,8 +220,8 @@ function TurretBase:client_onCreate()
     self.interactable:setSubMeshVisible("turretpart1", false)
     self.interactable:setSubMeshVisible("turretpart2", false)
 
-    self.seatBroken = false
-    self.gunBroken = false
+    self.seatBuilt = false
+    self.gunBuilt = false
 
     self.bearingSettings = {}
 	self.bearingSettings.updateDelay = 0.0
@@ -389,9 +389,6 @@ function TurretBase:client_onClientDataUpdate(data, channel)
 
         self.interactable:setSubMeshVisible("turretpart1", false)
         self.interactable:setSubMeshVisible("turretpart2", false)
-
-        self.seatBroken = false
-        self.gunBroken = false
     else
         local health = data.health
         self.cl_health = health
@@ -422,12 +419,12 @@ function TurretBase:client_onClientDataUpdate(data, channel)
                 self.repairVisualization:destroy()
             end
 
-            local seatBroken = health >= TurretBase.maxHealth * 0.5
-            if seatBroken ~= self.seatBroken then
-                self.interactable:setSubMeshVisible("turretpart1", seatBroken)
-                self.seatBroken = seatBroken
+            local seatBuilt = health >= self.maxHealth * 0.5
+            if seatBuilt ~= self.seatBuilt then
+                self.interactable:setSubMeshVisible("turretpart1", seatBuilt)
+                self.seatBuilt = seatBuilt
 
-                if seatBroken then
+                if seatBuilt then
                     local rot = self.shape.worldRotation
                     sm.effect.playEffect("Turret - SeatRepair1", self.shape.worldPosition + rot * vec3_forward * 0.5, vec3_zero, rot)
                 else
@@ -435,12 +432,12 @@ function TurretBase:client_onClientDataUpdate(data, channel)
                 end
             end
 
-            local gunBroken = health >= TurretBase.maxHealth * 0.8
-            if gunBroken ~= self.gunBroken then
-                self.interactable:setSubMeshVisible("turretpart2", gunBroken)
-                self.gunBroken = gunBroken
+            local gunBuilt = health >= self.maxHealth * 0.8
+            if gunBuilt ~= self.gunBuilt then
+                self.interactable:setSubMeshVisible("turretpart2", gunBuilt)
+                self.gunBuilt = gunBuilt
 
-                if gunBroken then
+                if gunBuilt then
                     sm.effect.playEffect("Turret - SeatRepair2", self.shape.worldPosition + self.shape.worldRotation * (vec3_up * 0.625 + vec3_forward))
                 else
                     local rot = self.shape.worldRotation
@@ -448,8 +445,8 @@ function TurretBase:client_onClientDataUpdate(data, channel)
                 end
             end
         elseif health >= self.maxHealth then
-            self.seatBroken = false
-            self.gunBroken = false
+            self.seatBuilt = true
+            self.gunBuilt = true
 
             if g_repairingTurret then
                 self:cl_onRepairEnd()
@@ -555,12 +552,12 @@ function TurretBase:cl_onLifted(state)
     self.lifted = state
     GetTurretBaseClientPublicData(self.interactable).isLifted = state
 
-    if state then
-        self.interactable:setSubMeshVisible("turretpart1", true)
-        self.interactable:setSubMeshVisible("turretpart2", true)
+    if sm.exists(self.cl_turret) then
+        self.interactable:setSubMeshVisible("turretpart1", state)
+        self.interactable:setSubMeshVisible("turretpart2", state)
     else
-        self.interactable:setSubMeshVisible("turretpart1", self.seatBroken)
-        self.interactable:setSubMeshVisible("turretpart2", self.gunBroken)
+        self.interactable:setSubMeshVisible("turretpart1", self.seatBuilt)
+        self.interactable:setSubMeshVisible("turretpart2", self.gunBuilt)
     end
 end
 
@@ -570,8 +567,14 @@ end
 
 function TurretBase:cl_putOnLift()
     self.lifted = false
-    self.interactable:setSubMeshVisible("turretpart1", self.seatBroken)
-    self.interactable:setSubMeshVisible("turretpart2", self.gunBroken)
+
+    if sm.exists(self.cl_turret) then
+        self.interactable:setSubMeshVisible("turretpart1", false)
+        self.interactable:setSubMeshVisible("turretpart2", false)
+    else
+        self.interactable:setSubMeshVisible("turretpart1", self.seatBuilt)
+        self.interactable:setSubMeshVisible("turretpart2", self.gunBuilt)
+    end
 end
 
 
