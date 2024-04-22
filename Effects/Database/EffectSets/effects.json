@@ -289,7 +289,7 @@
 			{"type":"audio","name":"Gas Explosion","offset":{"x":0.0,"y":0.0,"z":0.0},"parameters":["size"],"delay":0.0},
 			{"type":"cameraShake","name":"","offset":{"x":0.0,"y":0.0,"z":0.0},"parameters":["shakeStrength","shakeRadius"],"duration":0.1,"delay":0.0},
 			{"type":"pointLight","name":"","offset":{"x":0.0,"y":0.0,"z":0.5},"parameters":["color","radius","intensity"],"duration":1.2,"delay":0.0},
-			{"type":"particle","name":"p_nukeNew_explosion","delay":0.0}
+			{"type":"particle","name":"p_nuke_explosion","delay":0.0}
 		]
 	}
 }

@@ -83,6 +83,18 @@ function SetPlayerCamOverride(data)
     end
 end
 
+---@param int Interactable
+---@param data any
+function SetTurretBaseClientPublicData(int, data)
+    sm.MANNEDTURRET_turretBases_clientPublicData[int.id] = data
+end
+
+---@param int Interactable
+---@return table
+function GetTurretBaseClientPublicData(int)
+    return sm.MANNEDTURRET_turretBases_clientPublicData[int.id] or {}
+end
+
 ---Get the yaw and pitch from a normalized directional vector
 ---@param direction Vec3 The normalized directional vector
 ---@return number yaw The yaw

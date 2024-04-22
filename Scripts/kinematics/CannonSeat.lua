@@ -189,7 +189,7 @@ function CannonSeat:sv_startAirStrike(pos, caller)
             end
 
             sm.projectile.projectileAttack(projectile_explosivetape, 100, position, -vec3_up * 100, caller)
-            turretSelf:sv_applyFiringImpulse(turretSelf:getAmmoData(2), turretSelf.harvestable.worldRotation * vec3_up, ({turretSelf:getFirePos()})[2])
+            turretSelf:sv_applyFiringImpulse(turretSelf:getAmmoData(2), turretSelf.harvestable.worldRotation * vec3_up, turretSelf:getFirePosEnd())
             return true
         end
     }
@@ -223,7 +223,7 @@ function CannonSeat:sv_tryLaunchPlayer(player)
         return
     end
 
-    char:setWorldPosition(({self:getFirePos()})[2])
+    char:setWorldPosition(self:getFirePosEnd())
     char:setTumbling(true)
     char:applyTumblingImpulse(self.harvestable.worldRotation * vec3_up * self:getAmmoData().velocity * char.mass)
 
@@ -350,7 +350,7 @@ function CannonSeat:client_onUpdate(dt)
 end
 
 function CannonSeat:getFirePos()
-    local pos = self.harvestable.worldPosition + (self.base or self.cl_base).shape.velocity * 0.025
+    local pos = self:getTurretPosition()
     local rot = self.harvestable.worldRotation
     local offsetBase = vec3_forward * 0.22
     return pos + rot * offsetBase, pos + rot * (vec3_up * 2 + offsetBase)
@@ -394,7 +394,7 @@ function CannonSeat:cl_shoot(args)
         self.recoil_l = 1
 
         local ammoType = args.ammoType or self.ammoType
-        sm.effect.playEffect(self:getAmmoData(ammoType).effect, args.pos or ({self:getFirePos()})[2], vec3_zero, sm.vec3.getRotation(vec3_up, args.dir or self.harvestable.worldRotation * vec3_up))
+        sm.effect.playEffect(self:getAmmoData(ammoType).effect, args.pos or self:getFirePosEnd(), vec3_zero, sm.vec3.getRotation(vec3_up, args.dir or self.harvestable.worldRotation * vec3_up))
 
         if self.seated and ammoType == 1 then
 			sm.audio.play("Blueprint - Build")

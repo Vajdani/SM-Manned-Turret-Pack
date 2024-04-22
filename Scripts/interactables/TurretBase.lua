@@ -228,14 +228,15 @@ function TurretBase:client_onCreate()
 	self.bearingSettings.updateSettings = {}
 
 
-    sm.MANNEDTURRET_turretBases_clientPublicData[self.interactable.id] = {
+    SetTurretBaseClientPublicData(self.interactable, {
         isTurret = true,
-        maxHealth = self.maxHealth
-    }
+        maxHealth = self.maxHealth,
+        isLifted = false
+    })
 end
 
 function TurretBase:client_onDestroy()
-    sm.MANNEDTURRET_turretBases_clientPublicData[self.interactable.id] = nil
+    SetTurretBaseClientPublicData(self.interactable, nil)
     self.healthBar:destroy()
 
     if g_repairingTurret and g_turretBase == self.interactable then
@@ -552,6 +553,7 @@ end
 
 function TurretBase:cl_onLifted(state)
     self.lifted = state
+    GetTurretBaseClientPublicData(self.interactable).isLifted = state
 
     if state then
         self.interactable:setSubMeshVisible("turretpart1", true)

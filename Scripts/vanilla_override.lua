@@ -1,3 +1,4 @@
+-- #region Player
 dofile( "$GAME_DATA/Scripts/game/BasePlayer.lua" )
 if not SurvivalPlayer then
 	dofile( "$SURVIVAL_DATA/Scripts/game/SurvivalPlayer.lua" )
@@ -17,8 +18,26 @@ local function newClientCreate( self )
 end
 SurvivalPlayer.client_onCreate = newClientCreate
 
+local oldClass = class
+function newClass(_class)
+    if _class then
+        for k, v in pairs(BasePlayer) do
+            if _class[k] ~= v then
+                return oldClass(_class)
+            end
+        end
+
+        return SurvivalPlayer
+    end
+
+    return oldClass()
+end
+class = newClass
+-- #endregion
 
 
+
+-- #region Lift
 sm.MANNEDTURRET_turretBases_clientPublicData = sm.MANNEDTURRET_turretBases_clientPublicData or {}
 local LiftReplacement = {}
 function LiftReplacement.client_onEquippedUpdate( self, primaryState, secondaryState )
@@ -239,46 +258,9 @@ function LiftReplacement:client_onUnequip()
 	self.forced = false
 end
 
-
-
 for k, liftClass in pairs({ Lift, SurvivalLift }) do
 	for _k, v in pairs(LiftReplacement) do
 		liftClass[_k] = v
 	end
 end
-
-
-
-local oldClass = class
-function newClass(_class)
-    if _class then
-        for k, v in pairs(BasePlayer) do
-            if _class[k] ~= v then
-                return oldClass(_class)
-            end
-        end
-
-        return SurvivalPlayer
-    end
-
-    return oldClass()
-end
-class = newClass
-
-
-
-gameHooked = gameHooked or false
-if not gameHooked then
-	for k, v in pairs({ CreativeGame, SurvivalGame, Game }) do
-		local oldOnPlayerJoined = v.server_onPlayerJoined
-		local function newOnPlayerJoined( self, player, newPlayer )
-			oldOnPlayerJoined( self, player, newPlayer )
-
-			print("omg player join!")
-		end
-		v.server_onPlayerJoined = newOnPlayerJoined
-		print("hooked game")
-	end
-
-	gameHooked = true
-end
+-- #endregion

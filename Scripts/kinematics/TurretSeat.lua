@@ -304,6 +304,8 @@ function TurretSeat:client_onCreate()
     self.seated = false
     self.cl_controlsEnabled = true
 
+    self.baseClassName = sm.item.getFeatureData(sm.uuid.new(self.baseUUID)).classname
+
     self.harvestable.clientPublicData = { health = TurretBase.maxHealth, controlsEnabled = true }
 end
 
@@ -334,7 +336,7 @@ function TurretSeat:client_onClientDataUpdate(data, channel)
 end
 
 function TurretSeat:client_canErase()
-    local canErase = not g_repairingTurret and self.harvestable.clientPublicData.health >= sm.MANNEDTURRET_turretBases_clientPublicData[self.cl_base.id].maxHealth and self.harvestable:getSeatCharacter() == nil
+    local canErase = not g_repairingTurret and self.harvestable.clientPublicData.health >= GetTurretBaseClientPublicData(self.cl_base).maxHealth and self.harvestable:getSeatCharacter() == nil
     if not canErase then
         sm.gui.setInteractionText("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>Unable to pick up turret</p>")
     end
@@ -351,7 +353,7 @@ function TurretSeat:client_canInteract()
     end
 
     local health = self.harvestable.clientPublicData.health
-    local canRepair = health < sm.MANNEDTURRET_turretBases_clientPublicData[self.cl_base.id].maxHealth
+    local canRepair = health < GetTurretBaseClientPublicData(self.cl_base).maxHealth
     if canRepair then
         sm.gui.setInteractionText("", getHealthDisplay(health))
     end
@@ -585,8 +587,17 @@ end
 
 
 
+function TurretSeat:getTurretPosition()
+    local base = (self.base or self.cl_base)
+    if GetTurretBaseClientPublicData(base).isLifted then
+        return _G[self.baseClassName].getSeatPos({ cl_turret = self.harvestable, shape = base.shape })
+    end
+
+    return self.harvestable.worldPosition + base.shape.velocity * 0.025
+end
+
 function TurretSeat:getFirePos()
-    local pos = self.harvestable.worldPosition + (self.base or self.cl_base).shape.velocity * 0.025
+    local pos = self:getTurretPosition()
     local rot = self.harvestable.worldRotation
     if self.shotCounter%2==0 then
         local offsetBase =  vec3_right * 0.27 + vec3_forward * 0.35
@@ -595,6 +606,11 @@ function TurretSeat:getFirePos()
         local offsetBase = -vec3_right * 0.27 + vec3_forward * 0.35
         return pos + rot * offsetBase, pos + rot * (vec3_up * 1.7 + offsetBase)
     end
+end
+
+function TurretSeat:getFirePosEnd()
+    local start, _end = self:getFirePos()
+    return _end
 end
 
 function TurretSeat:isOverrideAmmoType(ammoType)

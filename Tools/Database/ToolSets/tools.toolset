@@ -44,7 +44,8 @@
             "file": "$CONTENT_DATA/Scripts/tools/LightningGatling.lua",
             "data" : {},
             "class": "LightningGatling"
-         }
+         },
+         "showInInventory": false
 		}
    ]
 }
