@@ -77,7 +77,7 @@ function CannonSeat:server_onDestroy()
         sm.event.sendToInteractable(self.rocket.interactable, "sv_explode")
     end
 
-    if self:isOverrideAmmoType() and self.ammoType.index == 1 then --Is Nuke
+    if sm.exists(self.base) and self:isOverrideAmmoType() and self.ammoType.index == 1 then --Is Nuke
         sm.event.sendToInteractable(self.base, "sv_spawnNukeOnDestroy", self.ammoType.previous)
     end
 end
