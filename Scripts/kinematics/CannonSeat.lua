@@ -6,6 +6,7 @@ CannonSeat = class(TurretSeat)
 CannonSeat.ammoTypes = {
     {
         name = "Guided Missile",
+        velocity = 100,
         recoilStrength = 1,
         fireCooldown = 40,
         effect = "Cannon - Shoot",
@@ -115,6 +116,7 @@ function CannonSeat:sv_OnPartFire(ammoType, ammoData, part, player)
         part.interactable.publicData = { owner = player, seat = self.harvestable }
         self.rocket = part
         self:sv_SetTurretControlsEnabled(false)
+        sm.event.sendToInteractable(self.base, "sv_clearDrivingFlags", true)
     elseif self:isOverrideAmmoType(ammoType) then
         local id = ammoType.index
         if id == 1 then --Nuke
