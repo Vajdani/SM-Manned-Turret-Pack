@@ -37,6 +37,7 @@
          "autoTool": true
       },
 		{
+         "name": "LightningGatling",
 			"uuid": "633bd15e-4e49-4b82-8051-8ef4ede03646",
 			"previewRenderable": "$GAME_DATA/Character/Char_Tools/char_spudgun_spinner_preview.rend",
 			"previewRotation": [ 1, 0, 0, 0, 0, -1, 0, 1, 0 ],
