@@ -23,11 +23,34 @@ sm.game.bindChatCommand = bindHook
 
 
 
+local function ReadFile(path)
+    if sm.json.fileExists(path) then
+        return sm.json.open(path)
+    end
+
+    return { version = 0 }
+end
+
+
 ---@class TurretAssistor : ToolClass
 TurretAssistor = class()
 
 function TurretAssistor:server_onCreate()
     self.players = sm.player.getAllPlayers()
+
+    local selfVer = ReadFile("$CONTENT_DATA/modVersion.json").version
+    local kinematicVer = ReadFile("$CONTENT_0407ffa7-c133-4934-a490-fe737c11d262/modVersion.json").version
+    local text
+    if selfVer > kinematicVer then
+        text = "#ff0000[MANNED TURRET PACK] #df7f00KINEMATIC MOD#ffffff OUT OF DATE, UPDATE AT: #df7f00https://steamcommunity.com/sharedfiles/filedetails/?id=3107289209"
+    elseif selfVer < kinematicVer then
+        text = "#ff0000[MANNED TURRET PACK] #df7f00BLOCKS AND PARTS MOD#ffffff OUT OF DATE, UPDATE AT: #df7f00https://steamcommunity.com/sharedfiles/filedetails/?id=3107290429"
+    end
+
+    if text then
+        sm.log.warning(text)
+        sm.gui.chatMessage(text)
+    end
 end
 
 function TurretAssistor:server_onFixedUpdate()
