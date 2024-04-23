@@ -285,6 +285,10 @@ end
 ---@param player Player
 function TurretSeat:sv_OnPartFire(ammoType, ammoData, part, player) end
 
+function TurretSeat:sv_updateShootState(state)
+    self.network:sendToClients("cl_updateShootState", state)
+end
+
 
 
 function TurretSeat:client_onCreate()
@@ -408,6 +412,7 @@ function TurretSeat:client_onAction(action, state)
 
     if (action == 5 or action == 19) and self.shootState ~= ShootState.toggle then
         self.shootState = state and ShootState.hold or ShootState.null
+        self.network:sendToServer("sv_updateShootState", self.shootState)
         self:cl_updateHotbar()
     end
 
@@ -422,6 +427,7 @@ function TurretSeat:client_onAction(action, state)
 			self.cl_base:setSteeringFlag( 8 )
         elseif action == 6 or action == 18 then
             self.shootState = self.shootState == ShootState.toggle and ShootState.null or ShootState.toggle
+            self.network:sendToServer("sv_updateShootState", self.shootState)
             self:cl_updateHotbar()
         elseif action == 7 then
             self.lightActive = not self.lightActive
@@ -583,6 +589,11 @@ function TurretSeat:cl_SetTurretControlsEnabled(state)
         self.shootState = ShootState.null
         self:cl_updateHotbar()
     end
+end
+
+function TurretSeat:cl_updateShootState(state)
+    print(state)
+    self.shootState = state
 end
 
 

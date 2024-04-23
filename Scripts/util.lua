@@ -7,6 +7,7 @@
 ---@field spread? number
 ---@field effect EffectName|string
 ---@field ignoreAmmoConsumption? boolean
+---@field overheatPerShot? number
 ---@field ammo Uuid
 ---@field uuid Uuid
 

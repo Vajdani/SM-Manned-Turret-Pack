@@ -61,6 +61,36 @@
          "uuid" : "a0c96d35-37ca-4cf9-82d8-9b9077132918"
       },
       {
+         "carryItem" : true,
+         "color" : "6b7d07",
+         "hull" : {
+            "col" : "$CONTENT_DATA/Objects/Mesh/Collision/obj_interactive_turret_base_col.obj",
+            "x" : 7,
+            "y" : 3,
+            "z" : 7
+         },
+         "name" : "obj_interactive_cannon_base",
+         "physicsMaterial" : "Metal",
+         "ratings" : {
+            "durability" : 10
+         },
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/TurretBase/obj_interactive_cannon_base.rend",
+         "restrictions" : {
+            "destructable" : false
+         },
+         "rotationSet" : "PropY",
+         "scripted" : {
+            "classname" : "MinigunBase",
+            "data" : {},
+            "filename" : "$CONTENT_DATA/Scripts/interactables/MinigunBase.lua",
+            "steering": {
+               "steerAngle": 45.0
+            }
+         },
+         "sticky" : "-Y",
+         "uuid" : "ae0a8816-00d8-4515-932b-00661ef20a0a"
+      },
+      {
          "color" : "6b7d07",
          "hull" : {
             "col" : "$CONTENT_DATA/Objects/Mesh/Collision/obj_interactive_mountable_turretgun_col.obj",
