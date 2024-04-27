@@ -16,8 +16,8 @@
                      {
                         "material" : "DifAsg",
                         "textureList" : [
-                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_dif.tga",
-                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_asg.tga"
+                           "$CONTENT_DATA/Objects/Textures/GuiMesh/gui_white_dif.tga",
+                           "$CONTENT_DATA/Objects/Textures/GuiMesh/gui_white_asg.tga"
                         ]
                      }
                   ]
@@ -44,8 +44,8 @@
                      {
                         "material" : "DifAsg",
                         "textureList" : [
-                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_dif.tga",
-                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_asg.tga"
+                           "$CONTENT_DATA/Objects/Textures/GuiMesh/gui_white_dif.tga",
+                           "$CONTENT_DATA/Objects/Textures/GuiMesh/gui_white_asg.tga"
                         ]
                      }
                   ]
@@ -72,8 +72,8 @@
                      {
                         "material" : "DifAsg",
                         "textureList" : [
-                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_dif.tga",
-                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_asg.tga"
+                           "$CONTENT_DATA/Objects/Textures/GuiMesh/gui_white_dif.tga",
+                           "$CONTENT_DATA/Objects/Textures/GuiMesh/gui_white_asg.tga"
                         ]
                      }
                   ]
@@ -100,8 +100,8 @@
                      {
                         "material" : "DifAsg",
                         "textureList" : [
-                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_dif.tga",
-                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_asg.tga"
+                           "$CONTENT_DATA/Objects/Textures/GuiMesh/gui_white_dif.tga",
+                           "$CONTENT_DATA/Objects/Textures/GuiMesh/gui_white_asg.tga"
                         ]
                      }
                   ]
@@ -128,8 +128,8 @@
                      {
                         "material" : "DifAsg",
                         "textureList" : [
-                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_dif.tga",
-                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_asg.tga"
+                           "$CONTENT_DATA/Objects/Textures/GuiMesh/gui_white_dif.tga",
+                           "$CONTENT_DATA/Objects/Textures/GuiMesh/gui_white_asg.tga"
                         ]
                      }
                   ]
@@ -156,8 +156,8 @@
                      {
                         "material" : "DifAsg",
                         "textureList" : [
-                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_dif.tga",
-                           "$CONTENT_DATA/Objects/Texture/GuiMesh/gui_white_asg.tga"
+                           "$CONTENT_DATA/Objects/Textures/GuiMesh/gui_white_dif.tga",
+                           "$CONTENT_DATA/Objects/Textures/GuiMesh/gui_white_asg.tga"
                         ]
                      }
                   ]
