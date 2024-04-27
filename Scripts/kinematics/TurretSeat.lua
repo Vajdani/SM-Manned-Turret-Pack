@@ -550,7 +550,7 @@ function TurretSeat:cl_displayAmmoInfo()
     local parent = self.cl_base:getSingleParent()
     if parent then
         local container = parent:getContainer(0)
-        sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>%d / %d</p>"):format(sm.container.totalQuantity(container, ammoData.uuid), container:getSize() * container:getMaxStackSize()))
+        sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>%d / %d</p>"):format(sm.container.totalQuantity(container, ammoData.ammo), container:getSize() * container:getMaxStackSize()))
     elseif sm.game.getEnableAmmoConsumption() then
         sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>No ammunition</p>"))
     end
@@ -592,7 +592,6 @@ function TurretSeat:cl_SetTurretControlsEnabled(state)
 end
 
 function TurretSeat:cl_updateShootState(state)
-    print(state)
     self.shootState = state
 end
 
@@ -639,6 +638,12 @@ function TurretSeat:getAmmoType(parent)
 
     if not sm.game.getEnableAmmoConsumption() then
         return self.ammoType
+    end
+
+    for k, v in pairs(self.ammoTypes) do
+        if v.ignoreAmmoConsumption then
+            return k
+        end
     end
 
     return 1

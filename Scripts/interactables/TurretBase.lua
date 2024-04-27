@@ -164,9 +164,13 @@ end
 
 function TurretBase:sv_createTurret()
     if self.destroyed then return end
-    self.turret = sm.harvestable.create(sm.uuid.new(self.seatUUID), self:getSeatPos(), self.shape.worldRotation)
+
+    local pos = self:getSeatPos()
+    self.turret = sm.harvestable.create(sm.uuid.new(self.seatUUID), pos, self.shape.worldRotation)
     self.turret:setParams({ base = self.interactable, ammoType = self.ammoType })
     self.network:setClientData(self.turret, 1)
+
+    sm.event.sendToTool(g_turretAssistor, "sv_tryCreateChunkLoader", pos)
 end
 
 function TurretBase:sv_updateDir(dir)

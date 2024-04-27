@@ -46,7 +46,22 @@
          "scripted" : {
             "classname" : "CannonRocket",
             "data" : {},
-            "filename" : "$CONTENT_DATA/Scripts/interactables/CannonRocket.lua"
+            "filename" : "$CONTENT_DATA/Scripts/interactables/CannonRocket.lua",
+            "seat": {
+               "bones": [
+                  {
+                     "name": "Hips",
+                     "offset": {
+                        "x": 0.0,
+                        "y": -10000,
+                        "z": 0.0
+                     }
+                  }
+               ],
+               "ragdollFile": "$GAME_DATA/Character/bikeseat_ragdoll.json",
+               "enterAudio": "Seat seated",
+               "exitAudio": "Seat unseated"
+            }
          },
          "stackSize" : 5,
          "sticky" : "-Y",

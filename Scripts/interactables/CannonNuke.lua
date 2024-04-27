@@ -18,6 +18,68 @@ function CannonNuke:sv_pickup(slot, caller)
 end
 
 
+--[[local harvestable_parts = {}
+for k, v in pairs(sm.json.open("$SURVIVAL_DATA/Objects/Database/ShapeSets/treeparts.json").partList) do
+	harvestable_parts[v.uuid] = true
+end
+
+for k, v in pairs(sm.json.open("$SURVIVAL_DATA/Objects/Database/ShapeSets/stoneparts.json").partList) do
+	harvestable_parts[v.uuid] = true
+end
+
+local trees = {}
+for k, v in pairs(sm.json.open("$SURVIVAL_DATA/Harvestables/Database/HarvestableSets/hvs_trees.json").harvestableList) do
+	trees[v.uuid] = true
+end
+
+local rocks = {}
+for k, v in pairs(sm.json.open("$SURVIVAL_DATA/Harvestables/Database/HarvestableSets/hvs_stones.json").harvestableList) do
+	rocks[v.uuid] = v.script.data
+end
+
+function CannonNuke.server_tryExplode( self )
+	if self.alive and self.shape.body.destructable then
+		self.alive = false
+		self.counting = false
+		self.fireDelayProgress = 0
+
+		local contacts = sm.physics.getSphereContacts(self.shape.worldPosition, self.destructionRadius)
+		for k, body in pairs(contacts.bodies) do
+			for _k, int in pairs(body:getInteractables()) do
+				if harvestable_parts[tostring(int.shape.uuid)] == true then
+					sm.event.sendToInteractable(int, "sv_onHit", 10000)
+				end
+			end
+		end
+
+		for k, harvestable in pairs(contacts.harvestables) do
+			local uuid = tostring(harvestable.uuid)
+			if trees[uuid] == true then
+				sm.event.sendToHarvestable(harvestable, "sv_onHit", 10000)
+			elseif rocks[uuid] ~= nil then
+				local data = rocks[uuid]
+				local placementOffset = sm.vec3.new( -0.5, -0.5, -0.5 )
+				if data.offset then
+					placementOffset = sm.vec3.new( data.offset.x, data.offset.y, data.offset.z )
+				end
+				placementOffset = harvestable.worldRotation * placementOffset
+
+				local bodies = sm.creation.importFromFile( nil, data.blueprint, harvestable.worldPosition + placementOffset, harvestable.worldRotation )
+				for i, body in pairs(bodies) do
+					for _k, int in pairs(body:getInteractables()) do
+						int:setParams( { inheritedDamage = 10000 } )
+					end
+				end
+
+				harvestable:destroy()
+			end
+		end
+
+		-- Create explosion
+		sm.physics.explode( self.shape.worldPosition, self.destructionLevel, self.destructionRadius, self.impulseRadius, self.impulseMagnitude, self.explosionEffectName, self.shape )
+		sm.shape.destroyPart( self.shape )
+	end
+end]]
 
 function CannonNuke:client_canInteract()
 	local canPickup = (sm.game.getLimitedInventory() and sm.localPlayer.getPlayer():getInventory() or sm.localPlayer.getPlayer():getHotbar()):canCollect(self.shape.uuid, 1)

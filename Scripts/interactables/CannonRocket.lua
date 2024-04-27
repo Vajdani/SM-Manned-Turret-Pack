@@ -3,11 +3,6 @@ CannonRocket = class()
 CannonRocket.lifeTime = 15 * 40
 
 function CannonRocket:server_onCreate()
-    if self.storage:load() then
-        self.shape:destroyShape()
-        return
-    end
-
     local publicData = self.interactable.publicData
     self.isPrimed = publicData ~= nil
 
@@ -17,13 +12,13 @@ function CannonRocket:server_onCreate()
 
         self.seat = self.interactable.publicData.seat
 
-        self.network:setClientData({ owner = publicData.owner, deathTick = self.sv_deathTick })
-    end
-end
+        local owner = publicData.owner
 
-function CannonRocket:server_onUnload()
-    self.storage:save(true)
-    self:sv_explode()
+        local dummy = sm.character.createCharacter(owner, sm.world.getCurrentWorld(), self.shape.worldPosition + vec3_up * 100)
+        self.interactable:setSeatCharacter(dummy)
+
+        self.network:setClientData({ owner = owner, deathTick = self.sv_deathTick })
+    end
 end
 
 function CannonRocket:server_onProjectile()
@@ -46,11 +41,12 @@ function CannonRocket:server_onCollision(other, position, selfPointVelocity, oth
     self:sv_explode(position)
 end
 
+local rayFilter = sm.physics.filter.dynamicBody + sm.physics.filter.staticBody + sm.physics.filter.terrainAsset + sm.physics.filter.terrainSurface + sm.physics.filter.harvestable
 function CannonRocket:server_onFixedUpdate(dt)
     if not self.isPrimed then return end
 
     local pos = self.shape.worldPosition
-    local hit, result = sm.physics.spherecast(pos, pos + self.shape.at * 2, 0.1, self.shape)
+    local hit, result = sm.physics.spherecast(pos, pos + self.shape.at * 2, 0.1, self.shape, rayFilter)
     if hit then
         self:sv_explode(pos)
         return

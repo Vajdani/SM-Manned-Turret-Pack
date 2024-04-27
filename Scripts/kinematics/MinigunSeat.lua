@@ -34,9 +34,9 @@ end
 function MinigunSeat:client_onUpdate(dt)
     if not sm.exists(self.cl_base) then return end
 
-    self.barrelSpin = self.barrelSpin + dt * 1 --* self.fireCharge
-    local one = (math.sin(-2 * math.pi * self.barrelSpin) + 1) / 2
-    local two = (math.cos(2 * math.pi * self.barrelSpin) + 1) / 2
+    self.barrelSpin = self.barrelSpin + dt * 100 --* self.fireCharge
+    local one = (math.sin(0-2*math.pi*(self.barrelSpin+17)/134)+1)/2
+    local two = (math.cos(2*math.pi*(self.barrelSpin+17)/134)+1)/2
     self.harvestable:setPoseWeight(0, one)
     self.harvestable:setPoseWeight(1, two)
 

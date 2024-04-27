@@ -38,7 +38,8 @@ CannonSeat.ammoTypes = {
         recoilStrength = 1,
         fireCooldown = 40,
         effect = "Cannon - Shoot",
-        ammo = sm.uuid.new( HotbarIcon.pLauncher )
+        ammo = sm.uuid.new( HotbarIcon.pLauncher ),
+        ignoreAmmoConsumption = true
     }
 }
 CannonSeat.overrideAmmoTypes = {
@@ -59,7 +60,8 @@ CannonSeat.containerToAmmoType = {
     ["da615034-dd24-4090-ba66-9d36785d7483"] = 3,
 }
 CannonSeat.baseUUID = "a0c96d35-37ca-4cf9-82d8-9b9077132918"
-CannonSeat.airStrikeDistanceLimit = 100
+CannonSeat.airStrikeDistanceLimit = 256
+CannonSeat.maxZoom = 5
 CannonSeat.beaconScale = sm.vec3.new(0.5, 50, 0.5)
 
 
@@ -324,7 +326,7 @@ function CannonSeat:client_onUpdate(dt)
             local horizontal = BoolToNum(self.strikeMoveControls[2]) - BoolToNum(self.strikeMoveControls[1])
             local veritcal = BoolToNum(self.strikeMoveControls[3]) - BoolToNum(self.strikeMoveControls[4])
 
-            self.strikeCamOffset = self.strikeCamOffset + (vec3_forward * veritcal + vec3_right * horizontal):safeNormalize(vec3_zero) * dt * 10 * self.strikeZoom
+            self.strikeCamOffset = self.strikeCamOffset + (vec3_forward * veritcal + vec3_right * horizontal):safeNormalize(vec3_zero) * dt * 10 * self.strikeZoom^2
             local distance = self.strikeCamOffset:length()
             if distance >= self.airStrikeDistanceLimit then
                 self.strikeCamOffset = self.strikeCamOffset * (self.airStrikeDistanceLimit / distance)
@@ -339,6 +341,7 @@ function CannonSeat:client_onUpdate(dt)
 
             local base = self.cl_base.shape
             self.airStrikeRadius:setPosition(base:getInterpolatedWorldPosition() + base.velocity * dt)
+            self.airStrikeBaseMarker:setScale(vec3_one * self.strikeZoom)
         elseif self.cl_controlsEnabled then
             SetPlayerCamOverride({ cameraState = 5 })
 
@@ -364,10 +367,10 @@ function CannonSeat:getStrikeCamPos(dt)
     local basePos = baseShape:getInterpolatedWorldPosition() + baseShape.velocity * (dt or 0) + self.strikeCamOffset
     local hit, result = sm.physics.raycast(basePos + vec3_up * 1000, basePos, baseShape, strikeFilter)
     if hit then
-        return result.pointWorld + vec3_up * 10 * self.strikeZoom
+        return result.pointWorld + vec3_up * 10 * self.strikeZoom^2
     end
 
-    return basePos + vec3_up * 10 * self.strikeZoom
+    return basePos + vec3_up * 10 * self.strikeZoom^2
 end
 
 function CannonSeat:cl_strikeControls(action)
@@ -384,7 +387,7 @@ function CannonSeat:cl_strikeControls(action)
             sm.audio.play("ConnectTool - Rotate", self:getStrikeCamPos())
         end
     elseif action == 8 then
-        if self.strikeZoom < 5 then
+        if self.strikeZoom < self.maxZoom then
             self.strikeZoom = self.strikeZoom + 1
             sm.audio.play("ConnectTool - Rotate", self:getStrikeCamPos())
         end
@@ -465,6 +468,10 @@ function CannonSeat:cl_startAirStrike()
     self.airStrikeRadius:setScale(vec3_one * self.airStrikeDistanceLimit)
     self.airStrikeRadius:start()
 
+    self.airStrikeBaseMarker = sm.effect.createEffect("Cannon - AirStrike - Radius", self.cl_base)
+    self.airStrikeBaseMarker:setScale(vec3_one)
+    self.airStrikeBaseMarker:start()
+
     self.strikeCamOffset = sm.vec3.zero()
     self.strikeZoom = 1
     self.spottingStrike = true
@@ -492,6 +499,7 @@ function CannonSeat:cl_cancelAirStrike(ignore)
         sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", true)
         self.controlHud:close()
         self.airStrikeRadius:stop()
+        self.airStrikeBaseMarker:stop()
         self:cl_updateHotbar()
     end
 

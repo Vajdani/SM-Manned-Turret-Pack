@@ -35,7 +35,12 @@ end
 ---@class TurretAssistor : ToolClass
 TurretAssistor = class()
 
+g_TurretSeatChunkLoaders = g_TurretSeatChunkLoaders or {}
+g_saveKey_TurretSeatChunkLoaders = "af96778d-402e-4f42-9332-3cb7d9119479"
 function TurretAssistor:server_onCreate()
+    g_turretAssistor = self.tool
+    g_TurretSeatChunkLoaders = sm.storage.load(g_saveKey_TurretSeatChunkLoaders) or {}
+
     self.players = sm.player.getAllPlayers()
 
     local selfVer = ReadFile("$CONTENT_DATA/modVersion.json").version
@@ -76,5 +81,20 @@ function TurretAssistor:sv_sendDataToJoiner(player)
                 sm.event.sendToInteractable(int, "sv_syncToLateJoiner", player)
             end
         end
+    end
+end
+
+function TurretAssistor:sv_tryCreateChunkLoader(pos)
+    sm.log.warning("TRYING TO CREATE LOADER")
+    local pos_64 = pos/64
+    local x, y = math.floor(pos_64.x), math.floor(pos_64.y)
+    local cellKey = CellKey(x, y)
+    local loader = g_TurretSeatChunkLoaders[cellKey]
+    if loader == nil or not sm.exists(loader) then
+        sm.log.warning("CREATED LOADER")
+        g_TurretSeatChunkLoaders[cellKey] = sm.shape.createPart(sm.uuid.new("53a7a730-24e1-49b6-b3df-54407ea75b82"), sm.vec3.new(pos.x, pos.y, -200), nil, false, true)
+        sm.storage.save(g_saveKey_TurretSeatChunkLoaders, g_TurretSeatChunkLoaders)
+    else
+        sm.log.warning("CHUNK ALREADY LOADED")
     end
 end
