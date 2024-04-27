@@ -18,23 +18,24 @@ function CannonNuke:sv_pickup(slot, caller)
 end
 
 
---[[local harvestable_parts = {}
+local parts = {}
 for k, v in pairs(sm.json.open("$SURVIVAL_DATA/Objects/Database/ShapeSets/treeparts.json").partList) do
-	harvestable_parts[v.uuid] = true
+	parts[v.uuid] = true
 end
 
 for k, v in pairs(sm.json.open("$SURVIVAL_DATA/Objects/Database/ShapeSets/stoneparts.json").partList) do
-	harvestable_parts[v.uuid] = true
+	parts[v.uuid] = true
 end
 
-local trees = {}
+local harvestables = {}
 for k, v in pairs(sm.json.open("$SURVIVAL_DATA/Harvestables/Database/HarvestableSets/hvs_trees.json").harvestableList) do
-	trees[v.uuid] = true
+	local data = v.script.data
+	data.isTree = true
+	harvestables[v.uuid] = data
 end
 
-local rocks = {}
 for k, v in pairs(sm.json.open("$SURVIVAL_DATA/Harvestables/Database/HarvestableSets/hvs_stones.json").harvestableList) do
-	rocks[v.uuid] = v.script.data
+	harvestables[v.uuid] = v.script.data
 end
 
 function CannonNuke.server_tryExplode( self )
@@ -46,28 +47,44 @@ function CannonNuke.server_tryExplode( self )
 		local contacts = sm.physics.getSphereContacts(self.shape.worldPosition, self.destructionRadius)
 		for k, body in pairs(contacts.bodies) do
 			for _k, int in pairs(body:getInteractables()) do
-				if harvestable_parts[tostring(int.shape.uuid)] == true then
-					sm.event.sendToInteractable(int, "sv_onHit", 10000)
+				if parts[tostring(int.shape.uuid)] then
+					sm.event.sendToInteractable(int, "sv_markDeath")
 				end
 			end
 		end
 
 		for k, harvestable in pairs(contacts.harvestables) do
-			local uuid = tostring(harvestable.uuid)
-			if trees[uuid] == true then
-				sm.event.sendToHarvestable(harvestable, "sv_onHit", 10000)
-			elseif rocks[uuid] ~= nil then
-				local data = rocks[uuid]
+			local data = harvestables[tostring(harvestable.uuid)]
+			if data then
 				local placementOffset = sm.vec3.new( -0.5, -0.5, -0.5 )
 				if data.offset then
 					placementOffset = sm.vec3.new( data.offset.x, data.offset.y, data.offset.z )
 				end
 				placementOffset = harvestable.worldRotation * placementOffset
 
+				local isTree = data.isTree
+				if isTree then
+					sm.effect.playEffect( "Tree - LogAppear", harvestable.worldPosition )
+				end
+
+				local colour = harvestable:getColor()
 				local bodies = sm.creation.importFromFile( nil, data.blueprint, harvestable.worldPosition + placementOffset, harvestable.worldRotation )
 				for i, body in pairs(bodies) do
 					for _k, int in pairs(body:getInteractables()) do
-						int:setParams( { inheritedDamage = 10000 } )
+						local shape = int.shape
+						shape:setColor(colour)
+						int:setParams( { markedForDeath = true } )
+
+						if isTree then
+							local fData = sm.item.getFeatureData(shape.uuid)
+							if fData and fData.data.fallenEffects then
+								local rotation = shape.worldRotation
+								for _, effect in ipairs( fData.data.fallenEffects ) do
+									local offsetPosition = sm.vec3.new( effect.offsetPosition.x, effect.offsetPosition.y, effect.offsetPosition.z )
+									sm.effect.playEffect( effect.effectName, shape.worldPosition + rotation * offsetPosition, nil, rotation, nil, { Color = colour } )
+								end
+							end
+						end
 					end
 				end
 
@@ -79,7 +96,7 @@ function CannonNuke.server_tryExplode( self )
 		sm.physics.explode( self.shape.worldPosition, self.destructionLevel, self.destructionRadius, self.impulseRadius, self.impulseMagnitude, self.explosionEffectName, self.shape )
 		sm.shape.destroyPart( self.shape )
 	end
-end]]
+end
 
 function CannonNuke:client_canInteract()
 	local canPickup = (sm.game.getLimitedInventory() and sm.localPlayer.getPlayer():getInventory() or sm.localPlayer.getPlayer():getHotbar()):canCollect(self.shape.uuid, 1)

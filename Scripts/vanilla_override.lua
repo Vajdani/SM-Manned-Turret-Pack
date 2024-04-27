@@ -264,3 +264,243 @@ for k, liftClass in pairs({ Lift, SurvivalLift }) do
 	end
 end
 -- #endregion
+
+
+
+-- #region Stone
+if not StoneChunk then
+	dofile( "$SURVIVAL_DATA/Scripts/game/harvestable/StoneChunk.lua" )
+end
+
+oldStoneChunkCreate = oldStoneChunkCreate or StoneChunk.server_onCreate
+function newStoneChunkCreate( self )
+	oldStoneChunkCreate(self)
+
+	if self.params then
+		if self.params.markedForDeath then
+			self.markedForDeath = true
+			self:sv_onHit( self.health )
+		end
+	end
+end
+StoneChunk.server_onCreate = newStoneChunkCreate
+
+--no way around replacing outight
+function StoneChunk.sv_onHit( self, damage )
+
+	if self.health > 0 then
+		self.health = self.health - damage
+		if self.health <= 0 then
+			local worldPosition = sm.shape.getWorldPosition(self.shape)
+			if self.data then
+				if self.data.chunkSize then
+					if self.data.chunkSize == 1 then
+						local harvest = math.random( 3 ) == 1 and obj_harvest_metal2 or obj_harvest_stone
+						local shapeOffset = sm.item.getShapeOffset( harvest )
+						local rotation = self.shape.worldRotation
+
+						local stone = sm.shape.createPart( harvest, worldPosition - rotation * shapeOffset, rotation )
+						stone.interactable:setParams({ markedForDeath = self.markedForDeath })
+
+						sm.effect.playEffect( "Stone - BreakChunk small", worldPosition, nil, self.shape.worldRotation, nil, { size = self.shape:getMass() / AUDIO_MASS_DIVIDE_RATIO } )
+					elseif self.data.chunkSize == 2 then
+						local shapeOffset = sm.item.getShapeOffset( obj_harvest_stonechunk01 )
+						local halfOffset = sm.vec3.new( 0, 0, shapeOffset.z )
+						local rotation = self.shape.worldRotation
+						local halfTurn = sm.vec3.getRotation( sm.vec3.new( 1, 0, 0 ), sm.vec3.new( -1, 0, 0 ) )
+
+						local stone = sm.shape.createPart( obj_harvest_stonechunk01, worldPosition - rotation * shapeOffset + rotation * halfOffset, rotation )
+						stone.interactable:setParams({ markedForDeath = self.markedForDeath })
+
+						local stone = sm.shape.createPart( obj_harvest_stonechunk01, worldPosition - ( rotation * halfTurn ) * shapeOffset - rotation * halfOffset, rotation * halfTurn )
+						stone.interactable:setParams({ markedForDeath = self.markedForDeath })
+
+						sm.effect.playEffect( "Stone - BreakChunk small", worldPosition, nil, self.shape.worldRotation, nil, { size = self.shape:getMass() / AUDIO_MASS_DIVIDE_RATIO } )
+					elseif self.data.chunkSize == 3 then
+						local shapeOffset = sm.item.getShapeOffset( obj_harvest_stonechunk02 ) -- Same dimensions on both chunks
+						local halfOffset = sm.vec3.new( shapeOffset.x, 0, 0 )
+						local rotation = self.shape.worldRotation
+						local halfTurn = sm.vec3.getRotation( sm.vec3.new( 1, 0, 0 ), sm.vec3.new( -1, 0, 0 ) )
+
+						local stone = sm.shape.createPart( obj_harvest_stonechunk02, worldPosition - rotation * shapeOffset + rotation * halfOffset, rotation )
+						stone.interactable:setParams({ markedForDeath = self.markedForDeath })
+
+						local stone = sm.shape.createPart( obj_harvest_stonechunk03, worldPosition - ( rotation * halfTurn ) * shapeOffset - rotation * halfOffset, rotation * halfTurn )
+						stone.interactable:setParams({ markedForDeath = self.markedForDeath })
+
+						sm.effect.playEffect( "Stone - BreakChunk", worldPosition, nil, self.shape.worldRotation, nil, { size = self.shape:getMass() / AUDIO_MASS_DIVIDE_RATIO } )
+					end
+				end
+			end
+
+			sm.shape.destroyPart( self.shape )
+		end
+	end
+end
+
+function StoneChunk:sv_markDeath()
+	self.markedForDeath = true
+	self:sv_onHit(self.health)
+end
+-- #endregion
+
+
+
+-- #region TreeTrunk
+if not TreeTrunk then
+	dofile( "$SURVIVAL_DATA/Scripts/game/harvestable/TreeTrunk.lua" )
+end
+
+oldTreeTrunkCreate = oldTreeTrunkCreate or TreeTrunk.server_onCreate
+function newTreeTrunkCreate( self )
+	oldTreeTrunkCreate(self)
+
+	if self.params then
+		if self.params.markedForDeath then
+			self.markedForDeath = true
+			self:sv_onHit( self.sv.health )
+		end
+	end
+end
+TreeTrunk.server_onCreate = newTreeTrunkCreate
+
+function TreeTrunk.sv_onHit( self, damage )
+	if self.sv.health > 0 then
+		self.sv.health = self.sv.health - damage
+		if self.sv.health <= 0 then
+			local worldPosition = self.shape.worldPosition
+			if self.data then
+				if self.data.treeType and not self.data.stump then
+					if self.data.treeType == "small" then
+						local shapeOffset = sm.item.getShapeOffset( obj_harvest_log_s01 )
+						local rotation = self.shape.worldRotation
+
+						local log = sm.shape.createPart( obj_harvest_log_s01, worldPosition - rotation * shapeOffset, rotation )
+						log.interactable:setParams({ markedForDeath = self.markedForDeath })
+
+						sm.effect.playEffect( "Tree - BreakTrunk Birch", worldPosition, nil, self.shape.worldRotation )
+					elseif self.data.treeType == "medium" then
+						local shapeOffset = sm.item.getShapeOffset( obj_harvest_log_m01 )
+						local halfOffset = sm.vec3.new( shapeOffset.x, 0, 0 )
+						local rotation = self.shape.worldRotation
+						local halfTurn = sm.vec3.getRotation( sm.vec3.new( 1, 0, 0 ), sm.vec3.new( -1, 0, 0 ) )
+
+						local log = sm.shape.createPart( obj_harvest_log_m01, worldPosition - rotation * shapeOffset + rotation * halfOffset, rotation )
+						log.interactable:setParams({ markedForDeath = self.markedForDeath })
+
+						local log = sm.shape.createPart( obj_harvest_log_m01, worldPosition - ( rotation * halfTurn ) * shapeOffset - rotation * halfOffset, rotation * halfTurn )
+						log.interactable:setParams({ markedForDeath = self.markedForDeath })
+
+						sm.effect.playEffect( "Tree - BreakTrunk Spruce", worldPosition, nil, self.shape.worldRotation )
+					elseif self.data.treeType == "large" then
+						local shapeOffset = sm.item.getShapeOffset( obj_harvest_log_l01 )
+						local halfOffset = sm.vec3.new( shapeOffset.x, 0, 0 )
+						local rotation = self.shape.worldRotation
+						local halfTurn = sm.vec3.getRotation( sm.vec3.new( 1, 0, 0 ), sm.vec3.new( -1, 0, 0 ) )
+
+						local log = sm.shape.createPart( obj_harvest_log_l01, worldPosition - rotation * shapeOffset + rotation * halfOffset, rotation )
+						log.interactable:setParams({ markedForDeath = self.markedForDeath })
+
+						local log = sm.shape.createPart( obj_harvest_log_l01, worldPosition - ( rotation * halfTurn ) * shapeOffset - rotation * halfOffset, rotation * halfTurn )
+						log.interactable:setParams({ markedForDeath = self.markedForDeath })
+
+						sm.effect.playEffect( "Tree - BreakTrunk Pine", worldPosition, nil, self.shape.worldRotation )
+					end
+				end
+			end
+
+			sm.shape.destroyPart(self.shape)
+		end
+	end
+end
+
+function TreeTrunk:sv_markDeath()
+	self.markedForDeath = true
+	self:sv_onHit(self.sv.health)
+end
+-- #endregion
+
+
+
+-- #region TreeLog
+if not TreeLog then
+	dofile( "$SURVIVAL_DATA/Scripts/game/harvestable/TreeLog.lua" )
+end
+
+oldTreeLogCreate = oldTreeLogCreate or TreeLog.server_onCreate
+function newTreeLogCreate( self )
+	oldTreeLogCreate(self)
+
+	if self.params then
+		if self.params.markedForDeath then
+			self.markedForDeath = true
+			self:sv_onHit( self.health )
+		end
+	end
+end
+TreeLog.server_onCreate = newTreeLogCreate
+
+function TreeLog.sv_onHit( self, damage )
+	if self.health > 0 then
+		self.health = self.health - damage
+		if self.health <= 0 then
+			local worldPosition = self.shape.worldPosition
+			if self.data then
+				if self.data.treeType then
+					if self.data.treeType == "small" then
+						local shapeOffset = sm.item.getShapeOffset( obj_harvest_wood )
+						local rotation = sm.vec3.getRotation( sm.vec3.new( 0, 1, 0 ), self.shape.at )
+
+						local log = sm.shape.createPart( obj_harvest_wood, worldPosition - rotation * shapeOffset, rotation )
+						log.interactable:setParams({ markedForDeath = self.markedForDeath })
+
+						sm.effect.playEffect( "Tree - BreakTrunk Birch", worldPosition, nil, self.shape.worldRotation )
+					elseif self.data.treeType == "medium" then
+						local shapeOffset = sm.item.getShapeOffset( obj_harvest_wood )
+						local rotation = sm.vec3.getRotation( sm.vec3.new( 0, 1, 0 ), self.shape.at )
+
+						local log = sm.shape.createPart( obj_harvest_wood, worldPosition - rotation * shapeOffset, rotation )
+						log.interactable:setParams({ markedForDeath = self.markedForDeath })
+
+						sm.effect.playEffect( "Tree - BreakTrunk SpruceHalf", worldPosition, nil, self.shape.worldRotation )
+					elseif self.data.treeType == "large" then
+						if self.data.size then
+							if self.data.size == "half" then
+								local shapeOffsetA = sm.item.getShapeOffset( obj_harvest_log_l02a )
+								local halfOffsetA = sm.vec3.new( 0, 0, shapeOffsetA.z )
+								local shapeOffsetB = sm.item.getShapeOffset( obj_harvest_log_l02b )
+								local halfOffsetB = sm.vec3.new( 0, 0, shapeOffsetB.z )
+								local rotation = self.shape.worldRotation
+								local halfTurn = sm.vec3.getRotation( sm.vec3.new( 1, 0, 0 ), sm.vec3.new( 0, 0, -1 ) )
+
+								local log = sm.shape.createPart( obj_harvest_log_l02a, worldPosition - rotation * shapeOffsetA + rotation * halfOffsetA, rotation )
+								log.interactable:setParams({ markedForDeath = self.markedForDeath })
+
+								local log = sm.shape.createPart( obj_harvest_log_l02b, worldPosition - ( rotation * halfTurn ) * shapeOffsetB - rotation * halfOffsetB, rotation * halfTurn )
+								log.interactable:setParams({ markedForDeath = self.markedForDeath })
+
+								sm.effect.playEffect( "Tree - BreakTrunk PineHalf", worldPosition, nil, self.shape.worldRotation )
+							elseif self.data.size == "quarter" then
+								local shapeOffset = sm.item.getShapeOffset( obj_harvest_wood2 )
+								local rotation = sm.vec3.getRotation( sm.vec3.new( 0, 1, 0 ), self.shape.at )
+
+								local log = sm.shape.createPart( obj_harvest_wood2, worldPosition - rotation * shapeOffset, rotation )
+								log.interactable:setParams({ markedForDeath = self.markedForDeath })
+
+								sm.effect.playEffect( "Tree - BreakTrunk PineQuarter", worldPosition, nil, self.shape.worldRotation )
+							end
+						end
+					end
+				end
+			end
+
+			sm.shape.destroyPart(self.shape)
+		end
+	end
+end
+
+function TreeLog:sv_markDeath()
+	self.markedForDeath = true
+	self:sv_onHit(self.health)
+end
+-- #endregion
