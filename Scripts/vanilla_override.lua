@@ -504,3 +504,490 @@ function TreeLog:sv_markDeath()
 	self:sv_onHit(self.health)
 end
 -- #endregion
+
+
+
+-- #region MechanicCharacter
+---@type ToolRenderable[]
+local renderables = {
+    hammer = {
+		blockRemove = true,
+        fp = { "$GAME_DATA/Character/Char_Tools/Char_smallhammer/char_smallhammer_fp.rend" },
+        tp = {
+			"$GAME_DATA/Character/Char_Tools/Char_smallhammer/char_smallhammer_tp.rend",
+		},
+        effect = { name = "Sledgehammer - Hit", params = { Material = 9 } }
+    },
+    hammer2 = {
+        fp = { "$GAME_DATA/Character/Char_Tools/Char_smallhammer/char_smallhammer_fp.rend" },
+        tp = {
+			"$GAME_DATA/Character/Char_Tools/Char_smallhammer/char_smallhammer_tp.rend",
+		},
+        effect = { name = "Sledgehammer - Hit", params = { Material = 9 } }
+    },
+    drill = {
+        fp = { "$GAME_DATA/Character/Char_Tools/Char_impactdriver/char_impactdriver_fp.rend" },
+        tp = {
+			"$GAME_DATA/Character/Char_Tools/Char_impactdriver/char_impactdriver_tp.rend",
+		},
+        audio = "event:/tools/drill"
+    },
+	weldtool_pickup = {
+		blockRemove = true,
+		fp = { "$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Character/WeldTool/char_weldtool_fp.rend" },
+		tp = {
+			"$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Character/WeldTool/char_weldtool_tp.rend",
+		},
+		audio = "event:/tools/weldtool/wt_equip"
+	},
+	weldtool_into = {
+		blockRemove = true,
+		fp = { "$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Character/WeldTool/char_weldtool_fp.rend" },
+		tp = {
+			"$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Character/WeldTool/char_weldtool_tp.rend",
+		},
+	},
+	weldtool_use = {
+		blockRemove = true,
+		fp = { "$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Character/WeldTool/char_weldtool_fp.rend" },
+		tp = {
+			"$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Character/WeldTool/char_weldtool_tp.rend",
+		},
+		audio = "event:/tools/weldtool/wt_weld",
+		effect = { name = "RepairTool - Weld" }
+	},
+	weldtool_exit = {
+		blockRemove = true,
+		fp = { "$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Character/WeldTool/char_weldtool_fp.rend" },
+		tp = {
+			"$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Character/WeldTool/char_weldtool_tp.rend",
+		},
+	},
+	weldtool_putdown = {
+		fp = { "$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Character/WeldTool/char_weldtool_fp.rend" },
+		tp = {
+			"$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Character/WeldTool/char_weldtool_tp.rend",
+		},
+		audio = "event:/tools/weldtool/wt_putdown"
+	},
+}
+
+function MechanicCharacter:setAnimation(anim, override)
+	local data = renderables[self.currentAnimation]
+	if data and (data.blockRemove == nil or override) then
+		for k, v in pairs(data.tp) do
+			self.character:removeRenderable(v)
+		end
+	end
+
+	self.currentAnimation = anim
+	if self.animations[anim] then
+		self.animations[anim].time = 0
+	end
+
+	local data = renderables[anim]
+	if data then
+		for k, v in pairs(data.tp) do
+			self.character:addRenderable(v)
+		end
+	end
+end
+
+function MechanicCharacter:setAnimationFP(anim, override)
+	local data = renderables[self.currentFPAnimation]
+	if data and (data.blockRemove == nil or override) then
+		for k, v in pairs(data.fp) do
+			sm.localPlayer.removeRenderable(v)
+		end
+	end
+
+	self.currentFPAnimation = anim
+	if self.FPanimations[anim] then
+		self.FPanimations[anim].time = 0
+	end
+
+	local data = renderables[anim]
+	if data then
+		for k, v in pairs(data.fp) do
+			sm.localPlayer.addRenderable(v)
+		end
+	end
+end
+
+oldMechanicGraphics = oldMechanicGraphics or MechanicCharacter.client_onGraphicsLoaded
+local function newMechanicGraphics(self)
+	oldMechanicGraphics(self)
+
+	--[[self.character:addRenderable("$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Character/char_male_repairtool_tp.rend")
+	if self.isLocal then
+		--sm.localPlayer.addRenderable("$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Character/char_male_repairtool_fp.rend")
+	end
+
+	self.animations.hammer = {
+		info = self.character:getAnimationInfo( "repairtool_hammer" ),
+		time = 0,
+		weight = 0,
+		nextAnimation = "hammer2",
+		eventTime = 0.1
+	}
+
+	self.animations.hammer2 = {
+		info = self.character:getAnimationInfo( "repairtool_hammer2" ),
+		time = 0,
+		weight = 0,
+		nextAnimation = "drill",
+		eventTime = 0.1
+	}
+
+	self.animations.drill = {
+		info = self.character:getAnimationInfo( "repairtool_impactdriver" ),
+		time = 0,
+		weight = 0,
+		nextAnimation = "weldtool_pickup",
+		eventTime = 0
+	}
+
+	self.animations.weldtool_pickup = {
+		info = self.character:getAnimationInfo( "repairtool_weldtool_pickup" ),
+		time = 0,
+		weight = 0,
+		nextAnimation = "weldtool_into",
+		eventTime = 0
+	}
+
+	self.animations.weldtool_into = {
+		info = self.character:getAnimationInfo( "repairtool_weldtool_use_into" ),
+		time = 0,
+		weight = 0,
+		nextAnimation = "weldtool_use",
+		eventTime = 0
+	}
+
+	self.animations.weldtool_use = {
+		info = self.character:getAnimationInfo( "repairtool_weldtool_use_idle" ),
+		time = 0,
+		weight = 0,
+		nextAnimation = "weldtool_exit",
+		eventTime = 0.1
+	}
+
+	self.animations.weldtool_exit = {
+		info = self.character:getAnimationInfo( "repairtool_weldtool_use_exit" ),
+		time = 0,
+		weight = 0,
+		nextAnimation = "weldtool_putdown",
+		eventTime = 0
+	}
+
+	self.animations.weldtool_putdown = {
+		info = self.character:getAnimationInfo( "repairtool_weldtool_putdown" ),
+		time = 0,
+		weight = 0,
+		nextAnimation = "hammer",
+		eventTime = 0
+	}
+
+	if self.isLocal then
+		self.FPanimations.hammer = {
+			info = sm.localPlayer.getFpAnimationInfo( "smallhammer_use" ),
+			time = 0,
+			weight = 0,
+			nextAnimation = "hammer2",
+			eventTime = 0.1
+		}
+
+		self.FPanimations.hammer2 = {
+			info = sm.localPlayer.getFpAnimationInfo( "smallhammer_use" ),
+			time = 0,
+			weight = 0,
+			nextAnimation = "drill",
+			eventTime = 0.1
+		}
+
+		self.FPanimations.drill = {
+			info = sm.localPlayer.getFpAnimationInfo( "impactdriver_use" ),
+			time = 0,
+			weight = 0,
+			nextAnimation = "weldtool_pickup",
+			eventTime = 0
+		}
+
+		self.FPanimations.weldtool_pickup = {
+			info = sm.localPlayer.getFpAnimationInfo( "weldtool_pickup" ),
+			time = 0,
+			weight = 0,
+			nextAnimation = "weldtool_into",
+			eventTime = 0
+		}
+
+		self.FPanimations.weldtool_into = {
+			info = sm.localPlayer.getFpAnimationInfo( "weldtool_use_into" ),
+			time = 0,
+			weight = 0,
+			nextAnimation = "weldtool_use",
+			eventTime = 0
+		}
+
+		self.FPanimations.weldtool_use = {
+			info = sm.localPlayer.getFpAnimationInfo( "weldtool_use_idle" ),
+			time = 0,
+			weight = 0,
+			nextAnimation = "weldtool_exit",
+			eventTime = 0.1
+		}
+
+		self.FPanimations.weldtool_exit = {
+			info = sm.localPlayer.getFpAnimationInfo( "weldtool_use_exit" ),
+			time = 0,
+			weight = 0,
+			nextAnimation = "weldtool_putdown",
+			eventTime = 0
+		}
+
+		self.FPanimations.weldtool_putdown = {
+			info = sm.localPlayer.getFpAnimationInfo( "weldtool_putdown" ),
+			time = 0,
+			weight = 0,
+			nextAnimation = "hammer",
+			eventTime = 0
+		}
+	end]]
+end
+MechanicCharacter.client_onGraphicsLoaded = newMechanicGraphics
+
+local multiknifeRenderableTp = "$GAME_DATA/Character/Char_Tools/Char_multiknife/char_multiknife_tp.rend"
+local multiknifeRenderableFp = "$GAME_DATA/Character/Char_Tools/Char_multiknife/char_multiknife_fp.rend"
+oldMechanicEvent = oldMechanicEvent or MechanicCharacter.cl_handleEvent
+local function newMechanicEvent(self, event)
+	oldMechanicEvent(self, event)
+
+	--[[if event == "turretRepairStart" then
+		print("START REPAIR")
+		self.repairing = true
+
+		self:setAnimation("hammer")
+		if self.isLocal then
+			self:setAnimationFP("hammer")
+		end
+	elseif event == "turretRepairEnd" then
+		print("END REPAIR")
+		self.repairing = false
+
+		self:setAnimation("", true)
+		if self.isLocal then
+			self:setAnimationFP("", true)
+
+			sm.MANNEDTURRET_repairingTurret = false
+			sm.MANNEDTURRET_turretBase = nil
+		end
+	end]]
+
+	if self.currentAnimation == "" then
+		if event == "turretRepairStart" then
+			self.character:addRenderable( multiknifeRenderableTp )
+			self.currentAnimation = "refine"
+			self.animations.refine.time = 0
+			if self.isLocal then
+				sm.localPlayer.addRenderable( multiknifeRenderableFp )
+				self.currentFPAnimation = "refine"
+				self.FPanimations.refine.time = 0
+			end
+		end
+	elseif self.currentAnimation == "refine" and event == "turretRepairEnd" then
+		self.character:removeRenderable( multiknifeRenderableTp )
+		self.currentAnimation = ""
+		if self.isLocal then
+			sm.localPlayer.removeRenderable( multiknifeRenderableFp )
+			self.currentFPAnimation = ""
+
+			sm.MANNEDTURRET_repairingTurret = false
+			sm.MANNEDTURRET_turretBase = nil
+		end
+	end
+end
+MechanicCharacter.cl_handleEvent = newMechanicEvent
+
+oldMechanicUpdate = oldMechanicUpdate or MechanicCharacter.client_onUpdate
+local function newMechanicUpdate(self, deltaTime)
+	BaseCharacter.client_onUpdate( self, deltaTime )
+	if not self.graphicsLoaded then
+		return
+	end
+
+	if self.character:isDowned() and not self.koEffect:isPlaying() then
+		sm.effect.playEffect( "Mechanic - Ko", self.character.worldPosition )
+		self.koEffect:start()
+	elseif not self.character:isDowned() and self.koEffect:isPlaying() then
+		self.koEffect:stop()
+	end
+
+	local activeAnimations = self.character:getActiveAnimations()
+	local debugText = ""
+	sm.gui.setCharacterDebugText( self.character, "" ) -- Clear debug text
+	if activeAnimations then
+		for i, animation in ipairs( activeAnimations ) do
+			if animation.name ~= "" and animation.name ~= "spine_turn" then
+				local truncatedWeight = math.floor( animation.weight * 10 + 0.5 ) / 10
+				sm.gui.setCharacterDebugText( self.character, tostring( animation.name .. " : " .. truncatedWeight ), false ) -- Add debug text without clearing
+			end
+		end
+	end
+
+	-- Control diving effect
+	if self.diveEffect then
+		if self.character:isDiving() then
+			if not self.diveEffect:isPlaying() then
+				self.diveEffect:start()
+			end
+		elseif not self.character:isDiving() then
+			if self.diveEffect:isPlaying() then
+				self.diveEffect:stop()
+			end
+		end
+	end
+
+	-- Third person animations
+	for name, animation in pairs(self.animations) do
+		if animation.info then
+			animation.time = animation.time + deltaTime
+
+			if animation.info.looping == true then
+				if animation.time >= animation.info.duration then
+					animation.time = animation.time - animation.info.duration
+				end
+			end
+			if name == self.currentAnimation then
+				animation.weight = math.min(animation.weight+(self.blendSpeed * deltaTime), 1.0)
+				if animation.time >= animation.info.duration then
+					self.currentAnimation = ""
+					--self:setAnimation(animation.nextAnimation or "")
+				end
+			else
+				animation.weight = math.max(animation.weight-(self.blendSpeed * deltaTime ), 0.0)
+			end
+
+			self.character:updateAnimation( animation.info.name, animation.time, animation.weight )
+		end
+	end
+
+	-- Baguette animations
+	if self.hasBaguette then
+		self.animationBaguetteIdle.weight = math.min( self.animationBaguetteIdle.weight + ( self.blendSpeed * deltaTime ), 1.0 )
+		self.animationBaguette.weight = math.min( self.animationBaguette.weight + ( self.blendSpeed * deltaTime ), 1.0 )
+	else
+		self.animationBaguetteIdle.weight = math.max( self.animationBaguetteIdle.weight - ( self.blendSpeed * deltaTime ), 0.0 )
+		self.animationBaguette.weight = math.max( self.animationBaguette.weight - ( self.blendSpeed * deltaTime ), 0.0 )
+	end
+	if self.chewing then
+		self.animationBaguetteChew.weight = math.min( self.animationBaguetteChew.weight + ( self.blendSpeed * deltaTime ), 1 )
+	else
+		self.animationBaguetteChew.weight = math.max( self.animationBaguetteChew.weight - ( self.blendSpeed * deltaTime ), 0.0 )
+	end
+
+	self.character:setAllowTumbleAnimations( self.hasBaguette or self.chewing )
+	if self.animationBaguetteIdle.info then
+		self.animationBaguetteIdle.time = self.animationBaguetteIdle.time + deltaTime
+		if self.animationBaguetteIdle.time >= self.animationBaguetteIdle.info.duration then
+			self.animationBaguetteIdle.time = self.animationBaguetteIdle.time - self.animationBaguetteIdle.info.duration
+		end
+		self.character:updateAnimation( self.animationBaguetteIdle.info.name, self.animationBaguetteIdle.time, self.animationBaguetteIdle.weight, true )
+	end
+	if self.animationBaguetteChew.info then
+		if self.chewing then
+			self.animationBaguetteChew.time = self.animationBaguetteChew.time + deltaTime
+			if self.animationBaguetteChew.time >= self.animationBaguetteChew.info.duration then
+				self.animationBaguetteChew.time = 0.0
+				self.chewing = false
+			end
+		end
+		self.character:updateAnimation( self.animationBaguetteChew.info.name, self.animationBaguetteChew.time, self.animationBaguetteChew.weight, true )
+	end
+	if self.animationBaguette.info then
+		self.animationBaguette.time = self.animationBaguette.time + deltaTime
+		self.animationBaguette.time = math.min( self.animationBaguette.time, math.min( self.baguetteDesiredElapsed, self.animationBaguette.info.duration ) )
+		self.character:updateAnimation( self.animationBaguette.info.name, self.animationBaguette.time, self.animationBaguette.weight, true )
+	end
+
+	-- Play refine effects
+	if self.isLocal then
+		if self.currentAnimation == "refine" then
+			local mayaFrameDuration = 1.0/30.0
+			local refineTime = self.animations["refine"].time
+			local frameTime = 6 * mayaFrameDuration
+			if refineTime >= frameTime and frameTime ~= 0 then
+				if self.pendingRefineFlag then
+					self.pendingRefineFlag = false
+
+					local sucess, result = sm.localPlayer.getRaycast( 7.5, sm.localPlayer.getRaycastStart(), sm.localPlayer.getDirection() )
+					local hitShape = result:getShape()
+					if sucess and hitShape then
+						if sm.localPlayer.isInFirstPersonView() then
+							local effectPos = sm.localPlayer.getFpBonePos( "pejnt_lazer" )
+							if effectPos then
+								local rot = sm.vec3.getRotation( sm.vec3.new( 0, 0, 1 ), sm.localPlayer.getUp() )
+								rot = sm.vec3.getRotation( sm.localPlayer.getUp(), sm.localPlayer.getUp():rotate( ( 40 ) * math.pi / 180, sm.localPlayer.getDirection() ) ) * rot
+
+								local fovScale = ( sm.camera.getFov() - 45 ) / 45
+
+								local xOffset45 = sm.localPlayer.getRight() * 0.035
+								local yOffset45 = sm.localPlayer.getDirection() * 0.6
+								local zOffset45 = sm.localPlayer.getUp() * 0.1
+								local offset45 = xOffset45 + yOffset45 + zOffset45
+
+								local xOffset90 = sm.localPlayer.getRight() * 0.035
+								local yOffset90 = sm.localPlayer.getDirection() * 0.2
+								local zOffset90 = sm.localPlayer.getUp() * 0.1
+								local offset90 = xOffset90 + yOffset90 + zOffset90
+
+								local offset = sm.vec3.lerp( offset45, offset90, fovScale )
+
+								self.refineEffect:setParameter( "Material", hitShape:getMaterialId() )
+								self.refineEffect:setPosition( effectPos + offset )
+								self.refineEffect:setRotation( rot )
+								self.refineEffect:start()
+							end
+						end
+
+						local params = { effectName = "Multiknife - Hit",
+										position = result.pointWorld,
+										rotation = sm.vec3.getRotation( sm.vec3.new( 0, 0, 1 ),
+										result.normalWorld ),
+										effectParams = { Material = hitShape:getMaterialId(), Size = 0.005, Velocity = 10 },
+										player = sm.localPlayer.getPlayer() }
+						self:cl_onEffect( params )
+						self.network:sendToServer( "sv_network_onEffect", params )
+					end
+				end
+			elseif refineTime < frameTime and frameTime ~= 0 then
+				self.pendingRefineFlag = true
+			end
+		end
+	end
+
+	-- First person animations
+	if self.isLocal then
+		for name, animation in pairs( self.FPanimations ) do
+			if animation.info then
+				animation.time = animation.time + deltaTime
+
+				if animation.info.looping == true then
+					if animation.time >= animation.info.duration then
+						animation.time = animation.time - animation.info.duration
+					end
+				end
+				if name == self.currentFPAnimation then
+					animation.weight = math.min(animation.weight+(self.blendSpeed * deltaTime), 1.0)
+					if animation.time >= animation.info.duration then
+						self.currentFPAnimation = ""
+						--self:setAnimationFP(animation.nextAnimation or "")
+					end
+				else
+					animation.weight = math.max(animation.weight-(self.blendSpeed * deltaTime ), 0.0)
+				end
+				sm.localPlayer.updateFpAnimation( animation.info.name, animation.time, animation.weight, animation.info.looping )
+			end
+		end
+	end
+end
+MechanicCharacter.client_onUpdate = newMechanicUpdate
+-- #endregion

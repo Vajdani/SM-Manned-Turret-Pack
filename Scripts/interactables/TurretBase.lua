@@ -190,16 +190,14 @@ function TurretBase:sv_updateDir(dir)
     self.network:sendToClients("cl_n_updateDir", dir)
 end
 
----@param slot number
+---@param state boolean
 ---@param caller Player
-function TurretBase:sv_onRepair(slot, caller)
-    local inv = sm.game.getLimitedInventory() and caller:getInventory() or caller:getHotbar()
-    caller.publicData = caller.publicData or {}
-    caller.publicData.itemBeforeRepair = { slot = slot, item = inv:getItem(slot) }
+function TurretBase:sv_onRepair(state, caller)
+    caller:sendCharacterEvent(state and "turretRepairStart" or "turretRepairEnd")
+end
 
-    sm.container.beginTransaction()
-    inv:setItem(slot, sm.uuid.new("68f9a1ef-dbbc-40c9-8006-0779ececcbf5"), 1)
-    sm.container.endTransaction()
+function TurretBase:sv_onRepairToolDestroy(player)
+    self.network:sendToClient(player, "cl_onRepairToolDestroy")
 end
 
 function TurretBase:sv_setDirTarget(dir)
@@ -260,7 +258,7 @@ function TurretBase:client_onDestroy()
 end
 
 function TurretBase:client_canErase()
-    local canErase = not g_repairingTurret and self.cl_health >= self.maxHealth and self.cl_turret:getSeatCharacter() == nil
+    local canErase = not sm.MANNEDTURRET_repairingTurret and self.cl_health >= self.maxHealth and self.cl_turret:getSeatCharacter() == nil
     if not canErase then
         sm.gui.setInteractionText("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>Unable to pick up turret</p>")
     end
@@ -273,7 +271,7 @@ function TurretBase:client_canInteract()
     local canInteract = seatExists and self.cl_turret:getSeatCharacter() == nil
     local canRepair = self.cl_health < self.maxHealth
 
-    if not g_repairingTurret then
+    if not sm.MANNEDTURRET_repairingTurret then
         local displayTexts = {}
         if canInteract then
             table.insert(displayTexts, sm.gui.getKeyBinding("Use", true))
@@ -291,13 +289,13 @@ function TurretBase:client_canInteract()
     end
 
     if canRepair then
-        if g_repairingTurret then
+        if sm.MANNEDTURRET_repairingTurret then
             sm.gui.setInteractionText("", getRepairText())
         end
         sm.gui.setInteractionText("", getHealthDisplay(self.cl_health))
     end
 
-    return canInteract and not g_repairingTurret
+    return canInteract and not sm.MANNEDTURRET_repairingTurret
 end
 
 function TurretBase:client_onInteract(char, state)
@@ -319,35 +317,12 @@ function TurretBase:client_getAvailableChildConnectionCount( connectionType )
 end
 
 function TurretBase:client_onTinker(char, state)
-    if state == g_repairingTurret then return end
-
     if state then
-        g_repairingTurret = true
-        g_turretBase = self.interactable
-
-        if sm.game.getLimitedInventory() then
-            self.network:sendToServer("sv_onRepair", sm.localPlayer.getSelectedHotbarSlot())
-        else
-            local inv = sm.localPlayer.getHotbar()
-            local selectedSlot = sm.localPlayer.getSelectedHotbarSlot()
-            local activeItem = sm.localPlayer.getActiveItem()
-            for i = 1, inv.size do
-                local hotbarSlot = i - 1
-                local row = math.ceil(i/10) - 1
-                if i > 10 then
-                    hotbarSlot = hotbarSlot - row * 10
-                end
-
-                local containerSlot = i - 1
-                if hotbarSlot == selectedSlot and inv:getItem(containerSlot).uuid == activeItem then
-                    self.network:sendToServer("sv_onRepair", containerSlot)
-                    break
-                end
-            end
-        end
-    else
-        self:cl_onRepairEnd()
+        sm.MANNEDTURRET_repairingTurret = true
+        sm.MANNEDTURRET_turretBase = self.interactable
     end
+
+    self.network:sendToServer("sv_onRepair", state)
 end
 
 function TurretBase:client_onUpdate(dt)
@@ -463,8 +438,8 @@ function TurretBase:client_onClientDataUpdate(data, channel)
             self.seatBuilt = true
             self.gunBuilt = true
 
-            if g_repairingTurret then
-                self:cl_onRepairEnd()
+            if sm.MANNEDTURRET_repairingTurret then
+                self.network:sendToServer("sv_onRepair", false)
             end
 
             if data.prevDestroyed == true then
