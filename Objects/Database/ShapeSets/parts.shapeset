@@ -118,6 +118,66 @@
          "uuid" : "891bd0f5-f387-4020-a2b4-1bace9932ec0"
       },
       {
+         "carryItem" : true,
+         "color" : "6b7d07",
+         "box" : {
+            //"col" : "$CONTENT_DATA/Objects/Mesh/Collision/kin_interactive_turret_seat_col.obj",
+            "x" : 1, //4,
+            "y" : 1, //6,
+            "z" : 1  //3
+         },
+         "name" : "obj_interactive_turret_seat",
+         "physicsMaterial" : "Metal",
+         "ratings" : {
+            "durability" : 10
+         },
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/TurretSeat/kin_interactive_turret_seat.rend",
+         "restrictions" : {
+            "destructable" : false
+         },
+         "rotationSet" : "PropY",
+         "scripted" : {
+            "classname" : "TurretSeat2",
+            "data" : {},
+            "filename" : "$CONTENT_DATA/Scripts/interactables/TurretSeat_part.lua",
+            "seat": {
+					"bones": [
+						{
+							"name": "Hips",
+							"offset": {
+								"x": 0.0,
+								"y": -0.1,
+								"z": -0.3
+							}
+						},
+						{
+							"name": "LeftForeArm",
+							"offset": {
+								"x": 1.2,
+								"y": 1.1,
+								"z": 1.5
+							},
+							"freeRotation": true
+						},
+						{
+							"name": "RightForeArm",
+							"offset": {
+								"x": -1.2,
+								"y": 1.1,
+								"z": 1.5
+							},
+							"freeRotation": true
+						}
+					],
+					"ragdollFile": "$GAME_DATA/Character/bikeseat_ragdoll.json",
+					"enterAudio": "Seat seated",
+					"exitAudio": "Seat unseated"
+				}
+         },
+         "sticky" : "-Y",
+         "uuid" : "f2e0a89d-578b-472d-9953-122216ade646"
+      },
+      {
 			"uuid": "53a7a730-24e1-49b6-b3df-54407ea75b82",
 			"name": "obj_seat_chunkloader",
 			"renderable": "$SURVIVAL_DATA/Objects/Renderable/interactive_upgradeable/obj_interactiveupgradeable_seat01.rend",

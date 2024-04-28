@@ -7,8 +7,8 @@
 ---@field seatUUID string
 ---@field seatHologramUUID string
 ---@field explosionDebrisData ExplosionDebris[]
----@field turret Harvestable
----@field cl_turret Harvestable
+---@field turret Shape
+---@field cl_turret Shape
 TurretBase = class()
 TurretBase.maxParentCount = 1
 TurretBase.maxChildCount = 255
@@ -39,6 +39,8 @@ function TurretBase:server_onCreate()
     self:sv_createTurret()
     self.network:setClientData({ health = health, destroyed = self.destroyed, ammoType = self.ammoType }, 2)
 
+    self.sv_dir = { x = 0, y = 0 }
+
     self.interactable.publicData = {
         isTurret = true,
         health = self.maxHealth,
@@ -62,12 +64,48 @@ end
 
 function TurretBase:server_onDestroy()
     if sm.exists(self.turret) then
-        self.turret:destroy()
+        self.turret:destroyShape()
     end
 end
 
-function TurretBase:server_onFixedUpdate()
-    local active = sm.exists(self.turret) and self.turret:getSeatCharacter() ~= nil or false
+local function quatToAxisAngle(q1)
+    --[[if q1.w > 1 then
+        q1.normalise() -- if w>1 acos and sqrt will produce errors, this cant happen if quaternion is normalised
+    end]]
+
+    local angle = 2 * math.acos(q1.w)
+    local s = math.sqrt(1-q1.w*q1.w) -- assuming quaternion normalised then w is less than 1, so term always positive.
+    if s < 0.001 then -- test to avoid divide by zero, s is always positive due to sqrt
+        -- if s close to zero then direction of axis not important
+        -- if it is important that axis is normalised then replace with x=1; y=z=0;
+        return sm.vec3.new(q1.x, q1.y, q1.z), angle
+    else
+        -- normalise axis
+        return sm.vec3.new(q1.x / s, q1.y / s, q1.z / s), angle
+    end
+end
+
+function TurretBase:server_onFixedUpdate(dt)
+    if sm.exists(self.turret) then
+        local shape = self.turret
+
+        sm.physics.applyImpulse(shape, ((self:getSeatPos() - shape.worldPosition) * 2 - ( shape.velocity * 0.3 )) * shape.mass, true)
+
+        if sm.game.getCurrentTick() % 40 == 0 then
+            --sm.effect.playEffect("Part - Upgrade", shape.worldPosition + dir)
+        end
+
+        local start = self.shape.worldRotation * sm.quat.angleAxis(-math.rad(90), vec3_right)
+        local target = self.shape.worldRotation * sm.quat.angleAxis(self.sv_dir.x, vec3_forward) * sm.quat.angleAxis(-self.sv_dir.y - math.rad(90), vec3_right)
+
+        local axis, angle = quatToAxisAngle(target)
+        --print(math.deg(angle), math.deg(2 * math.acos(shape.worldRotation.w)))
+        local correct = shape.up:cross(target * self.shape.up) + shape.at:cross(self.shape.at) --axis --* (angle - (2 * math.acos(shape.worldRotation.w))) --shape.up:cross(target * self.shape.up) + shape.at:cross(self.shape.at)
+        local body = shape.body
+        sm.physics.applyTorque(body, (correct - body.angularVelocity * 0.3) * shape.mass * dt, true)
+    end
+
+    local active = sm.exists(self.turret) and self.turret.interactable:getSeatCharacter() ~= nil or false
     if active ~= self.interactable.active then
         self.interactable.active = active
     end
@@ -125,8 +163,8 @@ function TurretBase:sv_takeDamage(damage)
     if newHealth <= 0 and not self.destroyed then
         self.network:sendToClients("cl_onDestroy")
 
-        local char = self.turret:getSeatCharacter()
-        self.turret:destroy()
+        local char = self.turret.interactable:getSeatCharacter()
+        self.turret:destroyShape()
 
         if char then
             char:setTumbling(true)
@@ -145,7 +183,7 @@ function TurretBase:sv_takeDamage(damage)
     self.cl_health = newHealth
     self.interactable.publicData.health = newHealth
     if turretExists then
-        self.turret.publicData.health = newHealth
+        self.turret.interactable.publicData.health = newHealth
     end
 
     local data = { health = newHealth, destroyed = self.destroyed, prevDestroyed = prevDestroyed, ammoType = self.ammoType }
@@ -159,18 +197,18 @@ function TurretBase:sv_e_setAmmoType(ammoType)
 end
 
 function TurretBase:server_canErase()
-    return self.cl_health >= self.maxHealth and self.turret:getSeatCharacter() == nil
+    return self.cl_health >= self.maxHealth and self.turret.interactable:getSeatCharacter() == nil
 end
 
 function TurretBase:sv_createTurret()
     if self.destroyed then return end
 
     local pos = self:getSeatPos()
-    self.turret = sm.harvestable.create(sm.uuid.new(self.seatUUID), pos, self.shape.worldRotation)
-    self.turret:setParams({ base = self.interactable, ammoType = self.ammoType })
+    self.turret = sm.shape.createPart(sm.uuid.new("f2e0a89d-578b-472d-9953-122216ade646"), pos, self.shape.worldRotation) --sm.harvestable.create(sm.uuid.new(self.seatUUID), pos, self.shape.worldRotation)
+    self.turret.interactable:setParams({ base = self.interactable, ammoType = self.ammoType })
     self.network:setClientData(self.turret, 1)
 
-    sm.log.warning("TRYING TO CREATE LOADER")
+    --[[sm.log.warning("TRYING TO CREATE LOADER")
     local pos_64 = pos/64
     local x, y = math.floor(pos_64.x), math.floor(pos_64.y)
     local cellKey = CellKey(x, y)
@@ -181,11 +219,20 @@ function TurretBase:sv_createTurret()
         sm.storage.save(g_saveKey_TurretSeatChunkLoaders, g_TurretSeatChunkLoaders)
     else
         sm.log.warning("CHUNK ALREADY LOADED")
-    end
+    end]]
 end
 
 function TurretBase:sv_updateDir(dir)
-    if not sm.exists(self.turret) or not self.turret.publicData.controlsEnabled then return end
+    if not sm.exists(self.turret) or not self.turret.interactable.publicData.controlsEnabled then return end
+
+    self.sv_dir.x = self.sv_dir.x + dir.x
+    self.sv_dir.y = self.sv_dir.y + dir.y
+
+    local norm_y = math.abs(self.sv_dir.y)
+    local limit = self.sv_dir.y < 0 and 0.7 or 1.05 --lower/upper
+    if norm_y > limit then
+        self.sv_dir.y = self.sv_dir.y * (limit / norm_y)
+    end
 
     self.network:sendToClients("cl_n_updateDir", dir)
 end
@@ -260,7 +307,7 @@ function TurretBase:client_onDestroy()
 end
 
 function TurretBase:client_canErase()
-    local canErase = not g_repairingTurret and self.cl_health >= self.maxHealth and self.cl_turret:getSeatCharacter() == nil
+    local canErase = not g_repairingTurret and self.cl_health >= self.maxHealth and self.cl_turret.interactable:getSeatCharacter() == nil
     if not canErase then
         sm.gui.setInteractionText("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>Unable to pick up turret</p>")
     end
@@ -270,7 +317,7 @@ end
 
 function TurretBase:client_canInteract()
     local seatExists = sm.exists(self.cl_turret)
-    local canInteract = seatExists and self.cl_turret:getSeatCharacter() == nil
+    local canInteract = seatExists and self.cl_turret.interactable:getSeatCharacter() == nil
     local canRepair = self.cl_health < self.maxHealth
 
     if not g_repairingTurret then
@@ -302,7 +349,7 @@ end
 
 function TurretBase:client_onInteract(char, state)
     if not state then return end
-    sm.event.sendToHarvestable(self.cl_turret, "cl_seat", char)
+    sm.event.sendToInteractable(self.cl_turret.interactable, "cl_seat", char)
 end
 
 function TurretBase:client_canTinker()
@@ -354,7 +401,7 @@ function TurretBase:client_onUpdate(dt)
     if not (self.cl_turret and sm.exists(self.cl_turret)) then return end
 
     self:cl_checkHighlight()
-    self.cl_turret:setPosition(self:getSeatPos() + (self.lifted and -vec3_up * 1000 or vec3_zero))
+    --self.cl_turret:setPosition(self:getSeatPos() + (self.lifted and -vec3_up * 1000 or vec3_zero))
 
     local lifted = self.shape.body:isOnLift()
     if lifted then
@@ -375,7 +422,7 @@ function TurretBase:client_onUpdate(dt)
             self.dirPrev = nil
             self.dirTarget = nil
         end
-    elseif not lifted and self.cl_turret:getSeatCharacter() == sm.localPlayer.getPlayer().character and self.cl_turret.clientPublicData.controlsEnabled then
+    elseif not lifted and self.cl_turret.interactable:getSeatCharacter() == sm.localPlayer.getPlayer().character and sm.MANNEDTURRET_turretSeats_clientPublicData[self.cl_turret.interactable.id].controlsEnabled then
         local x, y = sm.localPlayer.getMouseDelta()
         if x ~= 0 or y ~= 0 then
             local dir = { x = x, y = y }
@@ -386,7 +433,7 @@ function TurretBase:client_onUpdate(dt)
 
     --semi functional worldrot
     --local worldRot1 = sm.quat.angleAxis(self.dir.x, vec3_up) * sm.quat.angleAxis(-self.dir.y + math.pi * 0.5, vec3_right)
-    self.cl_turret:setRotation(self.shape.worldRotation * sm.quat.angleAxis(self.dir.x, vec3_forward) * sm.quat.angleAxis(-self.dir.y, vec3_right))
+    --self.cl_turret:setRotation(self.shape.worldRotation * sm.quat.angleAxis(self.dir.x, vec3_forward) * sm.quat.angleAxis(-self.dir.y, vec3_right))
 end
 
 function TurretBase:cl_syncToLateJoiner(data)
@@ -410,7 +457,14 @@ function TurretBase:client_onClientDataUpdate(data, channel)
         self.healthBar:setSliderData("Health", self.maxHealth, health)
 
         if sm.exists(self.cl_turret) then
-            self.cl_turret.clientPublicData.health = health
+            if not sm.MANNEDTURRET_turretSeats_clientPublicData[self.cl_turret.interactable.id] then
+                sm.MANNEDTURRET_turretSeats_clientPublicData[self.cl_turret.interactable.id] = {
+                    health = self.maxHealth,
+                    controlsEnabled = true,
+                    base = self.interactable
+                }
+            end
+            sm.MANNEDTURRET_turretSeats_clientPublicData[self.cl_turret.interactable.id].health = health
         end
 
         if data.destroyed then
@@ -478,7 +532,7 @@ end
 function TurretBase:cl_n_updateDir(dir)
     if not sm.exists(self.cl_turret) then return end
 
-    if sm.localPlayer.getPlayer().character ~= self.cl_turret:getSeatCharacter() then
+    if sm.localPlayer.getPlayer().character ~= self.cl_turret.interactable:getSeatCharacter() then
         self:cl_updateDir(dir)
     end
 end
@@ -545,7 +599,7 @@ end
 
 function TurretBase:cl_checkHighlight()
     if not sm.exists(self.turretHighlight) then
-        self.turretHighlight = sm.effect.createEffect("ShapeRenderable", self.cl_turret)
+        self.turretHighlight = sm.effect.createEffect("ShapeRenderable", self.cl_turret.interactable)
         self.turretHighlight:setParameter("uuid", sm.uuid.new(self.seatHologramUUID))
         self.turretHighlight:setParameter("visualization", true)
         self.turretHighlight:setScale(vec3_one * 0.25)
@@ -745,5 +799,5 @@ function TurretBase:getSeatPos()
 
     local turretPos = self.cl_turret.worldPosition
     local targetPos = turretPos + self.cl_turret.worldRotation * vec3_forward * 0.8
-    return self.shape.worldPosition + self.shape.at * 0.53 + self.shape.velocity * 0.05 + (targetPos - turretPos)
+    return self.shape.worldPosition + self.shape.at * 0.66 + self.shape.velocity * 0.05 + (targetPos - turretPos)
 end
