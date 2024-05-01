@@ -161,6 +161,8 @@ function CannonNuke_Tool:client_onCreate()
 		self.activeItem = nil
 		self.wasOnGround = true
 	end
+
+	self:loadAnimations()
 end
 
 function CannonNuke_Tool.loadAnimations( self )
@@ -319,9 +321,12 @@ function CannonNuke_Tool:client_onEquip()
 	self.wantEquipped = true
 
 	if self.tool:isLocal() then
-		self.activeItem = sm.localPlayer.getActiveItem()
-		self:cl_updateRenderable(self.activeItem)
-		self.network:sendToServer( "sv_updateRenderable", self.activeItem )
+		local item = sm.localPlayer.getActiveItem()
+		if renderables[tostring(item)] == nil then return end
+
+		self.activeItem = item
+		self:cl_updateRenderable(item)
+		self.network:sendToServer( "sv_updateRenderable", item )
 	end
 end
 

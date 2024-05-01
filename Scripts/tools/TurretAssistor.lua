@@ -39,6 +39,7 @@ g_TurretSeatChunkLoaders = g_TurretSeatChunkLoaders or {}
 g_saveKey_TurretSeatChunkLoaders = "af96778d-402e-4f42-9332-3cb7d9119479"
 function TurretAssistor:server_onCreate()
     g_TurretSeatChunkLoaders = sm.storage.load(g_saveKey_TurretSeatChunkLoaders) or {}
+    g_turretAssistor = self.tool
 
     self.players = sm.player.getAllPlayers()
 
@@ -81,4 +82,12 @@ function TurretAssistor:sv_sendDataToJoiner(player)
             end
         end
     end
+end
+
+function TurretAssistor:sv_recreateChunkLoader(data)
+    local seat = sm.shape.createPart(sm.uuid.new("53a7a730-24e1-49b6-b3df-54407ea75b82"), sm.vec3.new(data.pos.x, data.pos.y, -200), nil, false, true)
+    seat.interactable:setParams(data.dummy)
+
+    g_TurretSeatChunkLoaders[data.cellKey] = seat
+    sm.storage.save(g_saveKey_TurretSeatChunkLoaders, g_TurretSeatChunkLoaders)
 end
