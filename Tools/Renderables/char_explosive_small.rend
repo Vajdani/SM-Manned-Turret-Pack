@@ -1,0 +1,26 @@
+{
+	"lodList": [
+		{
+			"mesh": "$CONTENT_DATA/Tools/Mesh/char_explosive_small.dae",
+			"includes": [
+				"POSITION",
+				"UV0",
+				"NORMAL",
+				"TANGENTS",
+				"BLEND_INDICES",
+				"BLEND_WEIGHTS"
+			],
+			"subMeshMap": {
+				"propanetanksmall": {
+					"textureList": [
+						"$GAME_DATA/Objects/Textures/interactive/obj_interactive_propanetank_small_dif.tga",
+						"$GAME_DATA/Objects/Textures/interactive/obj_interactive_propanetank_small_asg.tga",
+						"$GAME_DATA/Objects/Textures/interactive/obj_interactive_propanetank_small_nor.tga"
+					],
+					"material": "DifAsgNor"
+				}
+			},
+			"maxViewDistance": 1000.0
+		}
+	]
+}

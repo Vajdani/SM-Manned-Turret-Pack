@@ -135,8 +135,8 @@ CannonNuke_Tool = class()
 
 local renderables = {
 	["47b43e6e-280d-497e-9896-a3af721d89d2"] = { "$CONTENT_DATA/Tools/Renderables/char_nuke.rend" }, 						--Nuclear Bomb
-	["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = { "$SURVIVAL_DATA/Character/Char_bucket/char_bucket_full.rend" }, 			--Small Explosive
-	["24001201-40dd-4950-b99f-17d878a9e07b"] = { "$SURVIVAL_DATA/Character/Char_bucket/char_bucket_full_chemical.rend" }, 	--Large Explosive
+	["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = { "$CONTENT_DATA/Tools/Renderables/char_explosive_small.rend" }, 			--Small Explosive
+	["24001201-40dd-4950-b99f-17d878a9e07b"] = { "$CONTENT_DATA/Tools/Renderables/char_explosive_large.rend" }, 			--Large Explosive
 }
 local renderablesTp = {
     "$SURVIVAL_DATA/Character/Char_Male/Animations/char_male_tp_bucket.rend",
