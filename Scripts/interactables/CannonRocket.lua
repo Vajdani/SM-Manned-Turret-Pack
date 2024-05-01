@@ -99,6 +99,11 @@ function CannonRocket:client_onCreate()
 end
 
 function CannonRocket:client_onUpdate(dt)
+    local char = self.interactable:getSeatCharacter()
+    if char then
+        char:setNameTag("")
+    end
+
     if not self.isLocal then return end
 
     local x, y = sm.localPlayer.getMouseDelta()

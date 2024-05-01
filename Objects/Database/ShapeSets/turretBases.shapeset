@@ -69,7 +69,7 @@
             "y" : 3,
             "z" : 7
          },
-         "name" : "obj_interactive_cannon_base",
+         "name" : "obj_interactive_minigun_base",
          "physicsMaterial" : "Metal",
          "ratings" : {
             "durability" : 10
@@ -90,103 +90,6 @@
          "sticky" : "-Y",
          "uuid" : "ae0a8816-00d8-4515-932b-00661ef20a0a",
          "showInInventory": false
-      },
-      {
-         "color" : "6b7d07",
-         "hull" : {
-            "col" : "$CONTENT_DATA/Objects/Mesh/Collision/obj_interactive_mountable_turretgun_col.obj",
-            "x" : 1,
-            "y" : 2,
-            "z" : 5
-         },
-         "name" : "obj_interactive_mountable_turretgun",
-         "physicsMaterial" : "Metal",
-         "ratings" : {
-            "buoyancy" : 3,
-            "density" : 2,
-            "durability" : 4,
-            "friction" : 3
-         },
-         "renderable" : "$CONTENT_DATA/Objects/Renderables/obj_interactive_mountable_turretgun.rend",
-         "rotationSet" : "PropY",
-         "scripted" : {
-            "classname" : "MountedTurretGun",
-            "data" : {},
-            "filename" : "$CONTENT_DATA/Scripts/interactables/MountedTurretGun.lua"
-         },
-         "sticky" : "-X+X-Y",
-         "uuid" : "891bd0f5-f387-4020-a2b4-1bace9932ec0"
-      },
-      {
-			"uuid": "53a7a730-24e1-49b6-b3df-54407ea75b82",
-			"name": "obj_seat_chunkloader",
-			"renderable": "$SURVIVAL_DATA/Objects/Renderable/interactive_upgradeable/obj_interactiveupgradeable_seat01.rend",
-			"color": "df7f01",
-			"hull": {
-				"x": 4,
-				"y": 4,
-				"z": 4,
-				"col": "$SURVIVAL_DATA/Objects/Collision/obj_interactive_seat_01.obj"
-			},
-			"scripted": {
-				"filename": "$CONTENT_DATA/Scripts/interactables/SeatChunkLoader.lua",
-				"classname": "SeatChunkLoader",
-				"data": {},
-				"seat": {
-					"bones": [
-						{
-							"name": "Hips",
-							"offset": {
-								"x": 0.0,
-								"y": -0.2,
-								"z": 0.25
-							}
-						},
-						{
-							"name": "LeftForeArm",
-							"offset": {
-								"x": 1.0,
-								"y": -0.25,
-								"z": 1.5
-							},
-							"freeRotation": true
-						},
-						{
-							"name": "RightForeArm",
-							"offset": {
-								"x": -1.0,
-								"y": -0.25,
-								"z": 1.5
-							},
-							"freeRotation": true
-						}
-					],
-					"ragdollFile": "$GAME_DATA/Character/seat_ragdoll.json",
-					"enterAudio": "Seat seated",
-					"exitAudio": "Seat unseated"
-				}
-			},
-			"rotationSet": "PropY",
-			"sticky": "-Y",
-			"physicsMaterial": "Mechanical",
-			"ratings": {
-				"density": 3,
-				"durability": 10,
-				"friction": 5,
-				"buoyancy": 2
-			},
-         "restrictions" : {
-				"buildable" : false,
-				"connectable" : false,
-				"convertibleToDynamic" : false,
-				"destructable" : false,
-				"erasable" : false,
-				"liftable" : false,
-				"paintable" : false,
-				"usable" : false
-			},
-			"flammable": false,
-         "showInInventory": false
-		}
+      }
    ]
 }
