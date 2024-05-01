@@ -273,7 +273,7 @@ function CannonNuke_Tool:client_onUpdate( dt )
 	local normalWeight = 1.0 - crouchWeight
 	local totalWeight = 0.0
 
-	for name, animation in pairs( self.tpAnimations.animations ) do
+	for name, animation in pairs( self.tpAnimations.animations or {} ) do
 		animation.time = animation.time + dt
 
 		if name == self.tpAnimations.currentAnimation then
