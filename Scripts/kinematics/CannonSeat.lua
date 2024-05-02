@@ -95,7 +95,7 @@ function CannonSeat:server_onCreate()
 end
 
 function CannonSeat:server_onDestroy()
-    if self.rocket then
+    if self.rocket and sm.exists(self.rocket) then
         sm.event.sendToInteractable(self.rocket.interactable, "sv_explode")
     end
 
@@ -155,7 +155,7 @@ function CannonSeat:sv_onRocketExplode(detonated)
 end
 
 function CannonSeat:sv_detonateRocket()
-    if self.rocket == nil then return end
+    if self.rocket == nil or not sm.exists(self.rocket) then return end
 
     sm.event.sendToInteractable(self.rocket.interactable, "sv_explode")
     self.rocket = nil
