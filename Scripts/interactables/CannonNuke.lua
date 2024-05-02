@@ -133,10 +133,10 @@ dofile( "$SURVIVAL_DATA/Scripts/game/survival_projectiles.lua" )
 ---@field blendTime number
 CannonNuke_Tool = class()
 
-local nukeUUID = sm.uuid.new("47b43e6e-280d-497e-9896-a3af721d89d2")
-
 local renderables = {
-	"$CONTENT_DATA/Tools/Renderables/char_nuke.rend"
+	["47b43e6e-280d-497e-9896-a3af721d89d2"] = { "$CONTENT_DATA/Tools/Renderables/char_nuke.rend" }, 						--Nuclear Bomb
+	["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = { "$CONTENT_DATA/Tools/Renderables/char_explosive_small.rend" }, 			--Small Explosive
+	["24001201-40dd-4950-b99f-17d878a9e07b"] = { "$CONTENT_DATA/Tools/Renderables/char_explosive_large.rend" }, 			--Large Explosive
 }
 local renderablesTp = {
     "$SURVIVAL_DATA/Character/Char_Male/Animations/char_male_tp_bucket.rend",
@@ -147,7 +147,10 @@ local renderablesFp = {
     "$SURVIVAL_DATA/Character/Char_bucket/char_bucket_fp_animlist.rend"
 }
 
-sm.tool.preloadRenderables( renderables )
+for k, v in pairs(renderables) do
+	sm.tool.preloadRenderables( v )
+end
+
 sm.tool.preloadRenderables( renderablesTp )
 sm.tool.preloadRenderables( renderablesFp )
 
@@ -158,6 +161,8 @@ function CannonNuke_Tool:client_onCreate()
 		self.activeItem = nil
 		self.wasOnGround = true
 	end
+
+	self:loadAnimations()
 end
 
 function CannonNuke_Tool.loadAnimations( self )
@@ -244,6 +249,12 @@ function CannonNuke_Tool:client_onUpdate( dt )
 				swapFpAnimation( self.fpAnimations, "jump", "land", 0.2 )
 			end
 
+			local newItem = sm.localPlayer.getActiveItem()
+			if self.activeItem ~= newItem and renderables[tostring(newItem)] ~= nil then
+				self.activeItem = newItem
+				self:cl_updateRenderable(self.activeItem)
+				self.network:sendToServer( "sv_updateRenderable", self.activeItem )
+			end
 		end
 		updateFpAnimations( self.fpAnimations, self.equipped, dt )
 
@@ -262,7 +273,7 @@ function CannonNuke_Tool:client_onUpdate( dt )
 	local normalWeight = 1.0 - crouchWeight
 	local totalWeight = 0.0
 
-	for name, animation in pairs( self.tpAnimations.animations ) do
+	for name, animation in pairs( self.tpAnimations.animations or {} ) do
 		animation.time = animation.time + dt
 
 		if name == self.tpAnimations.currentAnimation then
@@ -309,16 +320,31 @@ end
 function CannonNuke_Tool:client_onEquip()
 	self.wantEquipped = true
 
+	if self.tool:isLocal() then
+		local item = sm.localPlayer.getActiveItem()
+		if renderables[tostring(item)] == nil then return end
+
+		self.activeItem = item
+		self:cl_updateRenderable(item)
+		self.network:sendToServer( "sv_updateRenderable", item )
+	end
+end
+
+function CannonNuke_Tool:sv_updateRenderable(item)
+	self.network:sendToClients("cl_updateRenderable", item)
+end
+
+function CannonNuke_Tool:cl_updateRenderable(item)
 	local currentRenderablesTp = {}
 	local currentRenderablesFp = {}
 	for k,v in pairs( renderablesTp ) do currentRenderablesTp[#currentRenderablesTp+1] = v end
 	for k,v in pairs( renderablesFp ) do currentRenderablesFp[#currentRenderablesFp+1] = v end
-	for k,v in pairs( renderables ) do
+	for k,v in pairs( renderables[tostring(item)] ) do
         currentRenderablesTp[#currentRenderablesTp+1] = v
         currentRenderablesFp[#currentRenderablesFp+1] = v
     end
 
-	local color = sm.item.getShapeDefaultColor( nukeUUID )
+	local color = sm.item.getShapeDefaultColor( item )
 	self.tool:setTpRenderables( currentRenderablesTp )
 	self.tool:setTpColor( color )
 	if self.isLocal then
@@ -361,12 +387,12 @@ function CannonNuke_Tool:client_onEquippedUpdate( lmb, rmb, f )
 				return true, false
 			end
 
-			if cPub.hasNukeLoaded then
-            	sm.gui.setInteractionText("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>A nuke is already loaded!</p>")
+			if cPub.isBarrelLoaded then
+            	sm.gui.setInteractionText("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>An explosive is already loaded!</p>")
 				return true, false
 			end
 
-			sm.gui.setInteractionText("", sm.gui.getKeyBinding("Create", true), "Load Nuke")
+			sm.gui.setInteractionText("", sm.gui.getKeyBinding("Create", true), "Load Explosive")
 
 			if lmb == 1 then
 				self.network:sendToServer(
@@ -375,13 +401,14 @@ function CannonNuke_Tool:client_onEquippedUpdate( lmb, rmb, f )
 						cannon = cannon,
 						consumeData = {
 							selectedSlot = sm.localPlayer.getSelectedHotbarSlot(),
+							item = sm.localPlayer.getActiveItem(),
 							container = sm.game.getLimitedInventory() and sm.localPlayer.getInventory() or sm.localPlayer.getHotbar()
 						}
 					}
 				)
 			end
         else
-            sm.gui.setInteractionText("", sm.gui.getKeyBinding("Create", true), "Toss Nuke")
+            sm.gui.setInteractionText("", sm.gui.getKeyBinding("Create", true), "Toss Explosive")
 
 			if lmb == 1 or lmb == 2 then
                 self:cl_toss()
@@ -400,20 +427,21 @@ function CannonNuke_Tool:sv_consumeNuke(params)
     end
 
     sm.container.beginTransaction()
-    sm.container.spendFromSlot( params.container, params.selectedSlot, nukeUUID, 1, true )
+    sm.container.spendFromSlot( params.container, params.selectedSlot, params.item, 1, true )
     return sm.container.endTransaction()
 end
 
 function CannonNuke_Tool:sv_loadNuke(nuke)
     if not self:sv_consumeNuke(nuke.consumeData) then return end
 
-    sm.event.sendToHarvestable(nuke.cannon, "sv_loadNuke")
+    sm.event.sendToHarvestable(nuke.cannon, "sv_loadNuke", nuke.consumeData.item)
     self.network:sendToClients( "cl_onUse" )
 end
 
 function CannonNuke_Tool:cl_toss()
 	if self.fireCooldownTimer <= 0.0 then
-		if sm.container.canSpend( sm.localPlayer.getInventory(), nukeUUID, 1 ) then
+		local item = sm.localPlayer.getActiveItem()
+		if sm.container.canSpend( sm.localPlayer.getInventory(), item, 1 ) then
 			local dir = sm.localPlayer.getDirection()
 			local forward = sm.vec3.new( 0, 0, 1 ):cross( sm.localPlayer.getRight() )
 			local pitchScale = forward:dot( dir )
@@ -421,7 +449,7 @@ function CannonNuke_Tool:cl_toss()
 
 			local params = {
                 firePos = self:calculateFirePosition(),
-                fakePos = self:calculateTpMuzzlePos(),
+                item = item,
                 dir = dir,
                 selectedSlot = sm.localPlayer.getSelectedHotbarSlot(),
                 container = sm.game.getLimitedInventory() and sm.localPlayer.getInventory() or sm.localPlayer.getHotbar()
@@ -438,9 +466,10 @@ end
 function CannonNuke_Tool:sv_n_onUse(params)
     if not self:sv_consumeNuke(params) then return end
 
+	local item = params.item
     local dir = params.dir
     local rot = sm.vec3.getRotation(vec3_forward, dir)
-    local nuke = sm.shape.createPart(nukeUUID, params.firePos + dir - rot * sm.item.getShapeOffset(nukeUUID), rot, true, true )
+    local nuke = sm.shape.createPart(item, params.firePos + dir - rot * sm.item.getShapeOffset(item), rot, true, true )
     sm.physics.applyImpulse(nuke, (self.tool:getOwner().character.velocity + dir * 10) * nuke.mass, true)
 
     self.network:sendToClients( "cl_n_onUse" )
@@ -487,38 +516,4 @@ function CannonNuke_Tool:calculateFirePosition()
 	end
 	local firePosition = GetOwnerPosition( self.tool ) + fireOffset
 	return firePosition
-end
-
-function CannonNuke_Tool:calculateTpMuzzlePos()
-	local crouching = self.tool:isCrouching()
-	local dir = sm.localPlayer.getDirection()
-	local pitch = math.asin( dir.z )
-	local right = sm.localPlayer.getRight()
-	local up = right:cross(dir)
-
-	local fakeOffset = sm.vec3.new( 0.0, 0.0, 0.0 )
-
-	--General offset
-	fakeOffset = fakeOffset + right * 0.25
-	fakeOffset = fakeOffset + dir * 0.5
-	fakeOffset = fakeOffset + up * 0.25
-
-	--Action offset
-	local pitchFraction = pitch / ( math.pi * 0.5 )
-	if crouching then
-		fakeOffset = fakeOffset + dir * 0.2
-		fakeOffset = fakeOffset + up * 0.1
-		fakeOffset = fakeOffset - right * 0.05
-
-		if pitchFraction > 0.0 then
-			fakeOffset = fakeOffset - up * 0.2 * pitchFraction
-		else
-			fakeOffset = fakeOffset + up * 0.1 * math.abs( pitchFraction )
-		end
-	else
-		fakeOffset = fakeOffset + up * 0.1 *  math.abs( pitchFraction )
-	end
-
-	local fakePosition = fakeOffset + GetOwnerPosition( self.tool )
-	return fakePosition
 end

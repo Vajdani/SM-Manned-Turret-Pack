@@ -52,6 +52,26 @@ CannonSeat.overrideAmmoTypes = {
         ammo = sm.uuid.new("47b43e6e-280d-497e-9896-a3af721d89d2"),
         uuid = sm.uuid.new("47b43e6e-280d-497e-9896-a3af721d89d2"),
         ignoreAmmoConsumption = true
+    },
+    {
+        name = "Large Explosive Canister",
+        velocity = 50,
+        recoilStrength = 3,
+        fireCooldown = 40,
+        effect = "Cannon - Shoot",
+        ammo = sm.uuid.new("24001201-40dd-4950-b99f-17d878a9e07b"),
+        uuid = sm.uuid.new("24001201-40dd-4950-b99f-17d878a9e07b"),
+        ignoreAmmoConsumption = true
+    },
+    {
+        name = "Small Explosive Canister",
+        velocity = 150,
+        recoilStrength = 1,
+        fireCooldown = 40,
+        effect = "Cannon - Shoot",
+        ammo = sm.uuid.new("8d3b98de-c981-4f05-abfe-d22ee4781d33"),
+        uuid = sm.uuid.new("8d3b98de-c981-4f05-abfe-d22ee4781d33"),
+        ignoreAmmoConsumption = true
     }
 }
 CannonSeat.containerToAmmoType = {
@@ -75,12 +95,12 @@ function CannonSeat:server_onCreate()
 end
 
 function CannonSeat:server_onDestroy()
-    if self.rocket then
+    if self.rocket and sm.exists(self.rocket) then
         sm.event.sendToInteractable(self.rocket.interactable, "sv_explode")
     end
 
-    if sm.exists(self.base) and self:isOverrideAmmoType() and self.ammoType.index == 1 then --Is Nuke
-        sm.event.sendToInteractable(self.base, "sv_spawnNukeOnDestroy", self.ammoType.previous)
+    if sm.exists(self.base) and self:isOverrideAmmoType() then
+        sm.event.sendToInteractable(self.base, "sv_spawnNukeOnDestroy", self.ammoType)
     end
 end
 
@@ -120,11 +140,8 @@ function CannonSeat:sv_OnPartFire(ammoType, ammoData, part, player)
         self:sv_SetTurretControlsEnabled(false)
         sm.event.sendToInteractable(self.base, "sv_clearDrivingFlags", true)
     elseif self:isOverrideAmmoType(ammoType) then
-        local id = ammoType.index
-        if id == 1 then --Nuke
-            self:sv_unSetOverrideAmmoType()
-            self.network:sendToClients("cl_updateLoadedNuke", false)
-        end
+        self:sv_unSetOverrideAmmoType()
+        self.network:sendToClients("cl_updateLoadedNuke", false)
     end
 end
 
@@ -138,7 +155,7 @@ function CannonSeat:sv_onRocketExplode(detonated)
 end
 
 function CannonSeat:sv_detonateRocket()
-    if self.rocket == nil then return end
+    if self.rocket == nil or not sm.exists(self.rocket) then return end
 
     sm.event.sendToInteractable(self.rocket.interactable, "sv_explode")
     self.rocket = nil
@@ -234,8 +251,13 @@ function CannonSeat:sv_tryLaunchPlayer(player)
     self.network:sendToClients("cl_shoot", { canShoot = true, ammoType = self.ammoType })
 end
 
-function CannonSeat:sv_loadNuke()
-    self:sv_setOverrideAmmoType(1)
+local itemToOverrideAmmoType = {
+    ["47b43e6e-280d-497e-9896-a3af721d89d2"] = 1,
+    ["24001201-40dd-4950-b99f-17d878a9e07b"] = 2,
+    ["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = 3,
+}
+function CannonSeat:sv_loadNuke(item)
+    self:sv_setOverrideAmmoType(itemToOverrideAmmoType[tostring(item)])
 end
 
 
@@ -261,7 +283,7 @@ function CannonSeat:client_onClientDataUpdate(data, channel)
     TurretSeat.client_onClientDataUpdate(self, data, channel)
 
     if channel == 2 then
-        if self:isOverrideAmmoType(data) and data.index == 1 then
+        if self:isOverrideAmmoType(data) then
             self:cl_updateLoadedNuke(true)
         end
     end
@@ -553,17 +575,23 @@ function CannonSeat:cl_onRocketExplode(detonated)
     end
 end
 
+local itemTransforms = {
+    ["47b43e6e-280d-497e-9896-a3af721d89d2"] = { pos = vec3_up * 2.085 + vec3_forward * 0.22, scale = vec3_one * 0.2 },
+    ["24001201-40dd-4950-b99f-17d878a9e07b"] = { pos = vec3_up * 2.085 + vec3_forward * 0.22, scale = vec3_one * 0.2 },
+    ["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = { pos = vec3_up * 2.085 + vec3_forward * 0.22, scale = vec3_one * 0.2 },
+}
 function CannonSeat:cl_updateLoadedNuke(state)
     if state then
         self.nukeEffect = sm.effect.createEffect("ShapeRenderable", self.harvestable)
 
-        local nukeUUID = self.overrideAmmoTypes[1].uuid
-        self.nukeEffect:setParameter("uuid", nukeUUID)
-        self.nukeEffect:setParameter("color", sm.item.getShapeDefaultColor(nukeUUID))
+        local uuid = self.overrideAmmoTypes[self.ammoType.index].uuid
+        self.nukeEffect:setParameter("uuid", uuid)
+        self.nukeEffect:setParameter("color", sm.item.getShapeDefaultColor(uuid))
 
-        self.nukeEffect:setOffsetPosition(vec3_up * 2.085 + vec3_forward * 0.22)
+        local transform = itemTransforms[tostring(uuid)]
+        self.nukeEffect:setOffsetPosition(transform.pos)
         self.nukeEffect:setOffsetRotation(turret_projectile_rotation_adjustment)
-        self.nukeEffect:setScale(vec3_one * 0.2)
+        self.nukeEffect:setScale(transform.scale)
 
         self.nukeEffect:start()
     	sm.effect.playEffect( "Resourcecollector - TakeOut", self.harvestable.worldPosition )
@@ -572,7 +600,7 @@ function CannonSeat:cl_updateLoadedNuke(state)
         self.nukeEffect:destroy()
     end
 
-    self.harvestable.clientPublicData.hasNukeLoaded = state
+    self.harvestable.clientPublicData.isBarrelLoaded = state
 end
 
 function CannonSeat:cl_SetTurretControlsEnabled(state)

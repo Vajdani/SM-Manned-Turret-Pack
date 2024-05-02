@@ -1,0 +1,165 @@
+{
+   "partList" : [
+      {
+			"uuid": "53a7a730-24e1-49b6-b3df-54407ea75b82",
+			"name": "obj_seat_chunkloader",
+			"renderable": "$SURVIVAL_DATA/Objects/Renderable/interactive_upgradeable/obj_interactiveupgradeable_seat01.rend",
+			"color": "df7f01",
+			"hull": {
+				"x": 4,
+				"y": 4,
+				"z": 4,
+				"col": "$SURVIVAL_DATA/Objects/Collision/obj_interactive_seat_01.obj"
+			},
+			"scripted": {
+				"filename": "$CONTENT_DATA/Scripts/interactables/SeatChunkLoader.lua",
+				"classname": "SeatChunkLoader",
+				"data": {},
+				"seat": {
+					"bones": [
+						{
+							"name": "Hips",
+							"offset": {
+								"x": 0.0,
+								"y": -0.2,
+								"z": 0.25
+							}
+						},
+						{
+							"name": "LeftForeArm",
+							"offset": {
+								"x": 1.0,
+								"y": -0.25,
+								"z": 1.5
+							},
+							"freeRotation": true
+						},
+						{
+							"name": "RightForeArm",
+							"offset": {
+								"x": -1.0,
+								"y": -0.25,
+								"z": 1.5
+							},
+							"freeRotation": true
+						}
+					],
+					"ragdollFile": "$GAME_DATA/Character/seat_ragdoll.json",
+					"enterAudio": "Seat seated",
+					"exitAudio": "Seat unseated"
+				}
+			},
+			"rotationSet": "PropY",
+			"sticky": "-Y",
+			"physicsMaterial": "Mechanical",
+			"ratings": {
+				"density": 3,
+				"durability": 10,
+				"friction": 5,
+				"buoyancy": 2
+			},
+         "restrictions" : {
+				"buildable" : false,
+				"connectable" : false,
+				"convertibleToDynamic" : false,
+				"destructable" : false,
+				"erasable" : false,
+				"liftable" : false,
+				"paintable" : false,
+				"usable" : false
+			},
+			"flammable": false,
+         "showInInventory": false
+		},
+      {
+			"uuid": "8d3b98de-c981-4f05-abfe-d22ee4781d33",
+			"name": "obj_interactive_propanetank_small",
+			"renderable": "$GAME_DATA/Objects/Renderable/Interactive/obj_interactive_propanetank_small.rend",
+			"previewRotation": [
+				0,
+				0,
+				1,
+				1,
+				0,
+				0,
+				0,
+				1,
+				0
+			],
+			"color": "cb0a00",
+			"box": {
+				"x": 2,
+				"y": 2,
+				"z": 2
+			},
+         "autoTool": "e6b6a84a-ab65-4f1d-a80d-5481e0ca17f2",
+			"scripted": {
+				"filename": "$GAME_DATA/Scripts/game/Explosive.lua",
+				"classname": "Explosive",
+				"data": {
+					"destructionLevel": 7,
+					"destructionRadius": 2.0,
+					"impulseRadius": 6.0,
+					"impulseMagnitude": 25.0,
+					"effectExplosion": "PropaneTank - ExplosionSmall",
+					"effectActivate": "PropaneTank - ActivateSmall"
+				}
+			},
+			"rotationSet": "PropYZ",
+			"sticky": "+Y-Y+Z-Z+X-X",
+			"physicsMaterial": "Mechanical",
+			"ratings": {
+				"density": 4,
+				"durability": 10,
+				"friction": 3,
+				"buoyancy": 7
+			},
+			"flammable": true
+		},
+		{
+			"uuid": "24001201-40dd-4950-b99f-17d878a9e07b",
+			"name": "obj_interactive_propanetank_large",
+			"renderable": "$GAME_DATA/Objects/Renderable/Interactive/obj_interactive_propanetank_large.rend",
+			"previewRotation": [
+				0,
+				0,
+				1,
+				1,
+				0,
+				0,
+				0,
+				1,
+				0
+			],
+			"color": "cb0a00",
+			"box": {
+				"x": 3,
+				"y": 4,
+				"z": 3
+			},
+         "autoTool": "e6b6a84a-ab65-4f1d-a80d-5481e0ca17f2",
+			"scripted": {
+				"filename": "$GAME_DATA/Scripts/game/Explosive.lua",
+				"classname": "Explosive",
+				"data": {
+					"destructionLevel": 7,
+					"destructionRadius": 4.0,
+					"impulseRadius": 12.0,
+					"impulseMagnitude": 40.0,
+					"effectExplosion": "PropaneTank - ExplosionBig",
+					"effectActivate": "PropaneTank - ActivateBig"
+				}
+			},
+			"rotationSet": "PropYZ",
+			"sticky": "+Y-Y+Z-Z+X-X",
+			"physicsMaterial": "Mechanical",
+			"ratings": {
+				"density": 4,
+				"durability": 10,
+				"friction": 3,
+				"buoyancy": 7
+			},
+			"flammable": true
+		}
+   ]
+}
