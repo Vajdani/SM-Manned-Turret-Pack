@@ -348,13 +348,13 @@ end
 
 function RepairTool:client_onCreate()
 	if self.tool:isLocal() then
-		if not g_repairingTurret then --failsafe for stuck repair tool
+		--[[if not g_repairingTurret then --failsafe for stuck repair tool
 			self.network:sendToServer("sv_onRepairEnd")
 			return
-		end
+		end]]
 
 		g_repairTool = self.tool
-		sm.tool.forceTool(self.tool)
+		--sm.tool.forceTool(self.tool)
 	end
 end
 
@@ -391,6 +391,9 @@ function RepairTool:cl_loadAnimations()
 end
 
 function RepairTool:client_onUpdate( dt )
+	--sm.tool.forceTool(nil)
+	--g_repairingTurret = false
+
 	if not sm.exists(self.tool) then return end
 
 	if self.tool:isLocal() then
@@ -423,6 +426,7 @@ function RepairTool:client_onEquip()
 
 	setTpAnimation( self.tpAnimations, startAnim, 0 )
 	if self.tool:isLocal() then
+		self.hasSentEnd = false
 		setFpAnimation( self.fpAnimations, startAnim, 0 )
 	end
 end
@@ -445,7 +449,7 @@ function RepairTool:cl_onRepairEnd()
 	g_repairingTurret = false
     g_turretBase = nil
 
-	self.network:sendToServer("sv_onRepairEnd")
+	--self.network:sendToServer("sv_onRepairEnd")
 end
 
 

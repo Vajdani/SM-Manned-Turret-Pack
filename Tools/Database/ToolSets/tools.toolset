@@ -10,7 +10,7 @@
             "file" : "$CONTENT_DATA/Scripts/tools/RepairTool.lua"
          },
          "uuid" : "68f9a1ef-dbbc-40c9-8006-0779ececcbf5",
-         "showInInventory": false
+         "autoTool": true
       },
       {
          "name" : "TurretAssistor",

@@ -319,9 +319,15 @@ function TurretBase:client_getAvailableChildConnectionCount( connectionType )
 end
 
 function TurretBase:client_onTinker(char, state)
-    if state == g_repairingTurret then return end
-
     if state then
+        sm.tool.forceTool(g_repairTool)
+        g_repairingTurret = true
+        g_turretBase = self.interactable
+    else
+        self:cl_onRepairEnd()
+    end
+
+    --[[if state then
         g_repairingTurret = true
         g_turretBase = self.interactable
 
@@ -347,7 +353,7 @@ function TurretBase:client_onTinker(char, state)
         end
     else
         self:cl_onRepairEnd()
-    end
+    end]]
 end
 
 function TurretBase:client_onUpdate(dt)
