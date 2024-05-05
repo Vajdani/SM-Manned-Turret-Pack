@@ -64,6 +64,10 @@ function CannonRocket:sv_explode(position)
         sm.event.sendToHarvestable(self.seat, "sv_onRocketExplode", position == nil)
     end
 
+    local char = self.interactable:getSeatCharacter()
+    self.interactable:setSeatCharacter(char)
+    char:setWorldPosition(sm.vec3.new(10000, 10000, 0))
+
     sm.physics.explode( position or self.shape.worldPosition, 7, 5, 7, 15, "PropaneTank - ExplosionBig", self.shape )
     self.shape:destroyShape()
 end
