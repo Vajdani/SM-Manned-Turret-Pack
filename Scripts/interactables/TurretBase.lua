@@ -190,18 +190,6 @@ function TurretBase:sv_updateDir(dir)
     self.network:sendToClients("cl_n_updateDir", dir)
 end
 
----@param slot number
----@param caller Player
-function TurretBase:sv_onRepair(slot, caller)
-    local inv = sm.game.getLimitedInventory() and caller:getInventory() or caller:getHotbar()
-    caller.publicData = caller.publicData or {}
-    caller.publicData.itemBeforeRepair = { slot = slot, item = inv:getItem(slot) }
-
-    sm.container.beginTransaction()
-    inv:setItem(slot, sm.uuid.new("68f9a1ef-dbbc-40c9-8006-0779ececcbf5"), 1)
-    sm.container.endTransaction()
-end
-
 function TurretBase:sv_setDirTarget(dir)
     self.network:sendToClients("cl_setDirTarget", dir)
 end
@@ -326,34 +314,6 @@ function TurretBase:client_onTinker(char, state)
     else
         self:cl_onRepairEnd()
     end
-
-    --[[if state then
-        g_repairingTurret = true
-        g_turretBase = self.interactable
-
-        if sm.game.getLimitedInventory() then
-            self.network:sendToServer("sv_onRepair", sm.localPlayer.getSelectedHotbarSlot())
-        else
-            local inv = sm.localPlayer.getHotbar()
-            local selectedSlot = sm.localPlayer.getSelectedHotbarSlot()
-            local activeItem = sm.localPlayer.getActiveItem()
-            for i = 1, inv.size do
-                local hotbarSlot = i - 1
-                local row = math.ceil(i/10) - 1
-                if i > 10 then
-                    hotbarSlot = hotbarSlot - row * 10
-                end
-
-                local containerSlot = i - 1
-                if hotbarSlot == selectedSlot and inv:getItem(containerSlot).uuid == activeItem then
-                    self.network:sendToServer("sv_onRepair", containerSlot)
-                    break
-                end
-            end
-        end
-    else
-        self:cl_onRepairEnd()
-    end]]
 end
 
 function TurretBase:client_onUpdate(dt)
@@ -469,7 +429,7 @@ function TurretBase:client_onClientDataUpdate(data, channel)
             self.seatBuilt = true
             self.gunBuilt = true
 
-            if g_repairingTurret then
+            if g_repairingTurret and g_turretBase == self.interactable then
                 self:cl_onRepairEnd()
             end
 

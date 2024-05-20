@@ -347,14 +347,9 @@ local function _updateFpAnimations( self, data, equipped, dt )
 end
 
 function RepairTool:client_onCreate()
-	if self.tool:isLocal() then
-		--[[if not g_repairingTurret then --failsafe for stuck repair tool
-			self.network:sendToServer("sv_onRepairEnd")
-			return
-		end]]
-
+	self.isLocal = self.tool:isLocal()
+	if self.isLocal then
 		g_repairTool = self.tool
-		--sm.tool.forceTool(self.tool)
 	end
 end
 
@@ -373,7 +368,7 @@ function RepairTool:cl_loadAnimations()
         }
     )
 
-    if self.tool:isLocal() then
+    if self.isLocal then
         self.fpAnimations = _createFpAnimations(
             self.tool,
             {
@@ -391,12 +386,9 @@ function RepairTool:cl_loadAnimations()
 end
 
 function RepairTool:client_onUpdate( dt )
-	--sm.tool.forceTool(nil)
-	--g_repairingTurret = false
-
 	if not sm.exists(self.tool) then return end
 
-	if self.tool:isLocal() then
+	if self.isLocal then
 		_updateFpAnimations( self, self.fpAnimations, self.equipped, dt )
 	end
 
@@ -418,14 +410,14 @@ function RepairTool:client_onEquip()
 
     local rend = renderables[startAnim]
     self.tool:setTpRenderables(rend.tp)
-    if self.tool:isLocal() then
+    if self.isLocal then
         self.tool:setFpRenderables(rend.fp)
     end
 
 	self:cl_loadAnimations()
 
 	setTpAnimation( self.tpAnimations, startAnim, 0 )
-	if self.tool:isLocal() then
+	if self.isLocal then
 		self.hasSentEnd = false
 		setFpAnimation( self.fpAnimations, startAnim, 0 )
 	end
@@ -448,8 +440,6 @@ function RepairTool:cl_onRepairEnd()
 	sm.tool.forceTool(nil)
 	g_repairingTurret = false
     g_turretBase = nil
-
-	--self.network:sendToServer("sv_onRepairEnd")
 end
 
 
@@ -461,26 +451,10 @@ function RepairTool:sv_healTurret(turret)
     sm.event.sendToInteractable(int, "sv_takeDamage", -math.ceil(int.publicData.maxHealth/12))
 end
 
-function RepairTool:sv_onRepairEnd(args, caller)
-	local inv = sm.game.getLimitedInventory() and caller:getInventory() or caller:getHotbar()
-	local data = caller.publicData.itemBeforeRepair
-
-	sm.container.beginTransaction()
-	local item = data.item
-
-	local uuid = item.uuid
-	if tostring(uuid) == "68f9a1ef-dbbc-40c9-8006-0779ececcbf5" then
-		uuid = sm.uuid.getNil()
-	end
-
-	inv:setItem(data.slot, uuid, item.quantity)--, item.instance)
-	sm.container.endTransaction()
-end
-
 
 
 function RepairTool:getRaycast()
-    local pos = self.tool:getPosition() + camOffset
+    local pos = self.tool:getPosition() + (self.tool:isCrouching() and camOffset_c or camOffset)
     local hit, result = sm.physics.raycast(pos, pos + self.tool:getDirection() * 7.5)
     return hit, result
 end
