@@ -1,0 +1,18 @@
+{
+   "lodList" : [
+      {
+         "mesh" : "$CONTENT_DATA/Objects/Mesh/MountedGun/CannonGun/obj_interactive_mountable_cannongun.fbx",
+         "pose0" : "$CONTENT_DATA/Objects/Mesh/MountedGun/CannonGun/obj_interactive_mountable_cannongun_pose0.fbx",
+         "subMeshList" : [
+            {
+               "material" : "PoseAnimDifAsgNor",
+               "textureList" : [
+                  "$CONTENT_DATA/Objects/Textures/TurretSeat/Cannon/kin_interactive_turret_cannon_dif.tga",
+                  "$CONTENT_DATA/Objects/Textures/TurretSeat/Cannon/kin_interactive_turret_cannon_asg.tga",
+                  "$CONTENT_DATA/Objects/Textures/TurretSeat/Cannon/kin_interactive_turret_cannon_nor.tga"
+               ]
+            }
+         ]
+      }
+   ]
+}

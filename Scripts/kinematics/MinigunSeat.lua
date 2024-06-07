@@ -94,14 +94,14 @@ function MinigunSeat:client_onFixedUpdate(dt)
 
     self.shootTimer = math.max(self.shootTimer - 1, 0)
     if isFiring and self.shootTimer <= 0 then
-        self.shootTimer = self:getAmmoData().fireCooldown
+        self.shootTimer = getAmmoData(self).fireCooldown
         self.network:sendToServer("sv_shoot", self.ammoType)
     end
 end
 
 function MinigunSeat:cl_shoot(args)
     if args.canShoot then
-        local ammoData = self:getAmmoData(args.ammoType)
+        local ammoData = getAmmoData(self, args.ammoType)
         self.overheatProgress = math.min(self.overheatProgress + ammoData.overheatPerShot, 1)
         if self.overheatProgress >= 1 then
             --self.overheated = true

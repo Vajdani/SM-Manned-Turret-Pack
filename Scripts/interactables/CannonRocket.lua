@@ -14,7 +14,7 @@ function CannonRocket:server_onCreate()
 
         local owner = publicData.owner
 
-        local dummy = sm.character.createCharacter(owner, sm.world.getCurrentWorld(), self.shape.worldPosition + vec3_up * 100)
+        local dummy = sm.character.createCharacter(owner or sm.player.getAllPlayers()[1], sm.world.getCurrentWorld(), self.shape.worldPosition + vec3_up * 100)
         self.interactable:setSeatCharacter(dummy)
 
         self.network:setClientData({ owner = owner, deathTick = self.sv_deathTick })

@@ -9,6 +9,7 @@ MountedTurretGun.connectionOutput = sm.interactable.connectionType.none
 MountedTurretGun.colorNormal = sm.color.new( 0xcb0a00ff )
 MountedTurretGun.colorHighlight = sm.color.new( 0xee0a00ff )
 MountedTurretGun.poseWeightCount = 1
+MountedTurretGun.fireOffset = sm.vec3.new( 0.0, 0.0, 0.375 )
 MountedTurretGun.ammoTypes = {
     {
         name = "AA Rounds",
@@ -127,29 +128,59 @@ function MountedTurretGun:sv_tryFire()
 
 	if freeFire then
 		if active and not self.sv.parentActive and self.sv.canFire then
-			self:sv_fire(self.ammoTypes[self.cl.ammoType])
+			self:sv_fire(self.ammoTypes[self.ammoType])
 		end
 	else
 		if active and not self.sv.parentActive and self.sv.canFire and ammoContainer then
-			local ammoType = self.ammoTypes[self.cl.ammoType]
+			local ammoData = getAmmoData(self, self.ammoType)
 
 			sm.container.beginTransaction()
-			sm.container.spend( ammoContainer, ammoType.ammo, 1 )
+			sm.container.spend( ammoContainer, ammoData.ammo, 1 )
 			if sm.container.endTransaction() then
-				self:sv_fire(ammoType)
+				self:sv_fire(ammoData)
 			end
 		end
 	end
 end
 
----@param ammoType AmmoType
-function MountedTurretGun:sv_fire(ammoType)
+---@param ammoData AmmoType
+function MountedTurretGun:sv_fire(ammoData)
 	self.sv.canFire = false
-	self.sv.fireDelayProgress = ammoType.fireCooldown
+	self.sv.fireDelayProgress = ammoData.fireCooldown
 
-	sm.projectile.shapeProjectileAttack( ammoType.uuid, ammoType.damage, sm.vec3.new( 0.0, 0.0, 0.375 ), sm.noise.gunSpread(vec3_up, ammoType.spread) * ammoType.velocity, self.shape )
-	sm.physics.applyImpulse( self.shape, -vec3_up * 500 )
-	self.network:sendToClients( "cl_onShoot", ammoType.effect )
+	local finalFirePos
+	local rot = self.shape.worldRotation
+	local dir = self.shape.up
+	if sm.item.isPart(ammoData.uuid) then
+		local projectileRot = rot * turret_projectile_rotation_adjustment
+		finalFirePos = self.shape.worldPosition + rot * self.fireOffset - projectileRot * sm.item.getShapeOffset(ammoData.uuid)
+		local projectile = sm.shape.createPart(ammoData.uuid, finalFirePos, projectileRot)
+
+		if ammoData.velocity then
+			sm.physics.applyImpulse(projectile, dir * projectile.mass * ammoData.velocity, true)
+		end
+
+		local char = self.interactable:getSeatCharacter()
+		self:sv_OnPartFire(self.ammoType, ammoData, projectile, char and char:getPlayer())
+	else
+		finalFirePos = self.shape.worldPosition + rot * self.fireOffset
+		sm.projectile.shapeProjectileAttack( ammoData.uuid, ammoData.damage, self.fireOffset, sm.noise.gunSpread(vec3_up, ammoData.spread) * ammoData.velocity, self.shape )
+	end
+
+	self:sv_applyFiringImpulse(ammoData, dir, finalFirePos)
+	self.network:sendToClients( "cl_onShoot", ammoData.effect )
+end
+
+---@param ammoType number
+---@param ammoData AmmoType
+---@param part Shape
+---@param player Player
+function MountedTurretGun:sv_OnPartFire(ammoType, ammoData, part, player) end
+
+function MountedTurretGun:sv_applyFiringImpulse(ammoData, dir, finalFirePos)
+    if ammoData.recoilStrength then
+        sm.physics.applyImpulse(self.shape, -dir * ammoData.recoilStrength * self.shape.mass, true, self.shape:transformPoint(finalFirePos))
+    end
 end
 
 function MountedTurretGun:sv_updateAmmoType(ammoType)
@@ -160,10 +191,8 @@ end
 
 
 function MountedTurretGun:client_onCreate()
-	self.cl = {}
-	self.cl.boltValue = 0.0
-
-	self.cl.ammoType = 1
+	self.boltValue = 0.0
+	self.ammoType = 1
 end
 
 function MountedTurretGun:client_canInteract()
@@ -171,7 +200,7 @@ function MountedTurretGun:client_canInteract()
 	if canInteract then
 		sm.gui.setInteractionText("", sm.gui.getKeyBinding("Use", true), "Switch ammo type")
 	end
-	sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>Ammunition: %s</p>"):format(self.ammoTypes[self.cl.ammoType].name))
+	sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>Ammunition: %s</p>"):format(getAmmoData(self).name))
 
 	return canInteract
 end
@@ -179,26 +208,26 @@ end
 function MountedTurretGun:client_onInteract(char, state)
 	if not state then return end
 
-	local ammoType = self.cl.ammoType < #self.ammoTypes and self.cl.ammoType + 1 or 1
+	local ammoType = self.ammoType < #self.ammoTypes and self.ammoType + 1 or 1
 	sm.gui.displayAlertText("Ammunition selected: #df7f00"..self.ammoTypes[ammoType].name, 2)
 	sm.audio.play("PaintTool - ColorPick")
 
-	self.cl.ammoType = ammoType
+	self.ammoType = ammoType
 	self.network:sendToServer("sv_updateAmmoType", ammoType)
 end
 
 function MountedTurretGun:client_onUpdate( dt )
-	if self.cl.boltValue > 0.0 then
-		self.cl.boltValue = self.cl.boltValue - dt * 7.5
+	if self.boltValue > 0.0 then
+		self.boltValue = self.boltValue - dt * 7.5
 	end
-	if self.cl.boltValue ~= self.cl.prevBoltValue then
-		self.interactable:setPoseWeight( 0, sm.util.easing("easeOutCubic", self.cl.boltValue) )
-		self.cl.prevBoltValue = self.cl.boltValue
+	if self.boltValue ~= self.prevBoltValue then
+		self.interactable:setPoseWeight( 0, sm.util.easing("easeOutCubic", self.boltValue) )
+		self.prevBoltValue = self.boltValue
 	end
 end
 
 function MountedTurretGun:client_getAvailableParentConnectionCount( connectionType )
-	if connectionType == 1 then
+	if bit.band( connectionType, 1 ) ~= 0  then
 		return 1 - #self.interactable:getParents( 1 )
 	else
 		for k, cType in pairs(connectionTypes) do
@@ -212,19 +241,17 @@ function MountedTurretGun:client_getAvailableParentConnectionCount( connectionTy
 end
 
 function MountedTurretGun:cl_updateAmmoType(ammoType)
-	self.cl.ammoType = ammoType
+	self.ammoType = ammoType
 end
 
 local effectOffsets = {
-	["Turret - Shoot"] = vec3_up,
-	["Mountedwatercanon - Shoot"] = vec3_zero,
-	["SpudgunBasic - BasicMuzzel"] = vec3_up
+	["Mountedwatercanon - Shoot"] = vec3_zero
 }
 function MountedTurretGun:cl_onShoot(effect)
-	self.cl.boltValue = 1.0
+	self.boltValue = 1.0
 
 	local rot = self.shape.worldRotation
-	sm.effect.playEffect(effect, self.shape.worldPosition + rot * effectOffsets[effect], vec3_zero, rot)
+	sm.effect.playEffect(effect, self.shape.worldPosition + rot * (effectOffsets[effect] or vec3_up), vec3_zero, rot)
 end
 
 function MountedTurretGun:getInputs()
@@ -234,7 +261,7 @@ function MountedTurretGun:getInputs()
 	for k, parent in pairs(parents) do
 		if parent:hasOutputType( 1 ) then
 			logicInteractable = parent
-		else
+		elseif parent:getContainer(0) then
 			ammoInteractable = parent
 		end
 	end
@@ -248,7 +275,7 @@ function MountedTurretGun:getAmmoType(parent)
     end
 
     if not sm.game.getEnableAmmoConsumption() then
-        return self.cl.ammoType
+        return self.ammoType
     end
 
     return 1

@@ -105,6 +105,20 @@ function getYawPitch( direction )
     return math.atan2(direction.y, direction.x) - math.pi/2, math.asin(direction.z)
 end
 
+function isOverrideAmmoType(self, ammoType)
+    return type(ammoType or self.ammoType) == "table"
+end
+
+---@return AmmoType
+function getAmmoData(self, ammoType)
+    ammoType = ammoType or self.ammoType
+    if isOverrideAmmoType(self, ammoType) then
+        return self.overrideAmmoTypes[ammoType.index]
+    end
+
+    return self.ammoTypes[ammoType]
+end
+
 -- #region quat lerp
 -- https://stackoverflow.com/questions/46156903/how-to-lerp-between-two-quaternions
 local function dot(a, b)

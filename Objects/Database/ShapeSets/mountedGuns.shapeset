@@ -16,7 +16,7 @@
             "durability" : 4,
             "friction" : 3
          },
-         "renderable" : "$CONTENT_DATA/Objects/Renderables/obj_interactive_mountable_turretgun.rend",
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/MountedGun/obj_interactive_mountable_turretgun.rend",
          "rotationSet" : "PropY",
          "scripted" : {
             "classname" : "MountedTurretGun",
@@ -25,6 +25,31 @@
          },
          "sticky" : "-X+X-Y",
          "uuid" : "891bd0f5-f387-4020-a2b4-1bace9932ec0"
+      },
+      {
+         "color" : "6b7d07",
+         "box" : {
+            "x" : 2,
+            "y" : 2,
+            "z" : 7
+         },
+         "name" : "obj_interactive_mountable_cannongun",
+         "physicsMaterial" : "Metal",
+         "ratings" : {
+            "buoyancy" : 3,
+            "density" : 2,
+            "durability" : 4,
+            "friction" : 3
+         },
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/MountedGun/obj_interactive_mountable_cannongun.rend",
+         "rotationSet" : "PropY",
+         "scripted" : {
+            "classname" : "MountedCannonGun",
+            "data" : {},
+            "filename" : "$CONTENT_DATA/Scripts/interactables/MountedCannonGun.lua"
+         },
+         "sticky" : "-X+X-Y+Y",
+         "uuid" : "0af5379e-29e8-4eb3-b965-6b3993c8f1df"
       }
    ]
 }
