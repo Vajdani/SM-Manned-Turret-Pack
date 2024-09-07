@@ -123,7 +123,7 @@ function TurretBase:sv_takeDamage(damage)
     local newHealth = sm.util.clamp(self.cl_health - damage, 0, self.maxHealth)
     local turretExists = sm.exists(self.turret)
     if newHealth <= 0 and not self.destroyed then
-        self.network:sendToClients("cl_onDestroy")
+        self.network:sendToClients("cl_onDestroy", self.turret.worldRotation)
 
         local char = self.turret:getSeatCharacter()
         self.turret:destroy()
@@ -489,12 +489,12 @@ function TurretBase:cl_onRepairEnd()
     sm.event.sendToTool(g_repairTool, "cl_markUnforce")
 end
 
-function TurretBase:cl_onDestroy()
+function TurretBase:cl_onDestroy(rot)
     local seatPos = self:getSeatPos()
 
     --sm.effect.playEffect("Turret - Explode", seatPos, vec3_zero, self.turret.worldRotation * sm.quat.angleAxis(math.rad(-90), vec3_right))
 
-    local rot = self.cl_turret.worldRotation
+    rot = rot or self.shape.worldRotation
     local col = self.shape.color
     for k, data in pairs(self.explosionDebrisData) do
         local pos = seatPos + rot * data.offset

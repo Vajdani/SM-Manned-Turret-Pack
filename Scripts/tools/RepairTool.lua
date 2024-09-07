@@ -155,10 +155,6 @@ local function _updateTpAnimations( self, data, dt )
 
 	local frameCurrent = data.currentAnimation
 	local rend = renderables[frameCurrent]
-	data.tool:setTpRenderables(rend.tp)
-	if rend.colour then
-		data.tool:setTpColor(rend.colour)
-	end
 
     local blendStep = 1.0
     if data.blendSpeed ~= 0.0 then blendStep = (1.0/data.blendSpeed) * dt end
@@ -168,8 +164,7 @@ local function _updateTpAnimations( self, data, dt )
 
 		if name == frameCurrent then
             if not data.tool:isLocal() and animation.time >= animation.eventTime and not animation.eventPlayed then
-                local currentRend = renderables[frameCurrent]
-				local effectData = currentRend.effect
+				local effectData = rend.effect
 				if effectData then
                     local hit, result = self:getRaycast()
 					if hit then
@@ -181,8 +176,8 @@ local function _updateTpAnimations( self, data, dt )
 					end
                 end
 
-                if currentRend.audio then
-                    sm.audio.play(currentRend.audio, data.tool:getPosition())
+                if rend.audio then
+                    sm.audio.play(rend.audio, data.tool:getPosition())
                 end
 
                 animation.eventPlayed = true
@@ -195,6 +190,11 @@ local function _updateTpAnimations( self, data, dt )
                     animation.time = 0
                 else
                     if animation.nextAnimation and not canUnforce(self, frameCurrent) then
+						local nextRend = renderables[animation.nextAnimation]
+						data.tool:setTpRenderables(nextRend.tp)
+						if nextRend.colour then
+							data.tool:setTpColor(nextRend.colour)
+						end
                         setTpAnimation( data, animation.nextAnimation, animation.blendNext )
                     else
                         animation.weight = 0
@@ -274,18 +274,12 @@ local function _updateFpAnimations( self, data, equipped, dt )
 		if data.blendSpeed ~= 0.0 then blendStep = (1.0/data.blendSpeed) * dt end
 
 		local rend = renderables[frameCurrent]
-		self.tool:setFpRenderables(rend.fp)
-		if rend.colour then
-			self.tool:setFpColor(rend.colour)
-		end
-
 		for name, animation in pairs(data.animations) do
 			animation.time = animation.baseTime + animation.time+animation.playRate*dt
 
 			if name == frameCurrent then
                 if animation.time >= animation.eventTime and not animation.eventPlayed then
-                    local currentRend = renderables[frameCurrent]
-					local effectData = currentRend.effect
+					local effectData = rend.effect
 					if effectData then
 						if type(effectData) == "table" then
 							local hit, result = sm.localPlayer.getRaycast(7.5)
@@ -297,8 +291,8 @@ local function _updateFpAnimations( self, data, equipped, dt )
 						end
 					end
 
-                    if currentRend.audio then
-                        sm.audio.play(currentRend.audio)
+                    if rend.audio then
+                        sm.audio.play(rend.audio)
                     end
 
                     animation.eventPlayed = true
@@ -316,6 +310,11 @@ local function _updateFpAnimations( self, data, equipped, dt )
                             end
 
 							if not endRepair then
+								local nextRend = renderables[animation.nextAnimation]
+								self.tool:setFpRenderables(nextRend.fp)
+								if nextRend.colour then
+									self.tool:setFpColor(nextRend.colour)
+								end
 	                            setFpAnimation(data, animation.nextAnimation, animation.blendNext)
 							end
                         else
@@ -328,7 +327,7 @@ local function _updateFpAnimations( self, data, equipped, dt )
 							self.hasSentEnd = true
 							self:cl_onRepairEnd()
 						end
-					else
+					elseif not self.hasSentEnd then
 						animation.eventPlayed = false
 					end
 				end

@@ -123,7 +123,7 @@ function CannonRocket:client_onUpdate(dt)
     sm.camera.setPosition(self.shape:getInterpolatedWorldPosition() + self.shape.velocity * dt)
     sm.camera.setRotation(nlerp(sm.camera.getRotation(), self.shape.worldRotation, dt * 15))
 
-    sm.gui.setProgressFraction((self.deathTick - sm.game.getCurrentTick()) / self.lifeTime)
+    sm.gui.setProgressFraction((self.deathTick - sm.game.getServerTick()) / self.lifeTime)
     --[[sm.gui.setInteractionText(
         sm.gui.getKeyBinding("Forward", true).."Boost\t",
         sm.gui.getKeyBinding("Backward", true).."Slow Down\t",

@@ -38,6 +38,8 @@ TurretAssistor = class()
 g_TurretSeatChunkLoaders = g_TurretSeatChunkLoaders or {}
 g_saveKey_TurretSeatChunkLoaders = "af96778d-402e-4f42-9332-3cb7d9119479"
 function TurretAssistor:server_onCreate()
+    if g_turretAssistor then return end --Prevent multiple loads
+
     g_TurretSeatChunkLoaders = sm.storage.load(g_saveKey_TurretSeatChunkLoaders) or {}
     g_turretAssistor = self.tool
 
