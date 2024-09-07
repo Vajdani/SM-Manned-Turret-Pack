@@ -34,7 +34,7 @@ end
 function MinigunSeat:client_onUpdate(dt)
     if not sm.exists(self.cl_base) then return end
 
-    self.barrelSpin = self.barrelSpin + dt * 100 --* self.fireCharge
+    self.barrelSpin = self.barrelSpin + dt * self.fireCharge * 100
     local one = (math.sin(0-2*math.pi*(self.barrelSpin+17)/134)+1)/2
     local two = (math.cos(2*math.pi*(self.barrelSpin+17)/134)+1)/2
     self.harvestable:setPoseWeight(0, one)
@@ -104,7 +104,7 @@ function MinigunSeat:cl_shoot(args)
         local ammoData = getAmmoData(self, args.ammoType)
         self.overheatProgress = math.min(self.overheatProgress + ammoData.overheatPerShot, 1)
         if self.overheatProgress >= 1 then
-            --self.overheated = true
+            self.overheated = true
         end
 
         sm.effect.playEffect(ammoData.effect, args.pos, vec3_zero, sm.vec3.getRotation(vec3_up, args.dir))
