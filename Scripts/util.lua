@@ -87,13 +87,13 @@ end
 
 ---@param int Interactable
 ---@param data any
-function SetTurretBaseClientPublicData(int, data)
+function sm.SetInteractableClientPublicData(int, data)
     sm.MANNEDTURRET_turretBases_clientPublicData[int.id] = data
 end
 
 ---@param int Interactable
 ---@return table
-function GetTurretBaseClientPublicData(int)
+function sm.GetInteractableClientPublicData(int)
     return sm.MANNEDTURRET_turretBases_clientPublicData[int.id] or {}
 end
 
@@ -117,6 +117,22 @@ function getAmmoData(self, ammoType)
     end
 
     return self.ammoTypes[ammoType]
+end
+
+local g_eventBindings =
+{
+	["Harvestable"     ] = sm.event.sendToHarvestable,
+	["ScriptableObject"] = sm.event.sendToScriptableObject,
+	["Character"       ] = sm.event.sendToCharacter,
+	["Tool"            ] = sm.event.sendToTool,
+	["Interactable"	   ] = sm.event.sendToInteractable,
+	["Unit"			   ] = sm.event.sendToUnit,
+	["Player"		   ] = sm.event.sendToPlayer,
+	["World"		   ] = sm.event.sendToWorld
+}
+
+function SendEventToObject(object, callback, args)
+    g_eventBindings[type(object)](object, callback, args)
 end
 
 -- #region quat lerp

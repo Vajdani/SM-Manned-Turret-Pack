@@ -61,7 +61,7 @@ end
 
 function CannonRocket:sv_explode(position)
     if sm.exists(self.seat) then
-        sm.event.sendToHarvestable(self.seat, "sv_onRocketExplode", position == nil)
+        SendEventToObject(self.seat, "sv_onRocketExplode", position == nil)
     end
 
     local char = self.interactable:getSeatCharacter()

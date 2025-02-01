@@ -437,7 +437,7 @@ function CannonSeat:cl_shoot(args)
             self.hotbar:setGridItem( "ButtonGrid", 2, nil)
             self.hotbar:setGridItem( "ButtonGrid", 3, nil)
 
-            local rot = self.harvestable.worldRotation 
+            local rot = self.harvestable.worldRotation
             SetPlayerCamOverride({
                 cameraState = 3,
                 cameraFov = 45,

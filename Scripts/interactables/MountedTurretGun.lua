@@ -127,7 +127,7 @@ function MountedTurretGun:sv_tryFire()
 	local freeFire = not sm.game.getEnableAmmoConsumption() and not ammoContainer
 
 	if freeFire then
-		if active and not self.sv.parentActive and self.sv.canFire then
+		if active and not self.sv.parentActive and self.sv.canFire and self:sv_beforeFiring(self.ammoType) then
 			self:sv_fire(self.ammoTypes[self.ammoType])
 		end
 	else
@@ -136,11 +136,15 @@ function MountedTurretGun:sv_tryFire()
 
 			sm.container.beginTransaction()
 			sm.container.spend( ammoContainer, ammoData.ammo, 1 )
-			if sm.container.endTransaction() then
+			if sm.container.endTransaction() and self:sv_beforeFiring(self.ammoType) then
 				self:sv_fire(ammoData)
 			end
 		end
 	end
+end
+
+function MountedTurretGun:sv_beforeFiring(ammoType)
+	return true
 end
 
 ---@param ammoData AmmoType
@@ -160,7 +164,7 @@ function MountedTurretGun:sv_fire(ammoData)
 			sm.physics.applyImpulse(projectile, dir * projectile.mass * ammoData.velocity, true)
 		end
 
-		local char = self.interactable:getSeatCharacter()
+		local char = self:getSeatCharacter()
 		self:sv_OnPartFire(self.ammoType, ammoData, projectile, char and char:getPlayer())
 	else
 		finalFirePos = self.shape.worldPosition + rot * self.fireOffset
@@ -174,7 +178,7 @@ end
 ---@param ammoType number
 ---@param ammoData AmmoType
 ---@param part Shape
----@param player Player
+---@param player Player|nil
 function MountedTurretGun:sv_OnPartFire(ammoType, ammoData, part, player) end
 
 function MountedTurretGun:sv_applyFiringImpulse(ammoData, dir, finalFirePos)
@@ -279,4 +283,18 @@ function MountedTurretGun:getAmmoType(parent)
     end
 
     return 1
+end
+
+function MountedTurretGun:getSeat()
+    return self.interactable:getParents(2)[1] or self.interactable:getParents(8)[1]
+end
+
+function MountedTurretGun:getSeatCharacter()
+    local seat = self:getSeat()
+    if not seat then return end
+
+    local char = seat:getSeatCharacter()
+    if sm.exists(char) then
+        return char
+    end
 end

@@ -50,7 +50,7 @@
          },
          "sticky" : "-X+X-Y+Y",
          "uuid" : "0af5379e-29e8-4eb3-b965-6b3993c8f1df",
-         "showInInventory": false
+         "showInInventory": true
       }
    ]
 }

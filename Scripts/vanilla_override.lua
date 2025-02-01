@@ -504,3 +504,78 @@ function TreeLog:sv_markDeath()
 	self:sv_onHit(self.health)
 end
 -- #endregion
+
+
+
+-- #region Seat
+if not Seat then
+	dofile "$SURVIVAL_DATA/Scripts/game/interactables/Seat.lua"
+end
+
+oldSeatAction = oldSeatAction or Seat.client_onAction
+function Seat:client_onAction(action, state)
+	return self:cl_checkRocketInput(action, state) or oldSeatAction(self, action, state)
+end
+
+function Seat:cl_checkRocketInput(action, state)
+	local cannon = self.interactable:getChildren(2^14)[1]
+	if cannon and sm.GetInteractableClientPublicData(cannon --[[@as Interactable]]).hasRocket then
+		self.network:sendToServer("sv_onRocketInput", { cannon = cannon, action = action, state = state })
+
+		if state then
+			return true
+		end
+	end
+
+	return false
+end
+
+function Seat:sv_onRocketInput(data)
+	sm.event.sendToInteractable(data.cannon, "sv_onRocketInput", { action = data.action, state = data.state })
+end
+
+function Seat:cl_onRocketFire()
+	self.gui:close()
+end
+
+function Seat:cl_onRocketExplode()
+	self.gui:open()
+end
+
+
+
+if not DriverSeat then
+	dofile "$SURVIVAL_DATA/Scripts/game/interactables/DriverSeat.lua"
+end
+
+oldDriverSeatAction = oldDriverSeatAction or DriverSeat.client_onAction
+---@param self ShapeClass
+function DriverSeat:client_onAction(action, state)
+	return self:cl_checkRocketInput(action, state) or oldDriverSeatAction(self, action, state)
+end
+
+function DriverSeat:cl_checkRocketInput(action, state)
+	local cannon = self.interactable:getChildren(2^14)[1]
+	if cannon and sm.GetInteractableClientPublicData(cannon --[[@as Interactable]]).hasRocket then
+		self.network:sendToServer("sv_onRocketInput", { cannon = cannon, action = action, state = state })
+
+		if state then
+			return true
+		end
+	end
+
+	return false
+end
+
+function DriverSeat:sv_onRocketInput(data)
+	sm.event.sendToInteractable(data.cannon, "sv_onRocketInput", { action = data.action, state = data.state })
+end
+
+function DriverSeat:cl_onRocketFire()
+	self.gui:close()
+end
+
+function DriverSeat:cl_onRocketExplode()
+	self.gui:open()
+end
+-- #endregion

@@ -231,7 +231,7 @@ function TurretBase:client_onCreate()
 	self.bearingSettings.updateSettings = {}
 
 
-    SetTurretBaseClientPublicData(self.interactable, {
+    sm.SetInteractableClientPublicData(self.interactable, {
         isTurret = true,
         maxHealth = self.maxHealth,
         isLifted = false
@@ -239,7 +239,7 @@ function TurretBase:client_onCreate()
 end
 
 function TurretBase:client_onDestroy()
-    SetTurretBaseClientPublicData(self.interactable, nil)
+    sm.SetInteractableClientPublicData(self.interactable, nil)
     self.healthBar:destroy()
 
     if g_repairingTurret and g_turretBase == self.interactable then
@@ -531,7 +531,7 @@ end
 
 function TurretBase:cl_onLifted(state)
     self.lifted = state
-    GetTurretBaseClientPublicData(self.interactable).isLifted = state
+    sm.GetInteractableClientPublicData(self.interactable).isLifted = state
 
     if sm.exists(self.cl_turret) then
         self.interactable:setSubMeshVisible("turretpart1", state)

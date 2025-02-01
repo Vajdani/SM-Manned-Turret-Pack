@@ -340,7 +340,7 @@ function TurretSeat:client_onClientDataUpdate(data, channel)
 end
 
 function TurretSeat:client_canErase()
-    local canErase = not g_repairingTurret and self.harvestable.clientPublicData.health >= GetTurretBaseClientPublicData(self.cl_base).maxHealth and self.harvestable:getSeatCharacter() == nil
+    local canErase = not g_repairingTurret and self.harvestable.clientPublicData.health >= sm.GetInteractableClientPublicData(self.cl_base).maxHealth and self.harvestable:getSeatCharacter() == nil
     if not canErase then
         sm.gui.setInteractionText("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>Unable to pick up turret</p>")
     end
@@ -357,7 +357,7 @@ function TurretSeat:client_canInteract()
     end
 
     local health = self.harvestable.clientPublicData.health
-    local canRepair = health < GetTurretBaseClientPublicData(self.cl_base).maxHealth
+    local canRepair = health < sm.GetInteractableClientPublicData(self.cl_base).maxHealth
     if canRepair then
         sm.gui.setInteractionText("", getHealthDisplay(health))
     end
@@ -599,7 +599,7 @@ end
 
 function TurretSeat:getTurretPosition()
     local base = (self.base or self.cl_base)
-    if GetTurretBaseClientPublicData(base).isLifted then
+    if sm.GetInteractableClientPublicData(base).isLifted then
         return _G[self.baseClassName].getSeatPos({ cl_turret = self.harvestable, shape = base.shape })
     end
 
