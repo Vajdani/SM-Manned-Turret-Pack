@@ -37,7 +37,7 @@ local MagRechargeCooldown = 1
 ---@field aiming boolean
 ---@field equipped boolean
 ---@field wantEquipped boolean
----@field prevSecondaryState boolean
+---@field prevSecondaryState number
 LightningGatling = class()
 
 local renderables = {

@@ -1,6 +1,14 @@
 dofile "$GAME_DATA/Scripts/game/Explosive.lua"
 
 ---@class CannonNuke : ShapeClass
+---@field alive boolean
+---@field counting boolean
+---@field fireDelayProgress number
+---@field destructionRadius number
+---@field destructionLevel number
+---@field impulseRadius number
+---@field impulseMagnitude number
+---@field explosionEffectName EffectName
 CannonNuke = class(Explosive)
 
 ---@param caller Player
@@ -371,17 +379,22 @@ function CannonNuke_Tool:client_onUnequip()
 	end
 end
 
-local cannonUUID = sm.uuid.new("f2efb390-b77d-4587-b2ce-b895698e2fd5")
+local cannonUUIDs = {
+	["f2efb390-b77d-4587-b2ce-b895698e2fd5"] = true,
+	["0af5379e-29e8-4eb3-b965-6b3993c8f1df"] = true,
+}
+
 function CannonNuke_Tool:client_onEquippedUpdate( lmb, rmb, f )
     if not f then
         local rayStart = sm.localPlayer.getRaycastStart()
         local rayDir = sm.localPlayer.getDirection()
         local hit, result = sm.physics.raycast( rayStart, rayStart + rayDir * 7.5, sm.localPlayer.getPlayer().character )
 
-        local cannon = result:getHarvestable()
-        local isCannon = cannon and cannon.uuid == cannonUUID
+		---@type Harvestable|Shape
+        local cannon = result:getHarvestable() or result:getShape()
+        local isCannon = cannon and cannonUUIDs[tostring(cannon.uuid)] == true
         if isCannon then
-			local cPub = cannon.clientPublicData
+			local cPub = type(cannon) == "Harvestable" and cannon.clientPublicData or sm.GetInteractableClientPublicData(cannon.interactable)
 			if not cPub.controlsEnabled then
             	sm.gui.setInteractionText("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>Cannon is in use!</p>")
 				return true, false
@@ -398,7 +411,7 @@ function CannonNuke_Tool:client_onEquippedUpdate( lmb, rmb, f )
 				self.network:sendToServer(
 					"sv_loadNuke",
 					{
-						cannon = cannon,
+						cannon = type(cannon) == "Harvestable" and cannon or cannon.interactable,
 						consumeData = {
 							selectedSlot = sm.localPlayer.getSelectedHotbarSlot(),
 							item = sm.localPlayer.getActiveItem(),
@@ -434,7 +447,7 @@ end
 function CannonNuke_Tool:sv_loadNuke(nuke)
     if not self:sv_consumeNuke(nuke.consumeData) then return end
 
-    sm.event.sendToHarvestable(nuke.cannon, "sv_loadNuke", nuke.consumeData.item)
+    SendEventToObject(nuke.cannon, "sv_loadNuke", nuke.consumeData.item)
     self.network:sendToClients( "cl_onUse" )
 end
 

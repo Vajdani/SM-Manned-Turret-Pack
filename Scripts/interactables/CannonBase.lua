@@ -20,6 +20,7 @@ function CannonBase:sv_spawnNukeOnDestroy(ammoType)
     local ammoData = CannonSeat.overrideAmmoTypes[ammoType.index]
     local turretRot = self.shape.worldRotation * sm.quat.angleAxis(self.dir.x, vec3_forward) * sm.quat.angleAxis(-self.dir.y, vec3_right)
     local projectileRot = turretRot * turret_projectile_rotation_adjustment
+    ---@diagnostic disable: missing-fields
     local startPos, endPos = CannonSeat.getFirePos(
         {
             harvestable = {

@@ -72,6 +72,7 @@ MountedTurretGun.ammoTypes = {
         uuid = projectile_potato
     }
 }
+MountedTurretGun.overrideAmmoTypes = {}
 MountedTurretGun.containerToAmmoType = {
     ["756594d6-6fdd-4f60-9289-a2416287f942"] = 1,
     ["037e3ecb-e0a6-402b-8187-a7264863c64f"] = 2,
@@ -128,11 +129,11 @@ function MountedTurretGun:sv_tryFire()
 
 	if freeFire then
 		if active and not self.sv.parentActive and self.sv.canFire and self:sv_beforeFiring(self.ammoType) then
-			self:sv_fire(self.ammoTypes[self.ammoType])
+			self:sv_fire(sm.GetTurretAmmoData(self, self.ammoType))
 		end
 	else
 		if active and not self.sv.parentActive and self.sv.canFire and ammoContainer then
-			local ammoData = getAmmoData(self, self.ammoType)
+			local ammoData = sm.GetTurretAmmoData(self, self.ammoType)
 
 			sm.container.beginTransaction()
 			sm.container.spend( ammoContainer, ammoData.ammo, 1 )
@@ -172,7 +173,7 @@ function MountedTurretGun:sv_fire(ammoData)
 	end
 
 	self:sv_applyFiringImpulse(ammoData, dir, finalFirePos)
-	self.network:sendToClients( "cl_onShoot", ammoData.effect )
+	self.network:sendToClients( "cl_onShoot", { effect = ammoData.effect, ammoType = self.ammoType } )
 end
 
 ---@param ammoType number
@@ -192,6 +193,15 @@ function MountedTurretGun:sv_updateAmmoType(ammoType)
 	self.network:sendToClients("cl_updateAmmoType", ammoType)
 end
 
+function MountedTurretGun:sv_setOverrideAmmoType(id)
+    local previous = sm.isOverrideAmmoType(self) and self.ammoType.previous or self.ammoType
+    self:sv_updateAmmoType({ index = id, previous = previous })
+end
+
+function MountedTurretGun:sv_unSetOverrideAmmoType()
+    self:sv_updateAmmoType(self.ammoType.previous)
+end
+
 
 
 function MountedTurretGun:client_onCreate()
@@ -204,13 +214,14 @@ function MountedTurretGun:client_canInteract()
 	if canInteract then
 		sm.gui.setInteractionText("", sm.gui.getKeyBinding("Use", true), "Switch ammo type")
 	end
-	sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>Ammunition: %s</p>"):format(getAmmoData(self).name))
+	sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>Ammunition: %s</p>"):format(sm.GetTurretAmmoData(self).name))
 
 	return canInteract
 end
 
 function MountedTurretGun:client_onInteract(char, state)
 	if not state then return end
+	if sm.isOverrideAmmoType(self) then return end
 
 	local ammoType = self.ammoType < #self.ammoTypes and self.ammoType + 1 or 1
 	sm.gui.displayAlertText("Ammunition selected: #df7f00"..self.ammoTypes[ammoType].name, 2)
@@ -251,9 +262,10 @@ end
 local effectOffsets = {
 	["Mountedwatercanon - Shoot"] = vec3_zero
 }
-function MountedTurretGun:cl_onShoot(effect)
+function MountedTurretGun:cl_onShoot(ammoData)
 	self.boltValue = 1.0
 
+	local effect = ammoData.effect
 	local rot = self.shape.worldRotation
 	sm.effect.playEffect(effect, self.shape.worldPosition + rot * (effectOffsets[effect] or vec3_up), vec3_zero, rot)
 end
@@ -274,12 +286,22 @@ function MountedTurretGun:getInputs()
 end
 
 function MountedTurretGun:getAmmoType(parent)
+	if sm.isOverrideAmmoType(self) then
+        return self.ammoType
+    end
+
     if parent then
         return self.containerToAmmoType[tostring(parent.shape.uuid)]
     end
 
     if not sm.game.getEnableAmmoConsumption() then
         return self.ammoType
+    end
+
+    for k, v in pairs(self.ammoTypes) do
+        if v.ignoreAmmoConsumption then
+            return k
+        end
     end
 
     return 1

@@ -1,3 +1,5 @@
+---@diagnostic disable: undefined-global
+
 -- #region Player
 dofile( "$GAME_DATA/Scripts/game/BasePlayer.lua" )
 if not SurvivalPlayer then
@@ -161,7 +163,7 @@ function LiftReplacement.client_interact( self, primaryState, secondaryState, ra
 
 	--Hover
 	if isSelectable and #self.selectedBodies == 0 then
-		self.hoverBodies = targetBody:getCreationBodies()
+		self.hoverBodies = targetBody and targetBody:getCreationBodies() or {}
 	else
 		self.hoverBodies = {}
 
@@ -549,33 +551,52 @@ if not DriverSeat then
 end
 
 oldDriverSeatAction = oldDriverSeatAction or DriverSeat.client_onAction
----@param self ShapeClass
 function DriverSeat:client_onAction(action, state)
 	return self:cl_checkRocketInput(action, state) or oldDriverSeatAction(self, action, state)
 end
 
-function DriverSeat:cl_checkRocketInput(action, state)
-	local cannon = self.interactable:getChildren(2^14)[1]
-	if cannon and sm.GetInteractableClientPublicData(cannon --[[@as Interactable]]).hasRocket then
-		self.network:sendToServer("sv_onRocketInput", { cannon = cannon, action = action, state = state })
+local mountedCannonUUID = "0af5379e-29e8-4eb3-b965-6b3993c8f1df"
+local MountedCannonGun = {
+	ammoTypes = {
+		"24d5e812-3902-4ac3-b214-a0c924a5c40f",
+		"4c69fa44-dd0d-42ce-9892-e61d13922bd2",
+		"e36b172c-ae2d-4697-af44-8041d9cbde0e",
+		"242b84e4-c008-4780-a2dd-abacea821637"
+	},
+	overrideAmmoTypes = {
+		"47b43e6e-280d-497e-9896-a3af721d89d2",
+		"24001201-40dd-4950-b99f-17d878a9e07b",
+		"8d3b98de-c981-4f05-abfe-d22ee4781d33",
+	}
+}
 
-		if state then
-			return true
+
+oldDriverSeatUpdate = oldDriverSeatUpdate or DriverSeat.client_onUpdate
+---@param self ShapeClass
+function DriverSeat:client_onUpdate(dt)
+	oldDriverSeatUpdate(self, dt)
+
+	if self.gui then
+		local interactables = self.interactable:getSeatInteractables()
+		for i=1, 10 do
+			local value = interactables[i]
+			if value and bit.band(value:getConnectionInputType(), 2) then
+				local uuid = tostring(value.shape.uuid)
+				if uuid == mountedCannonUUID then
+					self.gui:setGridItem( "ButtonGrid", i-1, {
+						["itemId"] = sm.GetTurretAmmoData(MountedCannonGun, sm.GetInteractableClientPublicData(value).ammoType),
+						["active"] = value.active
+					})
+				else
+					self.gui:setGridItem( "ButtonGrid", i-1, {
+						["itemId"] = uuid,
+						["active"] = value.active
+					})
+				end
+			else
+				self.gui:setGridItem( "ButtonGrid", i-1, nil)
+			end
 		end
 	end
-
-	return false
-end
-
-function DriverSeat:sv_onRocketInput(data)
-	sm.event.sendToInteractable(data.cannon, "sv_onRocketInput", { action = data.action, state = data.state })
-end
-
-function DriverSeat:cl_onRocketFire()
-	self.gui:close()
-end
-
-function DriverSeat:cl_onRocketExplode()
-	self.gui:open()
 end
 -- #endregion

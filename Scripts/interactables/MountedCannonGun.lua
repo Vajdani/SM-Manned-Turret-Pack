@@ -45,6 +45,38 @@ MountedCannonGun.ammoTypes = {
         ignoreAmmoConsumption = true
     }
 }
+MountedCannonGun.overrideAmmoTypes = {
+    {
+        name = "Nuke",
+        velocity = 100,
+        recoilStrength = 3,
+        fireCooldown = 40,
+        effect = "Cannon - Shoot",
+        ammo = sm.uuid.new("47b43e6e-280d-497e-9896-a3af721d89d2"),
+        uuid = sm.uuid.new("47b43e6e-280d-497e-9896-a3af721d89d2"),
+        ignoreAmmoConsumption = true
+    },
+    {
+        name = "Large Explosive Canister",
+        velocity = 50,
+        recoilStrength = 3,
+        fireCooldown = 40,
+        effect = "Cannon - Shoot",
+        ammo = sm.uuid.new("24001201-40dd-4950-b99f-17d878a9e07b"),
+        uuid = sm.uuid.new("24001201-40dd-4950-b99f-17d878a9e07b"),
+        ignoreAmmoConsumption = true
+    },
+    {
+        name = "Small Explosive Canister",
+        velocity = 150,
+        recoilStrength = 1,
+        fireCooldown = 40,
+        effect = "Cannon - Shoot",
+        ammo = sm.uuid.new("8d3b98de-c981-4f05-abfe-d22ee4781d33"),
+        uuid = sm.uuid.new("8d3b98de-c981-4f05-abfe-d22ee4781d33"),
+        ignoreAmmoConsumption = true
+    }
+}
 MountedCannonGun.containerToAmmoType = {
     ["d9e6453a-2e8c-47f8-a843-d0e700957d39"] = 1,
     ["037e3ecb-e0a6-402b-8187-a7264863c64f"] = 2,
@@ -106,24 +138,24 @@ function MountedCannonGun:sv_tryLaunchPlayer(player)
     char:setWorldPosition(self.shape.worldPosition + rot * self.fireOffset)
     char:setTumbling(true)
 
-    local ammoData = getAmmoData(self)
+    local ammoData = sm.GetTurretAmmoData(self)
     char:applyTumblingImpulse(rot * vec3_up * ammoData.velocity * char.mass)
 
     --self.network:sendToClients("cl_shoot", { canShoot = true, ammoType = self.ammoType })
-	self.network:sendToClients( "cl_onShoot", ammoData.effect )
+	self.network:sendToClients( "cl_onShoot", ammoData )
 end
 
 function MountedCannonGun:sv_OnPartFire(ammoType, ammoData, part, player)
     if ammoType == 1 then --Guided Missile
-        local seat = self:getSeat()
-        if seat then
+        local char = self:getSeatCharacter()
+        if char then
             part.interactable.publicData = { owner = player, seat = self.interactable }
             self.rocket = part
         else
             part.interactable.publicData = {}
         end
-    elseif isOverrideAmmoType(self, ammoType) then
-        --self:sv_unSetOverrideAmmoType()
+    elseif sm.isOverrideAmmoType(self, ammoType) then
+        self:sv_unSetOverrideAmmoType()
         self.network:sendToClients("cl_updateLoadedNuke", false)
     end
 end
@@ -163,6 +195,15 @@ function MountedCannonGun:sv_onRocketInput(data)
     end
 end
 
+local itemToOverrideAmmoType = {
+    ["47b43e6e-280d-497e-9896-a3af721d89d2"] = 1,
+    ["24001201-40dd-4950-b99f-17d878a9e07b"] = 2,
+    ["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = 3,
+}
+function MountedCannonGun:sv_loadNuke(item)
+    self:sv_setOverrideAmmoType(itemToOverrideAmmoType[tostring(item)])
+end
+
 
 
 function MountedCannonGun:client_onCreate()
@@ -171,7 +212,12 @@ function MountedCannonGun:client_onCreate()
     self.controlHud = ControlHud():init(4, 1/23)
     self.hotbar = sm.gui.createSeatGui()
 
-    sm.SetInteractableClientPublicData(self.interactable, { hasRocket = false })
+    sm.SetInteractableClientPublicData(self.interactable, {
+        hasRocket = false,
+        controlsEnabled = true,
+        isBarrelLoaded = false,
+        ammoType = 1
+    })
 end
 
 local connectionTypes = {
@@ -201,10 +247,10 @@ function MountedCannonGun:cl_launchPlayer()
     sm.gui.endFadeToBlack(0.8)
 end
 
-function MountedCannonGun:cl_onShoot(effect)
-    MountedTurretGun.cl_onShoot(self, effect)
+function MountedCannonGun:cl_onShoot(ammoData)
+    MountedTurretGun.cl_onShoot(self, ammoData)
 
-    if self.ammoType == 1 then
+    if ammoData.ammoType == 1 then
         local char = self:getSeatCharacter()
         if not char or char:getPlayer() ~= sm.localPlayer.getPlayer() then return end
 
@@ -229,7 +275,6 @@ function MountedCannonGun:cl_onShoot(effect)
 
         self.controlHud:open()
 
-        --sm.SetInteractableClientPublicData(self.interactable, { hasRocket = true })
         sm.GetInteractableClientPublicData(self.interactable).hasRocket = true
         sm.event.sendToInteractable(self:getSeat(), "cl_onRocketFire")
     end
@@ -246,7 +291,7 @@ function MountedCannonGun:cl_onRocketExplode(detonated)
     self.controlHud:close()
     self.hotbar:close()
 
-    sm.SetInteractableClientPublicData(self.interactable, { hasRocket = false })
+    sm.GetInteractableClientPublicData(self.interactable).hasRocket = false
     sm.event.sendToInteractable(self:getSeat(), "cl_onRocketExplode")
 end
 
@@ -264,4 +309,42 @@ function MountedCannonGun:cl_n_toggleHud(toggle, forceSurvivalOff)
             sm.SURVIVALHUD:open()
         end
     end
+end
+
+function MountedCannonGun:cl_updateAmmoType(ammoType)
+	MountedTurretGun.cl_updateAmmoType(self, ammoType)
+
+    sm.GetInteractableClientPublicData(self.interactable).ammoType = ammoType
+
+    if sm.isOverrideAmmoType(self, ammoType) then
+        self:cl_updateLoadedNuke(true)
+    end
+end
+
+local itemTransforms = {
+    ["47b43e6e-280d-497e-9896-a3af721d89d2"] = { pos = vec3_up * 0.95 + vec3_forward * 0.022, scale = vec3_one * 0.2 },
+    ["24001201-40dd-4950-b99f-17d878a9e07b"] = { pos = vec3_up * 0.95 + vec3_forward * 0.022, scale = vec3_one * 0.2 },
+    ["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = { pos = vec3_up * 0.95 + vec3_forward * 0.022, scale = vec3_one * 0.2 },
+}
+function MountedCannonGun:cl_updateLoadedNuke(state)
+    if state then
+        self.nukeEffect = sm.effect.createEffect("ShapeRenderable", self.interactable)
+
+        local uuid = self.overrideAmmoTypes[self.ammoType.index].uuid
+        self.nukeEffect:setParameter("uuid", uuid)
+        self.nukeEffect:setParameter("color", sm.item.getShapeDefaultColor(uuid))
+
+        local transform = itemTransforms[tostring(uuid)]
+        self.nukeEffect:setOffsetPosition(transform.pos)
+        self.nukeEffect:setOffsetRotation(turret_projectile_rotation_adjustment)
+        self.nukeEffect:setScale(transform.scale)
+
+        self.nukeEffect:start()
+    	sm.effect.playEffect( "Resourcecollector - TakeOut", self.shape.worldPosition )
+    else
+        self.nukeEffect:stop()
+        self.nukeEffect:destroy()
+    end
+
+    sm.GetInteractableClientPublicData(self.interactable).isBarrelLoaded = state
 end

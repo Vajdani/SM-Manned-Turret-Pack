@@ -105,14 +105,14 @@ function getYawPitch( direction )
     return math.atan2(direction.y, direction.x) - math.pi/2, math.asin(direction.z)
 end
 
-function isOverrideAmmoType(self, ammoType)
+function sm.isOverrideAmmoType(self, ammoType)
     return type(ammoType or self.ammoType) == "table"
 end
 
 ---@return AmmoType
-function getAmmoData(self, ammoType)
+function sm.GetTurretAmmoData(self, ammoType)
     ammoType = ammoType or self.ammoType
-    if isOverrideAmmoType(self, ammoType) then
+    if sm.isOverrideAmmoType(self, ammoType) then
         return self.overrideAmmoTypes[ammoType.index]
     end
 

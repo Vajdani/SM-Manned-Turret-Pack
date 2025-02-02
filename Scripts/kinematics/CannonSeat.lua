@@ -99,7 +99,7 @@ function CannonSeat:server_onDestroy()
         sm.event.sendToInteractable(self.rocket.interactable, "sv_explode")
     end
 
-    if sm.exists(self.base) and isOverrideAmmoType(self) then
+    if sm.exists(self.base) and sm.isOverrideAmmoType(self) then
         sm.event.sendToInteractable(self.base, "sv_spawnNukeOnDestroy", self.ammoType)
     end
 end
@@ -139,7 +139,7 @@ function CannonSeat:sv_OnPartFire(ammoType, ammoData, part, player)
         self.rocket = part
         self:sv_SetTurretControlsEnabled(false)
         sm.event.sendToInteractable(self.base, "sv_clearDrivingFlags", true)
-    elseif isOverrideAmmoType(self, ammoType) then
+    elseif sm.isOverrideAmmoType(self, ammoType) then
         self:sv_unSetOverrideAmmoType()
         self.network:sendToClients("cl_updateLoadedNuke", false)
     end
@@ -210,7 +210,7 @@ function CannonSeat:sv_startAirStrike(pos, caller)
             end
 
             sm.projectile.projectileAttack(projectile_explosivetape, 100, position, -vec3_up * 100, caller)
-            turretSelf:sv_applyFiringImpulse(getAmmoData(turretSelf, 2), turretSelf.harvestable.worldRotation * vec3_up, turretSelf:getFirePosEnd())
+            turretSelf:sv_applyFiringImpulse(sm.GetTurretAmmoData(turretSelf, 2), turretSelf.harvestable.worldRotation * vec3_up, turretSelf:getFirePosEnd())
             return true
         end
     }
@@ -246,7 +246,7 @@ function CannonSeat:sv_tryLaunchPlayer(player)
 
     char:setWorldPosition(self:getFirePosEnd())
     char:setTumbling(true)
-    char:applyTumblingImpulse(self.harvestable.worldRotation * vec3_up * getAmmoData(self).velocity * char.mass)
+    char:applyTumblingImpulse(self.harvestable.worldRotation * vec3_up * sm.GetTurretAmmoData(self).velocity * char.mass)
 
     self.network:sendToClients("cl_shoot", { canShoot = true, ammoType = self.ammoType })
 end
@@ -283,7 +283,7 @@ function CannonSeat:client_onClientDataUpdate(data, channel)
     TurretSeat.client_onClientDataUpdate(self, data, channel)
 
     if channel == 2 then
-        if isOverrideAmmoType(self, data) then
+        if sm.isOverrideAmmoType(self, data) then
             self:cl_updateLoadedNuke(true)
         end
     end
@@ -421,7 +421,7 @@ function CannonSeat:cl_shoot(args)
         self.recoil_l = 1
 
         local ammoType = args.ammoType or self.ammoType
-        sm.effect.playEffect(getAmmoData(self, ammoType).effect, args.pos or self:getFirePosEnd(), vec3_zero, sm.vec3.getRotation(vec3_up, args.dir or self.harvestable.worldRotation * vec3_up))
+        sm.effect.playEffect(sm.GetTurretAmmoData(self, ammoType).effect, args.pos or self:getFirePosEnd(), vec3_zero, sm.vec3.getRotation(vec3_up, args.dir or self.harvestable.worldRotation * vec3_up))
 
         if self.seated and ammoType == 1 then
 			sm.audio.play("Blueprint - Build")
@@ -456,7 +456,7 @@ function CannonSeat:cl_startAirStrike()
     if self.blockStrikeCast then return end
 
     local parent = self.cl_base:getSingleParent()
-    if parent and not parent:getContainer(0):canSpend(getAmmoData(self, 2).ammo, 1) then
+    if parent and not parent:getContainer(0):canSpend(sm.GetTurretAmmoData(self, 2).ammo, 1) then
         self:cl_shoot({ canShoot = false })
         return true
     end
