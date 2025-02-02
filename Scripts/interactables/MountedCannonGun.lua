@@ -5,7 +5,7 @@ dofile "$CONTENT_DATA/Scripts/ControlHud.lua"
 MountedCannonGun = class(MountedTurretGun)
 MountedCannonGun.maxParentCount = 3
 MountedCannonGun.connectionInput = 1 + 2 + 8 + 2^14 + 2^15 + 2^16
-MountedCannonGun.fireOffset = sm.vec3.new( 0.0, 0.0, 1.5 )
+MountedCannonGun.fireOffset = sm.vec3.new( 0.0, 0.0, 2 )
 MountedCannonGun.ammoTypes = {
     {
         name = "Guided Missile",
@@ -218,6 +218,27 @@ function MountedCannonGun:client_onCreate()
         isBarrelLoaded = false,
         ammoType = 1
     })
+end
+
+function MountedCannonGun:client_onDestroy()
+    self.controlHud:destroy()
+    self.hotbar:destroy()
+
+    SetPlayerCamOverride()
+end
+
+function MountedCannonGun:client_onFixedUpdate(dt)
+    if not sm.exists(self.shape) then return end
+
+    local char = self:getSeatCharacter()
+    if self.seated and not char then
+        self.controlHud:close()
+        self.hotbar:close()
+
+        SetPlayerCamOverride()
+    end
+
+    self.seated = self:getSeatCharacter() == sm.localPlayer.getPlayer().character
 end
 
 local connectionTypes = {

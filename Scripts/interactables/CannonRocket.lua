@@ -38,6 +38,13 @@ end
 
 function CannonRocket:server_onCollision(other, position, selfPointVelocity, otherPointVelocity, normal)
     if not self.isPrimed then return end
+    if other == self.seat then return end
+    if type(self.seat) == "Interactable" then
+        for k, v in pairs(self.seat.shape.body:getCreationShapes()) do
+            if other == v then return end
+        end
+    end
+
     self:sv_explode(position)
 end
 
