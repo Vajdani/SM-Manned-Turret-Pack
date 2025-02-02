@@ -62,11 +62,11 @@ end
 
 function LiftReplacement:liftTurrets(state, onLift)
 	if onLift then
-		for k, v in pairs(self.turrets) do
+		for k, v in pairs(self.turrets or {}) do
 			sm.event.sendToInteractable(v, "cl_n_putOnLift")
 		end
 	else
-		for k, v in pairs(self.turrets) do
+		for k, v in pairs(self.turrets or {}) do
 			sm.event.sendToInteractable(v, "cl_onLifted", state)
 		end
 	end
