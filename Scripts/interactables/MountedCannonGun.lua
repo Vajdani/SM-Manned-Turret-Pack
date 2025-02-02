@@ -93,6 +93,31 @@ function MountedCannonGun:server_onCreate()
         rocketBoost = 0
     }
     self.rocketControls = { [1] = false, [2] = false, [3] = false, [4] = false }
+
+    self.world = sm.world.getCurrentWorld()
+end
+
+function MountedCannonGun:server_onDestroy()
+    if sm.isOverrideAmmoType(self) then
+        local ammoData = sm.GetTurretAmmoData(self)
+        local rot = self.worldRot
+        local projectileRot = rot * turret_projectile_rotation_adjustment
+
+        sm.event.sendToWorld(self.world, "sv_e_spawnPart", {
+            uuid = ammoData.uuid,
+            pos = self.worldPos + rot * (self.fireOffset * 0.5) - projectileRot * sm.item.getShapeOffset(ammoData.uuid),
+            rot = projectileRot
+        })
+    end
+end
+
+function MountedCannonGun:server_onFixedUpdate()
+    MountedTurretGun.server_onFixedUpdate(self)
+
+    self.worldPos = self.shape.worldPosition
+    self.worldRot = self.shape.worldRotation
+
+    -- sm.effect.playEffect("Part - Upgrade", self.worldPos + self.worldRot * self.fireOffset)
 end
 
 function MountedCannonGun:sv_beforeFiring(ammoType)

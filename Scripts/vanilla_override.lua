@@ -600,3 +600,15 @@ function DriverSeat:client_onUpdate(dt)
 	end
 end
 -- #endregion
+
+
+
+-- #region World hook
+for k, v in pairs(_G) do
+	if type(v) == "table" and (v.cellMaxX or v.cellMaxY or v.cellMinX or v.cellMinY) then
+		function v:sv_e_spawnPart(args)
+			sm.shape.createPart(args.uuid, args.pos, args.rot)
+		end
+	end
+end
+-- #endregion
