@@ -42,8 +42,11 @@ function ControlHud:open()
 end
 
 function ControlHud:close()
+    if self.gui:isActive() then
+        sm.effect.playEffect("ControlHud - Close", sm.camera.getPosition())
+    end
+
     self.gui:close()
-    sm.effect.playEffect("ControlHud - Close", sm.camera.getPosition())
 end
 
 function ControlHud:destroy()

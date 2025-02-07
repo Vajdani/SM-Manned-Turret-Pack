@@ -16,14 +16,14 @@ MountedCannonGun.ammoTypes = {
         ammo = sm.uuid.new("24d5e812-3902-4ac3-b214-a0c924a5c40f"),
         uuid = sm.uuid.new("24d5e812-3902-4ac3-b214-a0c924a5c40f")
     },
-    {
-        name = "Air Strike",
-        recoilStrength = 1,
-        fireCooldown = 40,
-        effect = "Cannon - Shoot",
-        ammo = sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"),
-        uuid = projectile_explosivetape
-    },
+    -- {
+    --     name = "Air Strike",
+    --     recoilStrength = 1,
+    --     fireCooldown = 40,
+    --     effect = "Cannon - Shoot",
+    --     ammo = sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"),
+    --     uuid = projectile_explosivetape
+    -- },
     {
         name = "Ratshot",
         damage = 50,
@@ -79,8 +79,8 @@ MountedCannonGun.overrideAmmoTypes = {
 }
 MountedCannonGun.containerToAmmoType = {
     ["d9e6453a-2e8c-47f8-a843-d0e700957d39"] = 1,
-    ["037e3ecb-e0a6-402b-8187-a7264863c64f"] = 2,
-    ["da615034-dd24-4090-ba66-9d36785d7483"] = 3,
+    -- ["037e3ecb-e0a6-402b-8187-a7264863c64f"] = 2,
+    ["da615034-dd24-4090-ba66-9d36785d7483"] = 2,
 }
 
 
@@ -123,10 +123,11 @@ end
 function MountedCannonGun:sv_beforeFiring(ammoType)
     if self.rocket then return false end
 
-    if ammoType == 2 then
-        print("airstrike")
-        return false
-    elseif ammoType == 4 then
+    -- if ammoType == 2 then
+    --     print("airstrike")
+    --     return false
+    -- else
+    if ammoType == 3 then
         local char = self:getSeatCharacter()
         if not char then return end
 
@@ -200,6 +201,8 @@ function MountedCannonGun:sv_onRocketExplode(detonated)
 end
 
 function MountedCannonGun:sv_onRocketInput(data)
+    if not self.rocket then return end
+
     local action, state = data.action, data.state
 
     if (action == 1 or action == 2) then
@@ -213,8 +216,6 @@ function MountedCannonGun:sv_onRocketInput(data)
     end
 
     if state and (action == 5 or action == 19) then
-        if self.rocket == nil or not sm.exists(self.rocket) then return end
-
         sm.event.sendToInteractable(self.rocket.interactable, "sv_explode")
         self.rocket = nil
     end
@@ -315,7 +316,7 @@ function MountedCannonGun:cl_onShoot(ammoData)
         SetPlayerCamOverride({
             cameraState = 3,
             cameraFov = 45,
-            cameraPosition = sm.camera.getPosition() + rot * vec3_up * 0.25,
+            cameraPosition = self.shape.worldPosition + rot * self.fireOffset,
             cameraRotation = rot * turret_projectile_rotation_adjustment
         })
 

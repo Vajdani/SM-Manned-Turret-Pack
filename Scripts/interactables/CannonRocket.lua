@@ -7,7 +7,6 @@ function CannonRocket:server_onCreate()
     self.isPrimed = publicData ~= nil
 
     if self.isPrimed then
-        self.thrustActivate = 0
         self.sv_deathTick = sm.game.getServerTick() + self.lifeTime
 
         self.seat = self.interactable.publicData.seat
@@ -88,10 +87,8 @@ function CannonRocket:sv_controlRocket(dt)
     local shape = self.shape
     local fwd = shape.at
 
-    self.thrustActivate = math.min(self.thrustActivate + dt, 1)
-    local wrampUp = sm.util.easing("easeInSine", self.thrustActivate) * 10
     local controlData = sm.exists(self.seat) and self.seat.publicData or { rocketBoost = 0, rocketRoll = 0 }
-    sm.physics.applyImpulse(shape, ((fwd * wrampUp * 2) - ( shape.velocity * 0.3 ) + fwd * controlData.rocketBoost * wrampUp) * shape.mass, true)
+    sm.physics.applyImpulse(shape, ((fwd * 20) - ( shape.velocity * 0.3 ) + fwd * controlData.rocketBoost * 10) * shape.mass, true)
 
     local body = shape.body
     sm.physics.applyTorque(body, (-body.angularVelocity * 0.5 + fwd * controlData.rocketRoll) * shape.mass * dt, true)
@@ -128,9 +125,15 @@ function CannonRocket:client_onUpdate(dt)
     end
 
     sm.camera.setPosition(self.shape:getInterpolatedWorldPosition() + self.shape.velocity * dt)
-    sm.camera.setRotation(nlerp(sm.camera.getRotation(), self.shape.worldRotation, dt * 15))
 
-    sm.gui.setProgressFraction((self.deathTick - sm.game.getServerTick()) / self.lifeTime)
+    local fraction = (self.deathTick - sm.game.getServerTick()) / self.lifeTime
+    if fraction > 0.98 then
+        sm.camera.setRotation(self.shape.worldRotation)
+    else
+        sm.camera.setRotation(nlerp(sm.camera.getRotation(), self.shape.worldRotation, dt * 15))
+    end
+
+    sm.gui.setProgressFraction(fraction)
     --[[sm.gui.setInteractionText(
         sm.gui.getKeyBinding("Forward", true).."Boost\t",
         sm.gui.getKeyBinding("Backward", true).."Slow Down\t",
