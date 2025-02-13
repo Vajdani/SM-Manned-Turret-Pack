@@ -2,7 +2,7 @@
 SeatChunkLoader = class()
 
 function SeatChunkLoader:server_onCreate()
-    local dummy = self.params or sm.character.createCharacter(sm.player.getAllPlayers()[1], sm.world.getCurrentWorld(), self.shape.worldPosition + vec3_up * 100)
+    local dummy = self.params or sm.character.createCharacter(sm.player.getAllPlayers()[1], sm.world.getCurrentWorld(), self.shape.worldPosition + vec3_up)
     self.interactable:setSeatCharacter(dummy)
 
     self.dummy = dummy

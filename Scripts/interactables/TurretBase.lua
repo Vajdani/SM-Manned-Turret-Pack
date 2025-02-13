@@ -177,7 +177,7 @@ function TurretBase:sv_createTurret()
     local loader = g_TurretSeatChunkLoaders[cellKey]
     if loader == nil or not sm.exists(loader) then
         sm.log.warning("CREATED LOADER")
-        g_TurretSeatChunkLoaders[cellKey] = sm.shape.createPart(sm.uuid.new("53a7a730-24e1-49b6-b3df-54407ea75b82"), sm.vec3.new(pos.x, pos.y, -200), nil, false, true)
+        g_TurretSeatChunkLoaders[cellKey] = sm.shape.createPart(sm.uuid.new("53a7a730-24e1-49b6-b3df-54407ea75b82"), sm.vec3.new(pos.x, pos.y, -512), nil, false, true)
         sm.storage.save(g_saveKey_TurretSeatChunkLoaders, g_TurretSeatChunkLoaders)
     else
         sm.log.warning("CHUNK ALREADY LOADED")

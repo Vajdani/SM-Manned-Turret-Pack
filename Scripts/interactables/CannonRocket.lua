@@ -73,7 +73,7 @@ function CannonRocket:sv_explode(position)
     local char = self.interactable:getSeatCharacter()
     if char and sm.exists(char) then
         self.interactable:setSeatCharacter(char)
-        char:setWorldPosition(sm.vec3.new(self.shape.worldPosition.x, self.shape.worldPosition.y, -2500))
+        char:setWorldPosition(sm.vec3.new(self.shape.worldPosition.x, self.shape.worldPosition.y, -512))
         sm.log.warning("ROCKET LOADER DESTROYED")
     else
         sm.log.error("ROCKET LOADER NOT DESTROYED")
