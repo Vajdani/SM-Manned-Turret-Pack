@@ -86,6 +86,11 @@ TurretSeat.baseUUID = "e4497545-5f77-4d59-bfbf-ce5692284322"
 function TurretSeat:server_onCreate()
     self.shotCounter = 0
     self.base = self.params.base
+    if not sm.exists(self.base) then
+        self.harvestable:destroy()
+        return
+    end
+
     self.network:setClientData(self.base, 1)
     self.network:setClientData(self.params.ammoType, 2)
 

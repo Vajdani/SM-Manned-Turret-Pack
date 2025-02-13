@@ -8,8 +8,12 @@
         "title": "Manned Cannon"
     },
     "891bd0f5-f387-4020-a2b4-1bace9932ec0": {
-        "description": "A mounted version of the Manned Turret's guns! Connect a #df7f00logic input to fire#919191!\n\nIt can #df7f00fire multiple types of projectiles#919191, it just depends on the #df7f00connected container#919191! (#ffffffAA Rounds#919191, #ffffffExplosive Rounds#919191, #ffffffWater#919191, #ffffffPotatoes#919191)\n\n(#ffffffIn creative#919191: #df7f00Interact with the cannon#919191 to #df7f00switch ammunition types#919191)",
+        "description": "A mounted version of the #ffffffManned Turret's #919191guns! Connect a #df7f00logic input to fire#919191!\n\nIt can #df7f00fire multiple types of projectiles#919191, it just depends on the #df7f00connected container#919191! (#ffffffAA Rounds#919191, #ffffffExplosive Rounds#919191, #ffffffWater#919191, #ffffffPotatoes#919191)\n\n(#ffffffIn creative#919191: #df7f00Interact with the cannon#919191 to #df7f00switch ammunition types#919191)",
         "title": "Mounted Turret Gun"
+    },
+    "0af5379e-29e8-4eb3-b965-6b3993c8f1df": {
+        "description": "A mounted version of the #ffffffManned Cannon's #919191gun! Connect a #df7f00logic input to fire#919191!\n\nIt can #df7f00fire multiple types of projectiles#919191, it just depends on the #df7f00connected container#919191! (#ffffffGuided Missiles#919191, #ffffffRatshot#919191, and #ffffffyou, the player#919191. To #ffffffcontrol the Guided Missiles#919191 and to #fffffflaunch yourself#919191, #df7f00connect your seat to the cannon#919191.\n\n(#ffffffIn creative#919191: #df7f00Interact with the cannon#919191 to #df7f00switch ammunition types#919191)",
+        "title": "Mounted Cannon Gun"
     },
     "756594d6-6fdd-4f60-9289-a2416287f942": {
         "description": "Can store AA Rounds to be used with the Manned Turret.",

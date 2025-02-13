@@ -86,7 +86,7 @@
          },
          "sticky" : "-Y",
          "uuid" : "ae0a8816-00d8-4515-932b-00661ef20a0a",
-         "showInInventory": true
+         "showInInventory": false
       }
    ]
 }

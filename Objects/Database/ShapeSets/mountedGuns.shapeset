@@ -42,15 +42,14 @@
             "friction" : 3
          },
          "renderable" : "$CONTENT_DATA/Objects/Renderables/MountedGun/obj_interactive_mountable_cannongun.rend",
-         "rotationSet" : "PropY",
+         "rotationSet" : "PropYX",
          "scripted" : {
             "classname" : "MountedCannonGun",
             "data" : {},
             "filename" : "$CONTENT_DATA/Scripts/interactables/MountedCannonGun.lua"
          },
          "sticky" : "-X+X-Y+Y",
-         "uuid" : "0af5379e-29e8-4eb3-b965-6b3993c8f1df",
-         "showInInventory": true
+         "uuid" : "0af5379e-29e8-4eb3-b965-6b3993c8f1df"
       }
    ]
 }
