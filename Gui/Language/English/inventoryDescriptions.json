@@ -48,7 +48,11 @@
         "title": "Ratshot Round"
     },
     "47b43e6e-280d-497e-9896-a3af721d89d2": {
-        "description": "Used as ammunition for the Manned Cannon.\n\nClick on the Cannon while holding the bomb to load the bomb into the barrel.",
+        "description": "Used as ammunition for the Manned Cannon.\n\nClick on the Cannon while holding the bomb to load it into the barrel.",
         "title": "Nuclear Bomb"
+    },
+    "254360f7-ba19-431d-ac1a-92c1ee9ba483": {
+        "description": "Used as ammunition for the Manned Cannon.\n\nClick on the Cannon while holding the potato to load it into the barrel.",
+        "title": "Big Potato"
     }
 }

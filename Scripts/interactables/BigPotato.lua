@@ -28,13 +28,13 @@ function BigPotato:sv_explode()
     local hor = 45
     local ver = 20
     local spreadAngle = 90
-    local uuid = sm.uuid.new("baf7ff9d-191a-4ea4-beba-e160ceb54daf")
+    local projectile = sm.uuid.new("baf7ff9d-191a-4ea4-beba-e160ceb54daf")
     for i = 0, hor do
         for j = 0, ver do
             local frac = j / ver
-            local horFrec = math.sin(frac * 2) --math.sin(frac) --christmas tree pattern
-            local dir = sm.vec3.new(math.sin(i) * horFrec, 0.8 - frac * 1.6, math.cos(i) * horFrec)
-            sm.projectile.shapeProjectileAttack(uuid, 28, zero, sm.noise.gunSpread(dir, spreadAngle) * 5, shape)
+            local horFrac = math.sin(frac * 2) --math.sin(frac) --christmas tree pattern
+            local dir = sm.vec3.new(math.sin(i) * horFrac, 0.8 - frac * 1.6, math.cos(i) * horFrac)
+            sm.projectile.shapeProjectileAttack(projectile, 28, zero, sm.noise.gunSpread(dir, spreadAngle) * 5, shape)
         end
     end
 

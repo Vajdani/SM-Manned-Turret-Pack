@@ -78,7 +78,7 @@ CannonSeat.overrideAmmoTypes = {
         damage = 100,
         velocity = 60,
         recoilStrength = 1,
-        fireCooldown = 0,
+        fireCooldown = 40,
         effect = "Cannon - Shoot",
         ammo = sm.uuid.new("254360f7-ba19-431d-ac1a-92c1ee9ba483"),
         uuid = sm.uuid.new("a385b242-ce0c-4e3b-82a7-99da38510709"),
@@ -157,10 +157,10 @@ function CannonSeat:sv_OnPartFire(ammoType, ammoData, part, player)
 end
 
 function CannonSeat:sv_OnProjectileFire(ammoType, ammoData, player)
-    -- if sm.isOverrideAmmoType(self, ammoType) then
-    --     self:sv_unSetOverrideAmmoType()
-    --     self.network:sendToClients("cl_updateLoadedNuke", false)
-    -- end
+    if sm.isOverrideAmmoType(self, ammoType) then
+        self:sv_unSetOverrideAmmoType()
+        self.network:sendToClients("cl_updateLoadedNuke", false)
+    end
 end
 
 function CannonSeat:sv_onRocketExplode(detonated)

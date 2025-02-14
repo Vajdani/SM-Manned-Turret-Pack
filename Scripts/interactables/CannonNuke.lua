@@ -364,6 +364,13 @@ local cannonUUIDs = {
 	["0af5379e-29e8-4eb3-b965-6b3993c8f1df"] = true,
 }
 
+local titles = {
+	["47b43e6e-280d-497e-9896-a3af721d89d2"] = "Nuke", 				--Nuclear Bomb
+	["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = "Small Explosive", 	--Small Explosive
+	["24001201-40dd-4950-b99f-17d878a9e07b"] = "Large Explosive", 	--Large Explosive
+	["254360f7-ba19-431d-ac1a-92c1ee9ba483"] = "Potato"				--Big Potato
+}
+
 function CannonNuke_Tool:client_onEquippedUpdate( lmb, rmb, f )
     if not f then
         local rayStart = sm.localPlayer.getRaycastStart()
@@ -373,6 +380,7 @@ function CannonNuke_Tool:client_onEquippedUpdate( lmb, rmb, f )
 		---@type Harvestable|Shape
         local cannon = result:getHarvestable() or result:getShape()
         local isCannon = cannon and cannonUUIDs[tostring(cannon.uuid)] == true
+		local title = titles[tostring(sm.localPlayer.getActiveItem())]
         if isCannon then
 			local cPub = type(cannon) == "Harvestable" and cannon.clientPublicData or sm.GetInteractableClientPublicData(cannon.interactable)
 			if not cPub.controlsEnabled then
@@ -381,11 +389,11 @@ function CannonNuke_Tool:client_onEquippedUpdate( lmb, rmb, f )
 			end
 
 			if cPub.isBarrelLoaded then
-            	sm.gui.setInteractionText("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>An explosive is already loaded!</p>")
+            	sm.gui.setInteractionText("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>A projectile is already loaded!</p>")
 				return true, false
 			end
 
-			sm.gui.setInteractionText("", sm.gui.getKeyBinding("Create", true), "Load Explosive")
+			sm.gui.setInteractionText("", sm.gui.getKeyBinding("Create", true), "Load "..title)
 
 			if lmb == 1 then
 				self.network:sendToServer(
@@ -401,7 +409,7 @@ function CannonNuke_Tool:client_onEquippedUpdate( lmb, rmb, f )
 				)
 			end
         else
-            sm.gui.setInteractionText("", sm.gui.getKeyBinding("Create", true), "Toss Explosive")
+            sm.gui.setInteractionText("", sm.gui.getKeyBinding("Create", true), "Toss "..title)
 
 			if lmb == 1 or lmb == 2 then
                 self:cl_toss()
