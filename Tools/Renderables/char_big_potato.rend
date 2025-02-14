@@ -1,0 +1,26 @@
+{
+   "lodList" : [
+      {
+         "includes" : [
+            "POSITION",
+            "UV0",
+            "NORMAL",
+            "TANGENTS",
+            "BLEND_INDICES",
+            "BLEND_WEIGHTS"
+         ],
+         "maxViewDistance" : 1000.0,
+         "mesh" : "$CONTENT_DATA/Tools/Mesh/char_big_potato.dae",
+         "subMeshMap" : {
+            "Material_0" : {
+               "material" : "DifAsgNor",
+               "textureList" : [
+                  "$GAME_DATA/Projectiles/Textures/obj_plants_potato_dif.TGA",
+                  "$GAME_DATA/Projectiles/Textures/obj_plants_potato_asg.TGA",
+                  "$GAME_DATA/Projectiles/Textures/obj_plants_potato_nor.TGA"
+               ]
+            }
+         }
+      }
+   ]
+}

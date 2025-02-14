@@ -249,6 +249,7 @@ function TurretSeat:sv_shoot(ammoType, caller)
         else
             finalFirePos = endPos + dir * (hit and 0 or 0.25)
             sm.projectile.projectileAttack( ammoData.uuid, ammoData.damage, finalFirePos, sm.noise.gunSpread(dir, ammoData.spread or 0) * ammoData.velocity, caller )
+            self:sv_OnProjectileFire(ammoType, ammoData, caller)
         end
 
         self:sv_applyFiringImpulse(ammoData, dir, finalFirePos)
@@ -289,6 +290,11 @@ end
 ---@param part Shape
 ---@param player Player
 function TurretSeat:sv_OnPartFire(ammoType, ammoData, part, player) end
+
+---@param ammoType number
+---@param ammoData AmmoType
+---@param player Player
+function TurretSeat:sv_OnProjectileFire(ammoType, ammoData, player) end
 
 function TurretSeat:sv_updateShootState(state)
     self.network:sendToClients("cl_updateShootState", state)

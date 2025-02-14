@@ -36,7 +36,6 @@ MountedTurretGun.ammoTypes = {
         damage = 0,
         velocity = 130,
         fireCooldown = 8,
-        spread = 0,
         effect = "Mountedwatercanon - Shoot",
         ammo = sm.uuid.new( "869d4736-289a-4952-96cd-8a40117a2d28" ),
         uuid = projectile_water
@@ -46,7 +45,6 @@ MountedTurretGun.ammoTypes = {
         damage = 0,
         velocity = 130,
         fireCooldown = 6,
-        spread = 0,
         effect = "Turret - Shoot",
         ammo = "f74c2891-79a9-45e0-982e-4896651c2e25",
         uuid = projectile_pesticide
@@ -56,7 +54,6 @@ MountedTurretGun.ammoTypes = {
         damage = 0,
         velocity = 130,
         fireCooldown = 6,
-        spread = 0,
         effect = "Turret - Shoot",
         ammo = "ac0b5b0a-14e1-4b31-8944-0a351fbfcc67",
         uuid = projectile_fertilizer
@@ -169,7 +166,10 @@ function MountedTurretGun:sv_fire(ammoData)
 		self:sv_OnPartFire(self.ammoType, ammoData, projectile, char and char:getPlayer())
 	else
 		finalFirePos = self.shape.worldPosition + rot * self.fireOffset
-		sm.projectile.shapeProjectileAttack( ammoData.uuid, ammoData.damage, self.fireOffset, sm.noise.gunSpread(vec3_up, ammoData.spread) * ammoData.velocity, self.shape )
+		sm.projectile.shapeProjectileAttack( ammoData.uuid, ammoData.damage, self.fireOffset, sm.noise.gunSpread(vec3_up, ammoData.spread or 0) * ammoData.velocity, self.shape )
+
+		local char = self:getSeatCharacter()
+		self:sv_OnProjectileFire(self.ammoType, ammoData, char and char:getPlayer())
 	end
 
 	self:sv_applyFiringImpulse(ammoData, dir, finalFirePos)
@@ -181,6 +181,11 @@ end
 ---@param part Shape
 ---@param player Player|nil
 function MountedTurretGun:sv_OnPartFire(ammoType, ammoData, part, player) end
+
+---@param ammoType number
+---@param ammoData AmmoType
+---@param player Player|nil
+function MountedTurretGun:sv_OnProjectileFire(ammoType, ammoData, player) end
 
 function MountedTurretGun:sv_applyFiringImpulse(ammoData, dir, finalFirePos)
     if ammoData.recoilStrength then

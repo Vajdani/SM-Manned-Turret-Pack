@@ -604,10 +604,37 @@ end
 
 
 -- #region World hook
+originalWorldFuncs = originalWorldFuncs or {}
 for k, v in pairs(_G) do
 	if type(v) == "table" and (v.cellMaxX or v.cellMaxY or v.cellMinX or v.cellMinY) then
 		function v:sv_e_spawnPart(args)
 			sm.shape.createPart(args.uuid, args.pos, args.rot)
+		end
+
+		if originalWorldFuncs[k] == nil then
+			originalWorldFuncs[k] = {
+				server_onProjectile = v.server_onProjectile
+			}
+		end
+
+		function v:server_onProjectile(position, airTime, velocity, projectileName, shooter, damage, customData, normal, target, uuid)
+			if tostring(uuid) == "a385b242-ce0c-4e3b-82a7-99da38510709" then --Big Potato
+				local hor = 45
+				local ver = 20
+				local spreadAngle = 90
+				local source = type(shooter) == "Player" and shooter or sm.player.getAllPlayers()[1]
+				local uuid = sm.uuid.new("baf7ff9d-191a-4ea4-beba-e160ceb54daf")
+				for i = 0, hor do
+					for j = 0, ver do
+						local frac = j / ver
+						local horFrec = math.sin(frac * 2) --math.sin(frac) --christmas tree pattern
+						local dir = sm.vec3.new(math.sin(i) * horFrec, 0.8 - frac * 1.6, math.cos(i) * horFrec)
+						sm.projectile.projectileAttack(uuid, 28, position, sm.noise.gunSpread(dir, spreadAngle) * 5, source)
+					end
+				end
+			end
+
+			return originalWorldFuncs[k].server_onProjectile(self, position, airTime, velocity, projectileName, shooter, damage, customData, normal, target, uuid)
 		end
 	end
 end

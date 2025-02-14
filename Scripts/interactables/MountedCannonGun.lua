@@ -30,7 +30,6 @@ MountedCannonGun.ammoTypes = {
         velocity = 250,
         recoilStrength = 3,
         fireCooldown = 40,
-        spread = 0,
         effect = "Cannon - Shoot",
         ammo = sm.uuid.new("e36b172c-ae2d-4697-af44-8041d9cbde0e"),
         uuid = sm.uuid.new("53e5da10-99ea-48d5-98b5-c03d0938811e")
@@ -74,6 +73,17 @@ MountedCannonGun.overrideAmmoTypes = {
         effect = "Cannon - Shoot",
         ammo = sm.uuid.new("8d3b98de-c981-4f05-abfe-d22ee4781d33"),
         uuid = sm.uuid.new("8d3b98de-c981-4f05-abfe-d22ee4781d33"),
+        ignoreAmmoConsumption = true
+    },
+    {
+        name = "Big Potato",
+        damage = 100,
+        velocity = 60,
+        recoilStrength = 1,
+        fireCooldown = 40,
+        effect = "Cannon - Shoot",
+        ammo = sm.uuid.new("254360f7-ba19-431d-ac1a-92c1ee9ba483"),
+        uuid = sm.uuid.new("a385b242-ce0c-4e3b-82a7-99da38510709"),
         ignoreAmmoConsumption = true
     }
 }
@@ -186,6 +196,13 @@ function MountedCannonGun:sv_OnPartFire(ammoType, ammoData, part, player)
     end
 end
 
+function MountedCannonGun:sv_OnProjectileFire(ammoType, ammoData, player)
+    if sm.isOverrideAmmoType(self, ammoType) then
+        self:sv_unSetOverrideAmmoType()
+        self.network:sendToClients("cl_updateLoadedNuke", false)
+    end
+end
+
 function MountedCannonGun:sv_onRocketExplode(detonated)
     self.rocket = nil
     self.interactable.publicData = {
@@ -225,6 +242,7 @@ local itemToOverrideAmmoType = {
     ["47b43e6e-280d-497e-9896-a3af721d89d2"] = 1,
     ["24001201-40dd-4950-b99f-17d878a9e07b"] = 2,
     ["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = 3,
+    ["254360f7-ba19-431d-ac1a-92c1ee9ba483"] = 4,
 }
 function MountedCannonGun:sv_loadNuke(item)
     self:sv_setOverrideAmmoType(itemToOverrideAmmoType[tostring(item)])
@@ -372,16 +390,19 @@ local itemTransforms = {
     ["47b43e6e-280d-497e-9896-a3af721d89d2"] = { pos = vec3_up * 0.95 + vec3_forward * 0.022, scale = vec3_one * 0.2 },
     ["24001201-40dd-4950-b99f-17d878a9e07b"] = { pos = vec3_up * 0.95 + vec3_forward * 0.022, scale = vec3_one * 0.2 },
     ["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = { pos = vec3_up * 0.95 + vec3_forward * 0.022, scale = vec3_one * 0.2 },
+    ["a385b242-ce0c-4e3b-82a7-99da38510709"] = { pos = vec3_up * 1.05 + vec3_forward * 0.020, scale = vec3_one * 0.25, overrideUUID = sm.uuid.new("254360f7-ba19-431d-ac1a-92c1ee9ba483") },
+
 }
 function MountedCannonGun:cl_updateLoadedNuke(state)
     if state then
         self.nukeEffect = sm.effect.createEffect("ShapeRenderable", self.interactable)
 
-        local uuid = self.overrideAmmoTypes[self.ammoType.index].uuid
+        local ammoData = self.overrideAmmoTypes[self.ammoType.index]
+        local transform = itemTransforms[tostring(ammoData.uuid)]
+        local uuid = transform.overrideUUID or ammoData.uuid
         self.nukeEffect:setParameter("uuid", uuid)
         self.nukeEffect:setParameter("color", sm.item.getShapeDefaultColor(uuid))
 
-        local transform = itemTransforms[tostring(uuid)]
         self.nukeEffect:setOffsetPosition(transform.pos)
         self.nukeEffect:setOffsetRotation(turret_projectile_rotation_adjustment)
         self.nukeEffect:setScale(transform.scale)

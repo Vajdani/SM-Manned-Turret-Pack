@@ -72,6 +72,17 @@ CannonSeat.overrideAmmoTypes = {
         ammo = sm.uuid.new("8d3b98de-c981-4f05-abfe-d22ee4781d33"),
         uuid = sm.uuid.new("8d3b98de-c981-4f05-abfe-d22ee4781d33"),
         ignoreAmmoConsumption = true
+    },
+    {
+        name = "Big Potato",
+        damage = 100,
+        velocity = 60,
+        recoilStrength = 1,
+        fireCooldown = 0,
+        effect = "Cannon - Shoot",
+        ammo = sm.uuid.new("254360f7-ba19-431d-ac1a-92c1ee9ba483"),
+        uuid = sm.uuid.new("a385b242-ce0c-4e3b-82a7-99da38510709"),
+        ignoreAmmoConsumption = true
     }
 }
 CannonSeat.containerToAmmoType = {
@@ -143,6 +154,13 @@ function CannonSeat:sv_OnPartFire(ammoType, ammoData, part, player)
         self:sv_unSetOverrideAmmoType()
         self.network:sendToClients("cl_updateLoadedNuke", false)
     end
+end
+
+function CannonSeat:sv_OnProjectileFire(ammoType, ammoData, player)
+    -- if sm.isOverrideAmmoType(self, ammoType) then
+    --     self:sv_unSetOverrideAmmoType()
+    --     self.network:sendToClients("cl_updateLoadedNuke", false)
+    -- end
 end
 
 function CannonSeat:sv_onRocketExplode(detonated)
@@ -255,6 +273,7 @@ local itemToOverrideAmmoType = {
     ["47b43e6e-280d-497e-9896-a3af721d89d2"] = 1,
     ["24001201-40dd-4950-b99f-17d878a9e07b"] = 2,
     ["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = 3,
+    ["254360f7-ba19-431d-ac1a-92c1ee9ba483"] = 4,
 }
 function CannonSeat:sv_loadNuke(item)
     self:sv_setOverrideAmmoType(itemToOverrideAmmoType[tostring(item)])
@@ -579,16 +598,18 @@ local itemTransforms = {
     ["47b43e6e-280d-497e-9896-a3af721d89d2"] = { pos = vec3_up * 2.085 + vec3_forward * 0.22, scale = vec3_one * 0.2 },
     ["24001201-40dd-4950-b99f-17d878a9e07b"] = { pos = vec3_up * 2.085 + vec3_forward * 0.22, scale = vec3_one * 0.2 },
     ["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = { pos = vec3_up * 2.085 + vec3_forward * 0.22, scale = vec3_one * 0.2 },
+    ["a385b242-ce0c-4e3b-82a7-99da38510709"] = { pos = vec3_up * 2.185 + vec3_forward * 0.20, scale = vec3_one * 0.25, overrideUUID = sm.uuid.new("254360f7-ba19-431d-ac1a-92c1ee9ba483") },
 }
 function CannonSeat:cl_updateLoadedNuke(state)
     if state then
         self.nukeEffect = sm.effect.createEffect("ShapeRenderable", self.harvestable)
 
-        local uuid = self.overrideAmmoTypes[self.ammoType.index].uuid
+        local ammoData = self.overrideAmmoTypes[self.ammoType.index]
+        local transform = itemTransforms[tostring(ammoData.uuid)]
+        local uuid = transform.overrideUUID or ammoData.uuid
         self.nukeEffect:setParameter("uuid", uuid)
         self.nukeEffect:setParameter("color", sm.item.getShapeDefaultColor(uuid))
 
-        local transform = itemTransforms[tostring(uuid)]
         self.nukeEffect:setOffsetPosition(transform.pos)
         self.nukeEffect:setOffsetRotation(turret_projectile_rotation_adjustment)
         self.nukeEffect:setScale(transform.scale)
