@@ -42,7 +42,10 @@ function CannonNuke.server_tryExplode( self )
 
 		for k, harvestable in pairs(contacts.harvestables) do
 			local data = harvestable:getData()
-			if data then
+			if not data then goto continue end
+
+			local blueprint = data.blueprint
+			if blueprint then
 				local placementOffset = sm.vec3.new( -0.5, -0.5, -0.5 )
 				if data.offset then
 					placementOffset = sm.vec3.new( data.offset.x, data.offset.y, data.offset.z )
@@ -55,7 +58,7 @@ function CannonNuke.server_tryExplode( self )
 				end
 
 				local colour = harvestable:getColor()
-				local bodies = sm.creation.importFromFile( nil, data.blueprint, harvestable.worldPosition + placementOffset, harvestable.worldRotation )
+				local bodies = sm.creation.importFromFile( nil, blueprint, harvestable.worldPosition + placementOffset, harvestable.worldRotation )
 				for i, body in pairs(bodies) do
 					for _k, int in pairs(body:getInteractables()) do
 						local shape = int.shape
@@ -77,6 +80,8 @@ function CannonNuke.server_tryExplode( self )
 
 				harvestable:destroy()
 			end
+
+		    ::continue::
 		end
 
 		-- Create explosion
