@@ -61,6 +61,8 @@ function TurretAssistor:server_onCreate()
 end
 
 function TurretAssistor:server_onFixedUpdate()
+    if g_turretAssistor ~= self.tool then return end
+
     local players = sm.player.getAllPlayers()
     local newLen, oldLen = #players, #self.players
     if newLen < oldLen then
