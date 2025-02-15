@@ -623,7 +623,7 @@ for k, v in pairs(_G) do
 				local ver = 20
 				local spreadAngle = 90
 				local source = type(shooter) == "Player" and shooter or sm.player.getAllPlayers()[1]
-				local projectile = sm.uuid.new("baf7ff9d-191a-4ea4-beba-e160ceb54daf")
+				local projectile = sm.uuid.new("4cc37871-c53f-4f47-9e68-d08f84492d6a")
 				for i = 0, hor do
 					for j = 0, ver do
 						local frac = j / ver

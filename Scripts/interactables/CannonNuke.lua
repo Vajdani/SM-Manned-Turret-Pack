@@ -373,6 +373,9 @@ local titles = {
 
 function CannonNuke_Tool:client_onEquippedUpdate( lmb, rmb, f )
     if not f then
+		local title = titles[tostring(sm.localPlayer.getActiveItem())]
+		if not title then return true, true end
+
         local rayStart = sm.localPlayer.getRaycastStart()
         local rayDir = sm.localPlayer.getDirection()
         local hit, result = sm.physics.raycast( rayStart, rayStart + rayDir * 7.5, sm.localPlayer.getPlayer().character )
@@ -380,7 +383,6 @@ function CannonNuke_Tool:client_onEquippedUpdate( lmb, rmb, f )
 		---@type Harvestable|Shape
         local cannon = result:getHarvestable() or result:getShape()
         local isCannon = cannon and cannonUUIDs[tostring(cannon.uuid)] == true
-		local title = titles[tostring(sm.localPlayer.getActiveItem())]
         if isCannon then
 			local cPub = type(cannon) == "Harvestable" and cannon.clientPublicData or sm.GetInteractableClientPublicData(cannon.interactable)
 			if not cPub.controlsEnabled then

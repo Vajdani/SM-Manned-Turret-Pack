@@ -1,149 +1,168 @@
 {
-   "projectiles" : [
+   "projectiles": [
       {
-         "attachedEffect" : "",
-         "audiomass" : 250.0,
-         "destruction" : {
-            "destructionLevels" : [
+         "attachedEffect": "",
+         "audiomass": 250.0,
+         "destruction": {
+            "destructionLevels": [
                {
-                  "chance" : 1.0,
-                  "qualityLevel" : 1
+                  "chance": 1.0,
+                  "qualityLevel": 1
                },
                {
-                  "chance" : 0.80,
-                  "qualityLevel" : 2
+                  "chance": 0.80,
+                  "qualityLevel": 2
                },
                {
-                  "chance" : 0.70,
-                  "qualityLevel" : 3
+                  "chance": 0.70,
+                  "qualityLevel": 3
                },
                {
-                  "chance" : 0.50,
-                  "qualityLevel" : 4
+                  "chance": 0.50,
+                  "qualityLevel": 4
                },
                {
-                  "chance" : 0.20,
-                  "qualityLevel" : 5
+                  "chance": 0.20,
+                  "qualityLevel": 5
                },
                {
-                  "chance" : 0.10,
-                  "qualityLevel" : 6
+                  "chance": 0.10,
+                  "qualityLevel": 6
                }
             ]
          },
-         "effect" : "Sledgehammer - Hit",
-         "effectmaterial" : "Metal",
-         "enableGravity" : true,
-         "enableImpactEffect" : false,
-         "friction" : 0.2000000029802322,
-         "mass" : 3.0,
-         "mesh" : "$CONTENT_DATA/Projectiles/Renderables/turret_bullet_normal.rend",
-         "name" : "turret_bullet_normal",
-         "radius" : 0.250,
-         "spin" : 7.0,
-         "uuid" : "fad5bb05-b6da-46ec-92f7-9ffb38bd6c9b"
+         "effect": "Sledgehammer - Hit",
+         "effectmaterial": "Metal",
+         "enableGravity": true,
+         "enableImpactEffect": false,
+         "friction": 0.2000000029802322,
+         "mass": 3.0,
+         "mesh": "$CONTENT_DATA/Projectiles/Renderables/turret_bullet_normal.rend",
+         "name": "turret_bullet_normal",
+         "radius": 0.250,
+         "spin": 7.0,
+         "uuid": "fad5bb05-b6da-46ec-92f7-9ffb38bd6c9b"
       },
       {
-         "amount" : 25,
-         "attachedEffect" : "",
-         "audiomass" : 250.0,
-         "destruction" : {
-            "destructionLevels" : [
+         "amount": 25,
+         "attachedEffect": "",
+         "audiomass": 250.0,
+         "destruction": {
+            "destructionLevels": [
                {
-                  "chance" : 1.0,
-                  "qualityLevel" : 1
+                  "chance": 1.0,
+                  "qualityLevel": 1
                },
                {
-                  "chance" : 0.75,
-                  "qualityLevel" : 2
+                  "chance": 0.75,
+                  "qualityLevel": 2
                },
                {
-                  "chance" : 0.60,
-                  "qualityLevel" : 3
+                  "chance": 0.60,
+                  "qualityLevel": 3
                },
                {
-                  "chance" : 0.50,
-                  "qualityLevel" : 4
+                  "chance": 0.50,
+                  "qualityLevel": 4
                },
                {
-                  "chance" : 0.25,
-                  "qualityLevel" : 5
+                  "chance": 0.25,
+                  "qualityLevel": 5
                },
                {
-                  "chance" : 0.1,
-                  "qualityLevel" : 6
+                  "chance": 0.1,
+                  "qualityLevel": 6
                }
             ]
          },
-         "effect" : "Sledgehammer - Hit",
-         "effectmaterial" : "Metal",
-         "enableGravity" : true,
-         "enableImpactEffect" : false,
-         "friction" : 0.2000000029802322,
-         "mass" : 3.0,
-         "mesh" : "$CONTENT_DATA/Projectiles/Renderables/cannon_ratshot.rend",
-         "name" : "cannon_ratshot",
-         "radius" : 0.250,
-         "spin" : 7.0,
-         "uuid" : "53e5da10-99ea-48d5-98b5-c03d0938811e"
+         "effect": "Sledgehammer - Hit",
+         "effectmaterial": "Metal",
+         "enableGravity": true,
+         "enableImpactEffect": false,
+         "friction": 0.2000000029802322,
+         "mass": 3.0,
+         "mesh": "$CONTENT_DATA/Projectiles/Renderables/cannon_ratshot.rend",
+         "name": "cannon_ratshot",
+         "radius": 0.250,
+         "spin": 7.0,
+         "uuid": "53e5da10-99ea-48d5-98b5-c03d0938811e"
       },
       {
-         "attachedEffect" : "",
-			"uuid": "baf7ff9d-191a-4ea4-beba-e160ceb54daf",
-			"name": "potato_copy",
-			"mass": 3.0,
-			"radius": 0.25,
-			"friction": 0.2,
-			"spin": 7.0,
-			"mesh": "$GAME_DATA/Projectiles/Renderables/potato.rend",
-			"effect": "",
-			"audiomass": 250.0,
-			"effectmaterial": "Potato",
-         "enableGravity" : true,
-			"destruction":
-			{
-				"destructionLevels":
-				[
-					{
-						"qualityLevel": 1,
-						"chance": 1.0
-					}
-				]
-			},
-			"enableImpactEffect": false
-		},
+         "attachedEffect": "",
+         "uuid": "4cc37871-c53f-4f47-9e68-d08f84492d6a",
+         "name": "potato_copy_nohit",
+         "mass": 3.0,
+         "radius": 0.25,
+         "friction": 0.2,
+         "spin": 7.0,
+         "mesh": "$GAME_DATA/Projectiles/Renderables/potato.rend",
+         "effect": "",
+         "audiomass": 250.0,
+         "effectmaterial": "Potato",
+         "enableGravity": true,
+         "destruction": {
+            "destructionLevels": [
+               {
+                  "qualityLevel": 1,
+                  "chance": 1.0
+               }
+            ]
+         },
+         "enableImpactEffect": false
+      },
       {
-         "attachedEffect" : "",
-			"uuid": "a385b242-ce0c-4e3b-82a7-99da38510709",
-			"name": "big_potato",
-			"mass": 9.0,
-			"radius": 0.75,
-			"friction": 0.2,
-			"spin": 1.33,
-			"mesh": "$CONTENT_DATA/Objects/Renderables/Ammo/obj_big_potato.rend",
-			"effect": "PotatoProjectile - Hit",
-			"audiomass": 750.0,
-			"effectmaterial": "Potato",
-         "enableGravity" : true,
-			"destruction":
-			{
-				"destructionLevels":
-				[
-					{
-						"qualityLevel": 1,
-						"chance": 1.0
-					},
+         "attachedEffect": "",
+         "uuid": "baf7ff9d-191a-4ea4-beba-e160ceb54daf",
+         "name": "potato_copy",
+         "mass": 3.0,
+         "radius": 0.25,
+         "friction": 0.2,
+         "spin": 7.0,
+         "mesh": "$GAME_DATA/Projectiles/Renderables/potato.rend",
+         "effect": "PotatoProjectile - Hit",
+         "audiomass": 250.0,
+         "effectmaterial": "Potato",
+         "enableGravity": true,
+         "destruction": {
+            "destructionLevels": [
                {
-						"qualityLevel": 2,
-						"chance": 1.0
-					},
+                  "qualityLevel": 1,
+                  "chance": 1.0
+               }
+            ]
+         },
+         "enableImpactEffect": true
+      },
+      {
+         "attachedEffect": "",
+         "uuid": "a385b242-ce0c-4e3b-82a7-99da38510709",
+         "name": "big_potato",
+         "mass": 9.0,
+         "radius": 0.75,
+         "friction": 0.2,
+         "spin": 1.33,
+         "mesh": "$CONTENT_DATA/Objects/Renderables/Ammo/obj_big_potato.rend",
+         "effect": "PotatoProjectile - Hit",
+         "audiomass": 750.0,
+         "effectmaterial": "Potato",
+         "enableGravity": true,
+         "destruction": {
+            "destructionLevels": [
                {
-						"qualityLevel": 3,
-						"chance": 1.0
-					}
-				]
-			},
-			"enableImpactEffect": true
-		}
+                  "qualityLevel": 1,
+                  "chance": 1.0
+               },
+               {
+                  "qualityLevel": 2,
+                  "chance": 1.0
+               },
+               {
+                  "qualityLevel": 3,
+                  "chance": 1.0
+               }
+            ]
+         },
+         "enableImpactEffect": true
+      }
    ]
 }
