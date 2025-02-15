@@ -287,5 +287,18 @@
 		],
 		"itemId" : "47b43e6e-280d-497e-9896-a3af721d89d2", 
 		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 5.0,
+		"ingredientList" : 
+		[
+			{
+				"itemId" : "bfcfac34-db0f-42d6-bd0c-74a7a5c95e82",
+				"quantity" : 100.0
+			}
+		],
+		"itemId" : "254360f7-ba19-431d-ac1a-92c1ee9ba483",
+		"quantity" : 1.0
 	}
 ]
