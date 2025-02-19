@@ -11,16 +11,16 @@
          ],
          "maxViewDistance" : 1000.0,
          "mesh" : "$CONTENT_DATA/Tools/Mesh/char_big_potato.dae",
-         "subMeshMap" : {
-            "Material_0" : {
+         "subMeshList" : [
+            {
                "material" : "DifAsgNor",
                "textureList" : [
-                  "$GAME_DATA/Projectiles/Textures/obj_plants_potato_dif.TGA",
-                  "$GAME_DATA/Projectiles/Textures/obj_plants_potato_asg.TGA",
-                  "$GAME_DATA/Projectiles/Textures/obj_plants_potato_nor.TGA"
+                  "$CONTENT_DATA/Objects/Textures/Ammo/obj_big_potato_dif.tga",
+                  "$CONTENT_DATA/Objects/Textures/Ammo/obj_big_potato_asg.tga",
+                  "$CONTENT_DATA/Tools/Textures/char_big_potato_nor.tga"
                ]
             }
-         }
+         ]
       }
    ]
 }

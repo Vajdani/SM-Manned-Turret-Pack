@@ -1,103 +1,103 @@
 {
-   "partList" : [
-      {
-         "consumable" : true,
-         "cylinder" : {
-            "axis" : "Z",
-            "depth" : 1,
-            "diameter" : 1
-         },
-         "name" : "obj_turret_cartridge_normal",
-         "physicsMaterial" : "Metal",
-         "renderable" : "$CONTENT_DATA/Objects/Renderables/Ammo/obj_turret_cartridge_normal.rend",
-         "rotationSet" : "PropY",
-         "stackSize" : 100,
-         "sticky" : "-Y",
-         "uuid" : "cabf45e9-a47d-4086-8f5f-4f806d5ec3a2"
-      },
-      {
-         "consumable" : true,
-         "cylinder" : {
-            "axis" : "Z",
-            "depth" : 1,
-            "diameter" : 1
-         },
-         "name" : "obj_turret_cartridge_explosive",
-         "physicsMaterial" : "Metal",
-         "renderable" : "$CONTENT_DATA/Objects/Renderables/Ammo/obj_turret_cartridge_explosive.rend",
-         "rotationSet" : "PropY",
-         "stackSize" : 100,
-         "sticky" : "-Y",
-         "uuid" : "4c69fa44-dd0d-42ce-9892-e61d13922bd2"
-      },
-      {
-         "color" : "9f2600",
-         "consumable" : true,
-         "cylinder" : {
-            "axis" : "Y",
-            "depth" : 5,
-            "diameter" : 2
-         },
-         "name" : "obj_cannon_rocket",
-         "physicsMaterial" : "Metal",
-         "qualityLevel" : 0,
-         "renderable" : "$CONTENT_DATA/Objects/Renderables/Ammo/obj_cannon_rocket.rend",
-         "rotationSet" : "PropY",
-         "scripted" : {
-            "classname" : "CannonRocket",
-            "data" : {},
-            "filename" : "$CONTENT_DATA/Scripts/interactables/CannonRocket.lua",
-            "seat": {
-               "bones": [
-                  {
-                     "name": "Hips",
-                     "offset": {
-                        "x": 0.0,
-                        "y": -10000,
-                        "z": 0.0
-                     }
-                  }
-               ],
-               "ragdollFile": "$GAME_DATA/Character/bikeseat_ragdoll.json",
-               "enterAudio": "Seat seated",
-               "exitAudio": "Seat unseated"
-            }
-         },
-         "stackSize" : 5,
-         "sticky" : "-Y",
-         "uuid" : "24d5e812-3902-4ac3-b214-a0c924a5c40f"
-      },
-      {
-         "consumable" : true,
-         "cylinder" : {
-            "axis" : "Y",
-            "depth" : 3,
-            "diameter" : 2
-         },
-         "name" : "obj_cannon_ratshot",
-         "physicsMaterial" : "Metal",
-         "renderable" : "$CONTENT_DATA/Objects/Renderables/Ammo/obj_cannon_ratshot.rend",
-         "rotationSet" : "PropY",
-         "stackSize" : 10,
-         "sticky" : "-Y",
-         "uuid" : "e36b172c-ae2d-4697-af44-8041d9cbde0e"
-      },
-      {
-         "color" : "9f2600",
-         "consumable" : true,
-         "cylinder" : {
-            "axis" : "Y",
-            "depth" : 4,
-            "diameter" : 3
-         },
-         "name" : "obj_cannon_nuke",
-         "physicsMaterial" : "Metal",
-         "qualityLevel" : 0,
-         "renderable" : "$CONTENT_DATA/Objects/Renderables/Ammo/obj_cannon_nuke.rend",
-         "rotationSet" : "PropY",
-         "autoTool": "e6b6a84a-ab65-4f1d-a80d-5481e0ca17f2",
-         "scripted" : {
-            "filename": "$CONTENT_DATA/Scripts/interactables/CannonNuke.lua",
+	"partList": [
+		{
+			"consumable": true,
+			"cylinder": {
+				"axis": "Z",
+				"depth": 1,
+				"diameter": 1
+			},
+			"name": "obj_turret_cartridge_normal",
+			"physicsMaterial": "Metal",
+			"renderable": "$CONTENT_DATA/Objects/Renderables/Ammo/obj_turret_cartridge_normal.rend",
+			"rotationSet": "PropY",
+			"stackSize": 100,
+			"sticky": "-Y",
+			"uuid": "cabf45e9-a47d-4086-8f5f-4f806d5ec3a2"
+		},
+		{
+			"consumable": true,
+			"cylinder": {
+				"axis": "Z",
+				"depth": 1,
+				"diameter": 1
+			},
+			"name": "obj_turret_cartridge_explosive",
+			"physicsMaterial": "Metal",
+			"renderable": "$CONTENT_DATA/Objects/Renderables/Ammo/obj_turret_cartridge_explosive.rend",
+			"rotationSet": "PropY",
+			"stackSize": 100,
+			"sticky": "-Y",
+			"uuid": "4c69fa44-dd0d-42ce-9892-e61d13922bd2"
+		},
+		{
+			"color": "9f2600",
+			"consumable": true,
+			"cylinder": {
+				"axis": "Y",
+				"depth": 5,
+				"diameter": 2
+			},
+			"name": "obj_cannon_rocket",
+			"physicsMaterial": "Metal",
+			"qualityLevel": 0,
+			"renderable": "$CONTENT_DATA/Objects/Renderables/Ammo/obj_cannon_rocket.rend",
+			"rotationSet": "PropY",
+			"scripted": {
+				"classname": "CannonRocket",
+				"data": {},
+				"filename": "$CONTENT_DATA/Scripts/interactables/CannonRocket.lua",
+				"seat": {
+					"bones": [
+						{
+							"name": "Hips",
+							"offset": {
+								"x": 0.0,
+								"y": -10000,
+								"z": 0.0
+							}
+						}
+					],
+					"ragdollFile": "$GAME_DATA/Character/bikeseat_ragdoll.json",
+					"enterAudio": "Seat seated",
+					"exitAudio": "Seat unseated"
+				}
+			},
+			"stackSize": 5,
+			"sticky": "-Y",
+			"uuid": "24d5e812-3902-4ac3-b214-a0c924a5c40f"
+		},
+		{
+			"consumable": true,
+			"cylinder": {
+				"axis": "Y",
+				"depth": 3,
+				"diameter": 2
+			},
+			"name": "obj_cannon_ratshot",
+			"physicsMaterial": "Metal",
+			"renderable": "$CONTENT_DATA/Objects/Renderables/Ammo/obj_cannon_ratshot.rend",
+			"rotationSet": "PropY",
+			"stackSize": 10,
+			"sticky": "-Y",
+			"uuid": "e36b172c-ae2d-4697-af44-8041d9cbde0e"
+		},
+		{
+			"color": "9f2600",
+			"consumable": true,
+			"cylinder": {
+				"axis": "Y",
+				"depth": 4,
+				"diameter": 3
+			},
+			"name": "obj_cannon_nuke",
+			"physicsMaterial": "Metal",
+			"qualityLevel": 0,
+			"renderable": "$CONTENT_DATA/Objects/Renderables/Ammo/obj_cannon_nuke.rend",
+			"rotationSet": "PropY",
+			"autoTool": "e6b6a84a-ab65-4f1d-a80d-5481e0ca17f2",
+			"scripted": {
+				"filename": "$CONTENT_DATA/Scripts/interactables/CannonNuke.lua",
 				"classname": "CannonNuke",
 				"data": {
 					"destructionLevel": 20,
@@ -107,11 +107,11 @@
 					"effectExplosion": "Nuke - Explode",
 					"effectActivate": "PropaneTank - ActivateBig"
 				}
-         },
-         "stackSize" : 5,
-         "sticky" : "-Y",
-         "uuid" : "47b43e6e-280d-497e-9896-a3af721d89d2"
-      },
+			},
+			"stackSize": 5,
+			"sticky": "-Y",
+			"uuid": "47b43e6e-280d-497e-9896-a3af721d89d2"
+		},
 		{
 			"uuid": "8d3b98de-c981-4f05-abfe-d22ee4781d33",
 			"name": "obj_interactive_propanetank_small",
@@ -218,15 +218,16 @@
 				0
 			],
 			"color": "cb0a00",
-			"box": {
-				"x": 2,
-				"y": 3,
-				"z": 2
+			"cylinder": {
+				"axis": "Y",
+				"depth": 3,
+				"diameter": 2
 			},
 			"autoTool": "e6b6a84a-ab65-4f1d-a80d-5481e0ca17f2",
 			"scripted": {
-            "filename": "$CONTENT_DATA/Scripts/interactables/BigPotato.lua",
-				"classname": "BigPotato"
+				"filename": "$CONTENT_DATA/Scripts/interactables/BigPotato.lua",
+				"classname": "BigPotato",
+				"data": {}
 			},
 			"rotationSet": "PropYZ",
 			"sticky": "+Y-Y+Z-Z+X-X",
@@ -239,5 +240,5 @@
 			},
 			"flammable": true
 		}
-   ]
+	]
 }
