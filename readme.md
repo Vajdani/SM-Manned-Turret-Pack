@@ -19,7 +19,7 @@ Be careful though, they're not invincible!
 Have fun!
 
 # Media
-![embed_1](https://www.youtube.com/watch?v=_swG8ryuTaw)
+[![embed_1](https://img.youtube.com/vi/_swG8ryuTaw/0.jpg)](https://www.youtube.com/watch?v=_swG8ryuTaw)
 ![embed_2](https://images.steamusercontent.com/ugc/2508017401741473898/849A383C394C2E463E9BB918CD2A1F5FF24DB699/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false)
 ![embed_3](https://images.steamusercontent.com/ugc/2508017401741473905/EF0BBB5F39016B419791F9B80C427CFB1EBF8C05/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false)
 ![embed_4](https://images.steamusercontent.com/ugc/2508017401741473912/325C123158C09C6B5EFAB8FCE4E4A809F5AB44C5/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false)
