@@ -1,3 +1,5 @@
+![Mod Preview](https://github.com/Vajdani/SM-Manned-Turret-Pack/blob/master/preview.jpg)
+
 # Introducing... the Manned Turrets!
 These player controlled turrets are capable of many things:
 - Taking down bots with potatoes/AA rounds/Ratshot
