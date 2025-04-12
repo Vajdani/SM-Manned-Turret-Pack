@@ -32,6 +32,6 @@ function CannonBase:sv_spawnNukeOnDestroy(ammoType)
         }
     )
 
-    sm.shape.createPart(ammoData.uuid, endPos - projectileRot * sm.item.getShapeOffset(ammoData.uuid), projectileRot)
+    sm.shape.createPart(ammoData.ammo, endPos - projectileRot * sm.item.getShapeOffset(ammoData.ammo), projectileRot)
     self:sv_e_setAmmoType(ammoType.previous)
 end
