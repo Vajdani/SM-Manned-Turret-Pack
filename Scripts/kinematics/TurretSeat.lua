@@ -616,7 +616,7 @@ function TurretSeat:getTurretPosition()
         return _G[self.baseClassName].getSeatPos({ cl_turret = self.harvestable, shape = base.shape })
     end
 
-    return self.harvestable.worldPosition + base.shape.velocity * 0.025
+    return self.harvestable.worldPosition --+ base.shape.velocity * 0.025
 end
 
 function TurretSeat:getFirePos()
