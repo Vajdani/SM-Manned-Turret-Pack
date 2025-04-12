@@ -10,7 +10,7 @@ function effectHook(name, object, bone)
 end
 sm.effect.createEffect = effectHook
 
-local oldBind = sm.game.bindChatCommand
+oldBind = oldBind or sm.game.bindChatCommand
 function bindHook(command, params, callback, help)
     if not gameHooked then
         gameHooked = true
@@ -20,6 +20,39 @@ function bindHook(command, params, callback, help)
 	return oldBind(command, params, callback, help)
 end
 sm.game.bindChatCommand = bindHook
+
+oldVizSetBodies = oldVizSetBodies or sm.visualization.setCreationBodies
+function sm.visualization.setCreationBodies(bodies)
+    sm.visualization.currentBodies = bodies
+    oldVizSetBodies(bodies)
+end
+
+oldVizSetVisible = oldVizSetVisible or sm.visualization.setCreationVisible
+function sm.visualization.setCreationVisible(state)
+    sm.visualization.isVisible = state
+    oldVizSetVisible(state)
+end
+
+oldVizSetFreePlacement = oldVizSetFreePlacement or sm.visualization.setCreationFreePlacement
+function sm.visualization.setCreationFreePlacement(state)
+    sm.visualization.creationFreePlacement = state
+    oldVizSetFreePlacement(state)
+end
+
+function sm.visualization.isBodyHighlighted(body, lift)
+    if not sm.visualization.isVisible or not lift and sm.visualization.creationFreePlacement then
+        return false
+    end
+
+    for k, v in pairs(sm.visualization.currentBodies) do
+        if v == body then
+            return true
+        end
+    end
+
+    return false
+end
+
 
 
 

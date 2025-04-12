@@ -285,6 +285,27 @@ function MountedCannonGun:client_onFixedUpdate(dt)
     self.seated = self:getSeatCharacter() == sm.localPlayer.getPlayer().character
 end
 
+function MountedCannonGun:client_onUpdate(dt)
+    MountedTurretGun.client_onUpdate(self, dt)
+
+    if self.nukeEffect == nil then return end
+
+    if sm.exists(self.nukeEffect) then
+        local highlighted = sm.visualization.isBodyHighlighted(self.shape.body, false)
+        if self.bodyHighlighted ~= highlighted then
+            self.bodyHighlighted = highlighted
+
+            if highlighted then
+                self.nukeEffectHighlight:start()
+            else
+                self.nukeEffectHighlight:stop()
+            end
+        end
+    else
+        self:cl_updateLoadedNuke(true)
+    end
+end
+
 local connectionTypes = {
     2^14,
     2^15,
@@ -402,16 +423,25 @@ function MountedCannonGun:cl_updateLoadedNuke(state)
         local uuid = transform.overrideUUID or ammoData.uuid
         self.nukeEffect:setParameter("uuid", uuid)
         self.nukeEffect:setParameter("color", sm.item.getShapeDefaultColor(uuid))
-
         self.nukeEffect:setOffsetPosition(transform.pos)
         self.nukeEffect:setOffsetRotation(turret_projectile_rotation_adjustment)
         self.nukeEffect:setScale(transform.scale)
+
+        self.nukeEffectHighlight = sm.effect.createEffect("ShapeRenderable", self.interactable)
+        self.nukeEffectHighlight:setParameter("uuid", uuid)
+        self.nukeEffectHighlight:setParameter("visualization", true)
+        self.nukeEffectHighlight:setOffsetPosition(transform.pos)
+        self.nukeEffectHighlight:setOffsetRotation(turret_projectile_rotation_adjustment)
+        self.nukeEffectHighlight:setScale(transform.scale)
 
         self.nukeEffect:start()
     	sm.effect.playEffect( "Resourcecollector - TakeOut", self.shape.worldPosition )
     else
         self.nukeEffect:stop()
         self.nukeEffect:destroy()
+
+        self.nukeEffectHighlight:stop()
+        self.nukeEffectHighlight:destroy()
     end
 
     sm.GetInteractableClientPublicData(self.interactable).isBarrelLoaded = state

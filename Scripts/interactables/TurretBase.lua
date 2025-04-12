@@ -517,16 +517,23 @@ function TurretBase:cl_checkHighlight()
         self.turretHighlight:setScale(vec3_one * 0.25)
     end
 
-    local shouldHighlight, isPlaying = sm.game.getCurrentTick() - (self.liftHoverTick or 0) < 2, self.turretHighlight:isPlaying()
-    if shouldHighlight and not isPlaying then
-        self.turretHighlight:start()
-    elseif not shouldHighlight and isPlaying then
-        self.turretHighlight:stop()
-    end
-end
+    local highlighted = sm.visualization.isBodyHighlighted(self.shape.body, false)
+    local lifted = not highlighted and sm.visualization.isBodyHighlighted(self.shape.body, true)
+    if self.bodyHighlighted ~= highlighted then
+        self.bodyHighlighted = highlighted
 
-function TurretBase:cl_liftHover()
-    self.liftHoverTick = sm.game.getCurrentTick()
+        if highlighted then
+            self.turretHighlight:start()
+        else
+            self.turretHighlight:stop()
+        end
+    end
+
+    if self.lifted ~= lifted then
+        self.lifted = lifted
+
+        self:cl_onLifted(lifted)
+    end
 end
 
 function TurretBase:cl_onLifted(state)

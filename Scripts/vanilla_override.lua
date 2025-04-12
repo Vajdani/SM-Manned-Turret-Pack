@@ -60,18 +60,6 @@ function LiftReplacement:checkForTurret(result)
 	end
 end
 
-function LiftReplacement:liftTurrets(state, onLift)
-	if onLift then
-		for k, v in pairs(self.turrets or {}) do
-			sm.event.sendToInteractable(v, "cl_n_putOnLift")
-		end
-	else
-		for k, v in pairs(self.turrets or {}) do
-			sm.event.sendToInteractable(v, "cl_onLifted", state)
-		end
-	end
-end
-
 ---@param raycastResult RaycastResult
 function LiftReplacement.client_interact( self, primaryState, secondaryState, raycastResult )
 	local targetBody = nil
@@ -84,9 +72,6 @@ function LiftReplacement.client_interact( self, primaryState, secondaryState, ra
 
 	--Clear states
 	if secondaryState == 1 and #self.selectedBodies > 0 then
-		self:liftTurrets(false)
-		self.turrets = {}
-
 		self.hoverBodies = {}
 		self.selectedBodies = {}
 
@@ -132,7 +117,6 @@ function LiftReplacement.client_interact( self, primaryState, secondaryState, ra
 		if targetBody:isDynamic() and targetBody:isLiftable() then
 			local isLiftable = true
 			isSelectable = true
-			local turrets = {}
 			for _, body in ipairs( targetBody:getCreationBodies() ) do
 				for _, shape in ipairs( body:getShapes() ) do
 					if not shape.liftable then
@@ -144,19 +128,6 @@ function LiftReplacement.client_interact( self, primaryState, secondaryState, ra
 					isSelectable = false
 					break
 				end
-
-				for _k, int in pairs(body:getInteractables()) do
-					if (sm.MANNEDTURRET_turretBases_clientPublicData[int.id] or {}).isTurret == true then
-						table.insert(turrets, int)
-					end
-				end
-			end
-
-			if isLiftable and isSelectable then
-				self.turrets = turrets
-				for k, v in pairs(turrets) do
-					sm.event.sendToInteractable(v, "cl_liftHover")
-				end
 			end
 		end
 	end
@@ -166,10 +137,6 @@ function LiftReplacement.client_interact( self, primaryState, secondaryState, ra
 		self.hoverBodies = targetBody and targetBody:getCreationBodies() or {}
 	else
 		self.hoverBodies = {}
-
-		if #self.selectedBodies == 0 then
-			self.turrets = {}
-		end
 	end
 
 	-- Unselect invalid bodies
@@ -188,13 +155,9 @@ function LiftReplacement.client_interact( self, primaryState, secondaryState, ra
 	if primaryState == sm.tool.interactState.start then
 
 		if isSelectable and #self.selectedBodies == 0 then
-			self:liftTurrets(true)
 			self.selectedBodies = self.hoverBodies
 			self.hoverBodies = {}
 		elseif isPlaceable then
-			self:liftTurrets(false, true)
-			self.turrets = {}
-
 			local placeLiftParams = { player = sm.localPlayer.getPlayer(), selectedBodies = self.selectedBodies, liftPos = self.liftPos, liftLevel = liftLevel, rotationIndex = self.rotationIndex }
 			self.network:sendToServer( "server_placeLift", placeLiftParams )
 			self.selectedBodies = {}
@@ -247,18 +210,13 @@ function LiftReplacement.client_interact( self, primaryState, secondaryState, ra
 	return blockDelete
 end
 
-function LiftReplacement:client_onUnequip()
-	if self.turrets then
-		self:liftTurrets(false)
-	end
-	self.turrets = {}
-
-	self.equipped = false
-	sm.visualization.setCreationBodies( {} )
-	sm.visualization.setCreationVisible( false )
-	sm.visualization.setLiftVisible( false )
-	self.forced = false
-end
+-- function LiftReplacement:client_onUnequip()
+-- 	self.equipped = false
+-- 	sm.visualization.setCreationBodies( {} )
+-- 	sm.visualization.setCreationVisible( false )
+-- 	sm.visualization.setLiftVisible( false )
+-- 	self.forced = false
+-- end
 
 for k, liftClass in pairs({ Lift, SurvivalLift }) do
 	for _k, v in pairs(LiftReplacement) do
