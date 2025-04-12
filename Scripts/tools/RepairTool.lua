@@ -250,6 +250,7 @@ local function _createFpAnimations( tool, animationMap )
             eventTime = pair[2] and pair[2].eventTime or nil,
             eventPlayed = false,
 			blockHeal = pair[2] and pair[2].blockHeal or false,
+			resetWeight = pair[2] and pair[2].resetWeight or false,
 			baseTime = pair[2] and pair[2].baseTime or 0.0,
 		}
 
@@ -315,6 +316,11 @@ local function _updateFpAnimations( self, data, equipped, dt )
 								if nextRend.colour then
 									self.tool:setFpColor(nextRend.colour)
 								end
+
+								if animation.resetWeight then
+									animation.weight = 0
+								end
+
 	                            setFpAnimation(data, animation.nextAnimation, animation.blendNext)
 							end
                         else
@@ -372,7 +378,7 @@ function RepairTool:cl_loadAnimations()
             self.tool,
             {
                 hammer  		 = { "smallhammer_use",   	{ nextAnimation = "hammer2",    		 	eventTime = 0.1,	blockHeal = false } },
-                hammer2 		 = { "smallhammer_use2",  	{ nextAnimation = "drill",      		 	eventTime = 0.1,	blockHeal = false } },
+                hammer2 		 = { "smallhammer_use2",  	{ nextAnimation = "drill",      		 	eventTime = 0.1,	blockHeal = false, 		resetWeight = true } },
                 drill   		 = { "impactdriver_use",  	{ nextAnimation = "weldtool_pickup",	 	eventTime = 0,		blockHeal = false } },
 				weldtool_pickup	 = { "weldtool_pickup",		{ nextAnimation = "weldtool_into",     	 	eventTime = 0,		blockHeal = true, 		playRate  = 2  	 } },
 				weldtool_into 	 = { "weldtool_use_into", 	{ nextAnimation = "weldtool_use",     	 	eventTime = 0,		blockHeal = true, 		blendNext = 0.2  } },
