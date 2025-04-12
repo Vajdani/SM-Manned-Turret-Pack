@@ -5,7 +5,7 @@
 ---@field recoilStrength? number
 ---@field fireCooldown number
 ---@field spread? number
----@field effect EffectName|string
+---@field effect string|EffectName
 ---@field ignoreAmmoConsumption? boolean
 ---@field overheatPerShot? number
 ---@field ammo Uuid
