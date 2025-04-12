@@ -114,7 +114,7 @@ function MountedCannonGun:server_onDestroy()
         local projectileRot = rot * turret_projectile_rotation_adjustment
 
         sm.event.sendToWorld(self.world, "sv_e_spawnPart", {
-            uuid = ammoData.uuid,
+            uuid = ammoData.ammo,
             pos = self.worldPos + rot * (self.fireOffset * 0.5) - projectileRot * sm.item.getShapeOffset(ammoData.uuid),
             rot = projectileRot
         })
