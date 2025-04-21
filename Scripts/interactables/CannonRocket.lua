@@ -20,6 +20,14 @@ function CannonRocket:server_onCreate()
     end
 end
 
+function CannonRocket:server_onDestroy()
+    if self.destroyed then return end
+
+    if sm.exists(self.seat) then
+        SendEventToObject(self.seat, "sv_onRocketExplode", true)
+    end
+end
+
 function CannonRocket:server_onProjectile()
     if not self.isPrimed then return end
     self:sv_explode()
@@ -66,6 +74,8 @@ function CannonRocket:server_onFixedUpdate(dt)
 end
 
 function CannonRocket:sv_explode(position)
+    self.destroyed = true
+
     if sm.exists(self.seat) then
         SendEventToObject(self.seat, "sv_onRocketExplode", position == nil)
     end
