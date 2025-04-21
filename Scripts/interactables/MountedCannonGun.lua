@@ -439,9 +439,11 @@ function MountedCannonGun:cl_updateLoadedNuke(state)
     else
         self.nukeEffect:stop()
         self.nukeEffect:destroy()
+        self.nukeEffect = nil
 
         self.nukeEffectHighlight:stop()
         self.nukeEffectHighlight:destroy()
+        self.nukeEffectHighlight = nil
     end
 
     sm.GetInteractableClientPublicData(self.interactable).isBarrelLoaded = state
