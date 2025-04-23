@@ -1,3 +1,5 @@
+---@diagnostic disable:duplicate-set-field
+
 local gameHooked = false
 local oldEffect = sm.effect.createEffect
 function effectHook(name, object, bone)
@@ -91,6 +93,8 @@ function TurretAssistor:server_onCreate()
         sm.log.warning(text)
         sm.gui.chatMessage(text)
     end
+
+    self.charQueue = {}
 end
 
 function TurretAssistor:server_onFixedUpdate()
@@ -108,6 +112,14 @@ function TurretAssistor:server_onFixedUpdate()
         end
 
         self.players = players
+    end
+
+    for k, v in pairs(self.charQueue) do
+        if v and sm.exists(v) then
+            sm.log.warning("CHARACTER DISCARDED")
+            v:setWorldPosition(sm.vec3.new(0, 0, -512))
+            self.charQueue[k] = nil
+        end
     end
 end
 
@@ -127,4 +139,9 @@ function TurretAssistor:sv_recreateChunkLoader(data)
 
     g_TurretSeatChunkLoaders[data.cellKey] = seat
     sm.storage.save(g_saveKey_TurretSeatChunkLoaders, g_TurretSeatChunkLoaders)
+end
+
+function TurretAssistor:sv_addCharToDestroyQueue(char)
+    sm.log.warning("CHARACTER ADDED TO DISCARD QUEUE")
+    table.insert(self.charQueue, char)
 end
