@@ -116,6 +116,10 @@ function TurretBase:server_onExplosion(center, destructionLevel)
     self:sv_takeDamage(destructionLevel * 25)
 end
 
+function TurretBase:sv_e_onHit(args)
+    self:sv_takeDamage(args.damage)
+end
+
 function TurretBase:sv_takeDamage(damage)
     --if self.cl_health <= 0 and damage >= 0 then return end
 
