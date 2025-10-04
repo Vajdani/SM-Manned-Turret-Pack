@@ -22,7 +22,10 @@ function BigPotato:server_onProjectile()
     self:sv_explode()
 end
 
-local zero = sm.vec3.zero()
+function BigPotato:sv_e_onHit()
+    self:sv_explode()
+end
+
 function BigPotato:sv_explode()
     local shape = self.shape
     local hor = 45
@@ -34,7 +37,7 @@ function BigPotato:sv_explode()
             local frac = j / ver
             local horFrac = math.sin(frac * 2) --math.sin(frac) --christmas tree pattern
             local dir = sm.vec3.new(math.sin(i) * horFrac, 0.8 - frac * 1.6, math.cos(i) * horFrac)
-            sm.projectile.shapeProjectileAttack(projectile, 28, zero, sm.noise.gunSpread(dir, spreadAngle) * 5, shape)
+            sm.projectile.shapeProjectileAttack(projectile, 28, vec3_zero, sm.noise.gunSpread(dir, spreadAngle) * 5, shape)
         end
     end
 

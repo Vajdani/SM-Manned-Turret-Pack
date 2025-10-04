@@ -513,7 +513,7 @@ function CannonSeat:cl_startAirStrike()
     self.airStrikeBaseMarker:setScale(vec3_one)
     self.airStrikeBaseMarker:start()
 
-    self.strikeCamOffset = sm.vec3.zero()
+    self.strikeCamOffset = vec3_zero
     self.strikeZoom = 1
     self.spottingStrike = true
 
