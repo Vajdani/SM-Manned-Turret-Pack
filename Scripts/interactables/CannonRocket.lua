@@ -87,7 +87,7 @@ function CannonRocket:sv_explode(position)
         sm.log.warning("ROCKET LOADER DESTROYED")
     else
         sm.log.error("ROCKET LOADER NOT DESTROYED")
-        sm.event.sendToTool(g_turretAssistor, "sv_addCharToDestroyQueue", self.dummy)
+        sm.event.sendToTool(sm.MANNEDTURRET_turretAssistor, "sv_addCharToDestroyQueue", self.dummy)
     end
 
     sm.physics.explode( position or self.shape.worldPosition, 7, 5, 7, 15, "PropaneTank - ExplosionBig", self.shape )

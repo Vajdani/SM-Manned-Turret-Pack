@@ -70,13 +70,33 @@ end
 ---@class TurretAssistor : ToolClass
 TurretAssistor = class()
 
-g_TurretSeatChunkLoaders = g_TurretSeatChunkLoaders or {}
-g_saveKey_TurretSeatChunkLoaders = "af96778d-402e-4f42-9332-3cb7d9119479"
+sm.MANNEDTURRET_turretChunkLoaders = sm.MANNEDTURRET_turretChunkLoaders or {}
+sm.MANNEDTURRET_turretChunkLoaders_saveKey = "af96778d-402e-4f42-9332-3cb7d9119479"
 function TurretAssistor:server_onCreate()
-    if g_turretAssistor then return end --Prevent multiple loads
+    if sm.MANNEDTURRET_turretAssistor then return end --Prevent multiple loads
 
-    g_TurretSeatChunkLoaders = sm.storage.load(g_saveKey_TurretSeatChunkLoaders) or {}
-    g_turretAssistor = self.tool
+    -- sm.storage.save(sm.MANNEDTURRET_turretChunkLoaders_saveKey, nil)
+    sm.MANNEDTURRET_turretChunkLoaders = sm.storage.load(sm.MANNEDTURRET_turretChunkLoaders_saveKey) or {}
+    sm.log.error(sm.MANNEDTURRET_turretChunkLoaders)
+
+    for cellKey, chunk in pairs(sm.MANNEDTURRET_turretChunkLoaders) do
+        local newChunks = {}
+        for _k, base in pairs(chunk.bases) do
+            if sm.exists(base) then
+                table.insert(newChunks, base)
+            end
+        end
+
+        if #newChunks == 0 then
+            sm.event.sendToGame("sv_releaseTurretChunkLoaderHandle", cellKey)
+        end
+
+        chunk.bases = newChunks
+    end
+
+    self:sv_saveChunkLoaders()
+
+    sm.MANNEDTURRET_turretAssistor = self.tool
 
     self.players = sm.player.getAllPlayers()
 
@@ -98,7 +118,7 @@ function TurretAssistor:server_onCreate()
 end
 
 function TurretAssistor:server_onFixedUpdate()
-    if g_turretAssistor ~= self.tool then return end
+    if sm.MANNEDTURRET_turretAssistor ~= self.tool then return end
 
     local players = sm.player.getAllPlayers()
     local newLen, oldLen = #players, #self.players
@@ -133,12 +153,8 @@ function TurretAssistor:sv_sendDataToJoiner(player)
     end
 end
 
-function TurretAssistor:sv_recreateChunkLoader(data)
-    local seat = sm.shape.createPart(sm.uuid.new("53a7a730-24e1-49b6-b3df-54407ea75b82"), sm.vec3.new(data.pos.x, data.pos.y, -200), nil, false, true)
-    seat.interactable:setParams(data.dummy)
-
-    g_TurretSeatChunkLoaders[data.cellKey] = seat
-    sm.storage.save(g_saveKey_TurretSeatChunkLoaders, g_TurretSeatChunkLoaders)
+function TurretAssistor:sv_saveChunkLoaders()
+	sm.storage.save(sm.MANNEDTURRET_turretChunkLoaders_saveKey, sm.MANNEDTURRET_turretChunkLoaders)
 end
 
 function TurretAssistor:sv_addCharToDestroyQueue(char)

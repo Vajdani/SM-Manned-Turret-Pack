@@ -44,6 +44,8 @@ function TurretBase:server_onCreate()
         health = self.maxHealth,
         maxHealth = self.maxHealth
     }
+
+    self.spawnPosition = self.shape.worldPosition
 end
 
 function TurretBase:sv_syncToLateJoiner(player)
@@ -63,6 +65,8 @@ end
 function TurretBase:server_onDestroy()
     if sm.exists(self.turret) then
         self.turret:destroy()
+
+        sm.event.sendToGame("sv_removeTurretChunkLoader", { position = self.spawnPosition })
     end
 end
 
@@ -140,6 +144,8 @@ function TurretBase:sv_takeDamage(damage)
         self:sv_clearDrivingFlags(false)
 
         self.destroyed = true
+
+        sm.event.sendToGame("sv_removeTurretChunkLoader", { position = self.spawnPosition, int = self.interactable })
     elseif newHealth == self.maxHealth and not turretExists then
         self.destroyed = false
         self:sv_createTurret()
@@ -174,18 +180,7 @@ function TurretBase:sv_createTurret()
     self.turret:setParams({ base = self.interactable, ammoType = self.ammoType })
     self.network:setClientData(self.turret, 1)
 
-    sm.log.warning("TRYING TO CREATE LOADER")
-    local pos_64 = pos/64
-    local x, y = math.floor(pos_64.x), math.floor(pos_64.y)
-    local cellKey = CellKey(x, y)
-    local loader = g_TurretSeatChunkLoaders[cellKey]
-    if loader == nil or not sm.exists(loader) then
-        sm.log.warning("CREATED LOADER")
-        g_TurretSeatChunkLoaders[cellKey] = sm.shape.createPart(sm.uuid.new("53a7a730-24e1-49b6-b3df-54407ea75b82"), sm.vec3.new(pos.x, pos.y, -512), nil, false, true)
-        sm.storage.save(g_saveKey_TurretSeatChunkLoaders, g_TurretSeatChunkLoaders)
-    else
-        sm.log.warning("CHUNK ALREADY LOADED")
-    end
+    sm.event.sendToGame("sv_addTurretChunkLoader", self.interactable)
 end
 
 function TurretBase:sv_updateDir(dir)

@@ -562,15 +562,19 @@ end
 
 
 -- #region World hook
-originalWorldFuncs = originalWorldFuncs or {}
+mannedTurret_originalHookFuncs = mannedTurret_originalHookFuncs or {}
 for k, v in pairs(_G) do
-	if type(v) == "table" and (v.cellMaxX or v.cellMaxY or v.cellMinX or v.cellMinY) then
+	if type(v) ~= "table" then
+		goto continue
+	end
+
+	if (v.cellMaxX or v.cellMaxY or v.cellMinX or v.cellMinY) then
 		function v:sv_e_spawnPart(args)
 			sm.shape.createPart(args.uuid, args.pos, args.rot)
 		end
 
-		if originalWorldFuncs[k] == nil then
-			originalWorldFuncs[k] = {
+		if mannedTurret_originalHookFuncs[k] == nil then
+			mannedTurret_originalHookFuncs[k] = {
 				server_onProjectile = v.server_onProjectile
 			}
 		end
@@ -592,8 +596,91 @@ for k, v in pairs(_G) do
 				end
 			end
 
-			return originalWorldFuncs[k].server_onProjectile(self, position, airTime, velocity, projectileName, shooter, damage, customData, normal, target, uuid)
+			return mannedTurret_originalHookFuncs[k].server_onProjectile(self, position, airTime, velocity, projectileName, shooter, damage, customData, normal, target, uuid)
+		end
+	elseif v.server_onPlayerJoined then
+		if mannedTurret_originalHookFuncs[k] == nil then
+			mannedTurret_originalHookFuncs[k] = {
+				server_onPlayerJoined = v.server_onPlayerJoined
+			}
+		end
+
+		function v:server_onPlayerJoined(player, newPlayer)
+			mannedTurret_originalHookFuncs[k].server_onPlayerJoined(self, player, newPlayer)
+
+			sm.log.warning("PLAYER JOIN", player, player:getName())
+		end
+
+		function v:sv_addTurretChunkLoader(int)
+			sm.log.warning("LOADING CHUNK FOR TURRET")
+			local pos_64 = int.shape.worldPosition/64
+			local x, y = math.floor(pos_64.x), math.floor(pos_64.y)
+			local cellKey = CellKey(x, y)
+			if sm.MANNEDTURRET_turretChunkLoaders[cellKey] == nil then
+				sm.MANNEDTURRET_turretChunkLoaders[cellKey] = {
+					bases = {},
+					handle = nil
+				}
+
+				int.body:getWorld():loadCell(x, y, nil, "sv_OnTurretChunkLoaded")
+			end
+
+			if isAnyOf(int, sm.MANNEDTURRET_turretChunkLoaders[cellKey].bases) then
+				sm.log.error(int, "IS ALREADY SAVED, NOT SAVING AGAIN")
+			else
+				table.insert(sm.MANNEDTURRET_turretChunkLoaders[cellKey].bases, int)
+				-- sm.storage.save(sm.MANNEDTURRET_turretChunkLoaders_saveKey, sm.MANNEDTURRET_turretChunkLoaders)
+				sm.event.sendToTool(sm.MANNEDTURRET_turretAssistor, "sv_saveChunkLoaders")
+			end
+
+			sm.log.warning(sm.MANNEDTURRET_turretChunkLoaders[cellKey])
+		end
+
+		function v:sv_OnTurretChunkLoaded(world, x, y, player, params, handle)
+			sm.MANNEDTURRET_turretChunkLoaders[CellKey(x, y)].handle = handle
+			-- sm.storage.save(sm.MANNEDTURRET_turretChunkLoaders_saveKey, sm.MANNEDTURRET_turretChunkLoaders)
+			sm.event.sendToTool(sm.MANNEDTURRET_turretAssistor, "sv_saveChunkLoaders")
+			sm.log.warning("CHUNK LOADED FOR TURRET, HANDLE:", handle)
+		end
+
+		function v:sv_removeTurretChunkLoader(data)
+			sm.log.warning("REMOVING TURRET FROM LOADED CHUNK")
+			local pos_64 = data.position / 64
+			local x, y = math.floor(pos_64.x), math.floor(pos_64.y)
+			local cellKey = CellKey(x, y)
+			if sm.MANNEDTURRET_turretChunkLoaders[cellKey] == nil then
+				sm.log.error("NO CHUNK DATA FOR BASE REQUESTING REMOVAL", data, x, y)
+				return
+			end
+
+			if data.int then
+				table.sort(sm.MANNEDTURRET_turretChunkLoaders[cellKey].bases, function(a, b)
+					return b == data.int
+				end)
+			else
+				table.sort(sm.MANNEDTURRET_turretChunkLoaders[cellKey].bases, function(a, b)
+					return not sm.exists(b)
+				end)
+			end
+
+			table.remove(sm.MANNEDTURRET_turretChunkLoaders[cellKey].bases)
+
+			if #sm.MANNEDTURRET_turretChunkLoaders[cellKey].bases == 0 then
+				self:sv_releaseTurretChunkLoaderHandle(cellKey)
+			end
+
+			-- sm.storage.save(sm.MANNEDTURRET_turretChunkLoaders_saveKey, sm.MANNEDTURRET_turretChunkLoaders)
+			sm.event.sendToTool(sm.MANNEDTURRET_turretAssistor, "sv_saveChunkLoaders")
+
+			sm.log.warning(sm.MANNEDTURRET_turretChunkLoaders[cellKey])
+		end
+
+		function v:sv_releaseTurretChunkLoaderHandle(cellKey)
+			-- sm.MANNEDTURRET_turretChunkLoaders[cellKey].handle:release()
+			sm.MANNEDTURRET_turretChunkLoaders[cellKey] = nil
 		end
 	end
+
+	::continue::
 end
 -- #endregion
