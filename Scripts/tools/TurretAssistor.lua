@@ -55,6 +55,16 @@ function sm.visualization.isBodyHighlighted(body, lift)
     return false
 end
 
+oldHudCreate = oldHudCreate or sm.gui.createSurvivalHudGui
+function sm.gui.createSurvivalHudGui(close)
+    local gui = oldHudCreate(close)
+    if not sm.SURVIVALHUD then
+        sm.SURVIVALHUD = gui
+    end
+
+    return gui
+end
+
 
 
 

@@ -2,39 +2,13 @@
 
 -- #region Player
 dofile( "$GAME_DATA/Scripts/game/BasePlayer.lua" )
-if not SurvivalPlayer then
-	dofile( "$SURVIVAL_DATA/Scripts/game/SurvivalPlayer.lua" )
+
+mannedTurret_oldClientCreate = mannedTurret_oldClientCreate or BasePlayer.client_onCreate
+function BasePlayer:client_onCreate()
+	mannedTurret_oldClientCreate(self)
+
+	sm.BASEPLAYERENABLED = true
 end
-
-oldClientCreate = oldClientCreate or SurvivalPlayer.client_onCreate
-local function newClientCreate( self )
-	oldClientCreate(self)
-
-	if g_survivalHud then
-		sm.SURVIVALHUD = g_survivalHud
-	end
-
-	if self.cl_localPlayerUpdate then --Not a reliable check
-		sm.BASEPLAYERENABLED = true
-	end
-end
-SurvivalPlayer.client_onCreate = newClientCreate
-
-local oldClass = class
-function newClass(_class)
-    if _class then
-        for k, v in pairs(BasePlayer) do
-            if _class[k] ~= v then
-                return oldClass(_class)
-            end
-        end
-
-        return SurvivalPlayer
-    end
-
-    return oldClass()
-end
-class = newClass
 -- #endregion
 
 
