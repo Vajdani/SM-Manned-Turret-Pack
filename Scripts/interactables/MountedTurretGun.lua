@@ -159,14 +159,14 @@ function MountedTurretGun:sv_fire(ammoData)
 		local projectile = sm.shape.createPart(ammoData.uuid, finalFirePos, projectileRot)
 
 		if ammoData.velocity then
-			sm.physics.applyImpulse(projectile, dir * projectile.mass * ammoData.velocity, true)
+			sm.physics.applyImpulse(projectile, (dir * ammoData.velocity + self.shape.velocity) * projectile.mass, true)
 		end
 
 		local char = self:getSeatCharacter()
 		self:sv_OnPartFire(self.ammoType, ammoData, projectile, char and char:getPlayer())
 	else
 		finalFirePos = self.shape.worldPosition + rot * self.fireOffset
-		sm.projectile.shapeProjectileAttack( ammoData.uuid, ammoData.damage, self.fireOffset, sm.noise.gunSpread(vec3_up, ammoData.spread or 0) * ammoData.velocity, self.shape )
+		sm.projectile.shapeProjectileAttack( ammoData.uuid, ammoData.damage, self.fireOffset, sm.noise.gunSpread(vec3_up, ammoData.spread or 0) * ammoData.velocity + self.shape.velocity, self.shape )
 
 		local char = self:getSeatCharacter()
 		self:sv_OnProjectileFire(self.ammoType, ammoData, char and char:getPlayer())

@@ -244,13 +244,13 @@ function TurretSeat:sv_shoot(ammoType, caller)
             local projectile = sm.shape.createPart(ammoData.uuid, finalFirePos, projectileRot)
 
             if ammoData.velocity then
-                sm.physics.applyImpulse(projectile, dir * projectile.mass * ammoData.velocity, true)
+                sm.physics.applyImpulse(projectile, (dir * ammoData.velocity + self.base.body.velocity) * projectile.mass, true)
             end
 
             self:sv_OnPartFire(ammoType, ammoData, projectile, caller)
         else
             finalFirePos = endPos + dir * (hit and 0 or 0.25)
-            sm.projectile.projectileAttack( ammoData.uuid, ammoData.damage, finalFirePos, sm.noise.gunSpread(dir, ammoData.spread or 0) * ammoData.velocity, caller )
+            sm.projectile.projectileAttack( ammoData.uuid, ammoData.damage, finalFirePos, sm.noise.gunSpread(dir, ammoData.spread or 0) * ammoData.velocity + self.base.body.velocity, caller )
             self:sv_OnProjectileFire(ammoType, ammoData, caller)
         end
 
