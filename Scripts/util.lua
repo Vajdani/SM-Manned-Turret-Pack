@@ -49,7 +49,7 @@ function getRepairText()
         checkedTick = tick
     end
 
-    return ("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>Repairing%s</p>"):format(string.rep(".", repairTick%4))
+    return ("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>Repairing%s</p>"):format(string.rep(".", repairTick%4)..string.rep(" ", 3 - repairTick%4))
 end
 
 function getHealthDisplay(health)
