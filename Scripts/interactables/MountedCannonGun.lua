@@ -119,6 +119,10 @@ function MountedCannonGun:server_onDestroy()
             rot = projectileRot
         })
     end
+
+    if self.rocket then
+        sm.event.sendToInteractable(self.seat, "sv_onRocketExplode")
+    end
 end
 
 function MountedCannonGun:server_onFixedUpdate()
@@ -187,6 +191,7 @@ function MountedCannonGun:sv_OnPartFire(ammoType, ammoData, part, player)
         if char then
             part.interactable.publicData = { owner = player, seat = self.interactable }
             self.rocket = part
+            self.seat = self:getSeat()
         else
             part.interactable.publicData = {}
         end
@@ -215,6 +220,9 @@ function MountedCannonGun:sv_onRocketExplode(detonated)
     if char then
         self.network:sendToClient(char:getPlayer(), "cl_onRocketExplode", detonated)
     end
+
+    sm.event.sendToInteractable(self.seat, "sv_onRocketExplode")
+    self.seat = nil
 end
 
 function MountedCannonGun:sv_onRocketInput(data)
@@ -234,7 +242,6 @@ function MountedCannonGun:sv_onRocketInput(data)
 
     if state and (action == 5 or action == 19) then
         sm.event.sendToInteractable(self.rocket.interactable, "sv_explode")
-        self.rocket = nil
     end
 end
 
@@ -256,6 +263,8 @@ function MountedCannonGun:client_onCreate()
     self.controlHud = ControlHud():init(4, 1/23)
     self.hotbar = sm.gui.createSeatGui()
 
+    self.id = self.interactable.id
+
     sm.SetInteractableClientPublicData(self.interactable, {
         hasRocket = false,
         controlsEnabled = true,
@@ -269,6 +278,10 @@ function MountedCannonGun:client_onDestroy()
     self.hotbar:destroy()
 
     SetPlayerCamOverride()
+
+    if sm.GetInteractableClientPublicData({ id = self.id }).hasRocket and sm.SURVIVALHUD then
+        sm.SURVIVALHUD:open()
+    end
 end
 
 function MountedCannonGun:client_onFixedUpdate(dt)
@@ -343,7 +356,7 @@ function MountedCannonGun:cl_onShoot(ammoData)
         sm.audio.play("Blueprint - Build")
         sm.gui.startFadeToBlack(1.0, 0.5)
         sm.gui.endFadeToBlack(0.8)
-        self:cl_n_toggleHud(false, true)
+        self:cl_n_toggleHud(true, false)
 
         self.hotbar:setGridItem( "ButtonGrid", 0, {
             itemId = HotbarIcon.shoot,
@@ -373,7 +386,7 @@ function MountedCannonGun:cl_onRocketExplode(detonated)
 
     SetPlayerCamOverride()
 
-    self:cl_n_toggleHud(true)
+    self:cl_n_toggleHud(false, false)
     self.controlHud:close()
     self.hotbar:close()
 
