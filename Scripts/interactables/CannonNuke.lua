@@ -230,16 +230,19 @@ function CannonNuke_Tool:client_onUpdate( dt )
 
 	if self.isLocal then
 		if self.equipped then
-			if isSprinting and self.fpAnimations.currentAnimation ~= "sprintInto" and self.fpAnimations.currentAnimation ~= "sprintIdle" then
-				swapFpAnimation( self.fpAnimations, "sprintExit", "sprintInto", 0.0 )
-			elseif not self.tool:isSprinting() and ( self.fpAnimations.currentAnimation == "sprintIdle" or self.fpAnimations.currentAnimation == "sprintInto" ) then
-				swapFpAnimation( self.fpAnimations, "sprintInto", "sprintExit", 0.0 )
-			end
+			local curAnim = self.fpAnimations.currentAnimation
+			if curAnim ~= "use" then
+				if isSprinting and curAnim ~= "sprintInto" and curAnim ~= "sprintIdle" then
+					swapFpAnimation( self.fpAnimations, "sprintExit", "sprintInto", 0.0 )
+				elseif not self.tool:isSprinting() and ( curAnim == "sprintIdle" or curAnim == "sprintInto" ) then
+					swapFpAnimation( self.fpAnimations, "sprintInto", "sprintExit", 0.0 )
+				end
 
-			if not isOnGround and self.wasOnGround and self.fpAnimations.currentAnimation ~= "jump" then
-				swapFpAnimation( self.fpAnimations, "land", "jump", 0.2 )
-			elseif isOnGround and not self.wasOnGround and self.fpAnimations.currentAnimation ~= "land" then
-				swapFpAnimation( self.fpAnimations, "jump", "land", 0.2 )
+				if not isOnGround and self.wasOnGround and curAnim ~= "jump" then
+					swapFpAnimation( self.fpAnimations, "land", "jump", 0.2 )
+				elseif isOnGround and not self.wasOnGround and curAnim ~= "land" then
+					swapFpAnimation( self.fpAnimations, "jump", "land", 0.2 )
+				end
 			end
 
 			local newItem = sm.localPlayer.getActiveItem()
@@ -522,6 +525,6 @@ function CannonNuke_Tool:calculateFirePosition()
 		fireOffset = fireOffset + right * 0.25
 		fireOffset = fireOffset:rotate( math.rad( pitch ), right )
 	end
-	local firePosition = GetOwnerPosition( self.tool ) + fireOffset
+	local firePosition = GetOwnerPosition( self.tool ) + fireOffset + self.tool:getOwner().character.velocity * 0.1
 	return firePosition
 end
