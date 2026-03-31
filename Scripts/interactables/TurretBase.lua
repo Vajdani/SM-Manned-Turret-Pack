@@ -308,6 +308,8 @@ function TurretBase:client_onTinker(char, state)
     if state then
         sm.tool.forceTool(g_repairTool)
         g_repairingTurret = true
+
+        ---@type Interactable?
         g_turretBase = self.interactable
     else
         self:cl_onRepairEnd()
