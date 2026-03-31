@@ -129,7 +129,6 @@ function TurretBase:sv_takeDamage(damage)
 
     local prevDestroyed = self.destroyed
     local newHealth = sm.util.clamp(self.cl_health - damage, 0, self.maxHealth)
-    local turretExists = sm.exists(self.turret)
     if newHealth <= 0 and not self.destroyed then
         self.network:sendToClients("cl_onDestroy", self.turret.worldRotation)
 
@@ -146,7 +145,7 @@ function TurretBase:sv_takeDamage(damage)
         self.destroyed = true
 
         sm.event.sendToGame("sv_removeTurretChunkLoader", { position = self.spawnPosition, int = self.interactable })
-    elseif newHealth == self.maxHealth and not turretExists then
+    elseif newHealth == self.maxHealth and not sm.exists(self.turret) and self.destroyed then
         self.destroyed = false
         self:sv_createTurret()
     end
@@ -154,7 +153,7 @@ function TurretBase:sv_takeDamage(damage)
     print(string.format("[TURRET ID[%s]] Took %s damage: %s / %s HP", self.shape.id, damage, newHealth, self.maxHealth))
     self.cl_health = newHealth
     self.interactable.publicData.health = newHealth
-    if turretExists then
+    if sm.exists(self.turret) then
         self.turret.publicData.health = newHealth
     end
 
