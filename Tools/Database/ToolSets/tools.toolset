@@ -47,6 +47,18 @@
             "class": "LightningGatling"
          },
          "showInInventory": false
-		}
+		},
+      {
+         "name" : "TurretInput",
+         "previewRenderable" : "$GAME_DATA/Character/Char_Tools/Char_smallhammer/char_smallhammer_fp.rend",
+         "previewRotation": [ 1, 0, 0, 0, 0, -1, 0, 1, 0 ],
+         "script" : {
+            "class" : "TurretInput",
+            "data" : {},
+            "file" : "$CONTENT_DATA/Scripts/tools/TurretInput.lua"
+         },
+         "uuid" : "be932d63-4854-440f-901d-ae00c07b019d",
+         "autoTool": true
+      }
    ]
 }

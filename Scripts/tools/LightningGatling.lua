@@ -6,7 +6,7 @@ dofile("$SURVIVAL_DATA/Scripts/game/survival_projectiles.lua")
 local Damage = 75
 local Range = 100
 local MaxCharge = 10
-local TurretHealAmount = 50
+local TurretHealFraction = 6
 local FireCooldown = 0.25
 local MagRechargeCooldown = 1
 
@@ -466,7 +466,7 @@ function LightningGatling:server_onFixedUpdate(dt)
 				local pData = int.publicData or {}
 				if pData.isTurret == true then
 					if pData.health < pData.maxHealth then
-						sm.event.sendToInteractable(int, "sv_takeDamage", -TurretHealAmount)
+						sm.event.sendToInteractable(int, "sv_takeDamage", -pData.maxHealth/TurretHealFraction)
 						skipExplosion = true
 					else
 						return
@@ -481,7 +481,7 @@ function LightningGatling:server_onFixedUpdate(dt)
 		local pData = turretSeat.publicData or {}
 		if pData.isTurret == true then
 			if pData.health < pData.maxHealth then
-				sm.event.sendToInteractable(pData.base, "sv_takeDamage", -TurretHealAmount)
+				sm.event.sendToInteractable(pData.base, "sv_takeDamage", -pData.maxHealth/TurretHealFraction)
 				skipExplosion = true
 			else
 				return

@@ -324,6 +324,10 @@ function TurretSeat:client_onCreate()
     self.baseClassName = sm.item.getFeatureData(sm.uuid.new(self.baseUUID)).classname
 
     self.harvestable.clientPublicData = { health = TurretBase.maxHealth, controlsEnabled = true }
+
+    BindOnTurretLMB(self.harvestable, "cl_e_onLMB")
+    BindOnTurretRMB(self.harvestable, "cl_e_onRMB")
+    BindOnTurretF  (self.harvestable, "cl_e_onF"  )
 end
 
 function TurretSeat:client_onDestroy()
@@ -332,6 +336,10 @@ function TurretSeat:client_onDestroy()
     if self.seated then
         SetPlayerCamOverride()
     end
+
+    UnBindOnTurretLMB(self.harvestable)
+    UnBindOnTurretRMB(self.harvestable)
+    UnBindOnTurretF  (self.harvestable)
 end
 
 function TurretSeat:cl_syncToLateJoiner(data)
@@ -396,6 +404,8 @@ function TurretSeat:cl_seat_partial()
     sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", true)
     sm.camera.setCameraPullback(0,0)
     SetPlayerCamOverride({ cameraState = 5 })
+
+    sm.tool.forceTool(g_turretInput.tool)
 end
 
 function TurretSeat:cl_unSeat()
@@ -410,9 +420,12 @@ function TurretSeat:cl_unSeat_graphics()
     self.hotbar:close()
     sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", false)
     SetPlayerCamOverride()
+
+    sm.tool.forceTool(nil)
 end
 
 function TurretSeat:client_onAction(action, state)
+    if action == 0 then return false end
     if not self.cl_controlsEnabled or not sm.exists(self.cl_base) then return true end
 
     if self.cl_base.shape.body:isOnLift() then
@@ -606,6 +619,26 @@ end
 
 function TurretSeat:cl_updateShootState(state)
     self.shootState = state
+end
+
+function TurretSeat:cl_e_onLMB(state)
+    if state == 1 then
+        self:client_onAction(19, true)
+    elseif state == 3 then
+        self:client_onAction(19, false)
+    end
+end
+
+function TurretSeat:cl_e_onRMB(state)
+    if state == 1 then
+        self:client_onAction(18, true)
+    elseif state == 3 then
+        self:client_onAction(18, false)
+    end
+end
+
+function TurretSeat:cl_e_onF(state)
+    self:client_onAction(22, state)
 end
 
 

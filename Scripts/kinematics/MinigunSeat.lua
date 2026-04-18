@@ -18,6 +18,9 @@ MinigunSeat.ammoTypes = {
     }
 }
 
+local shellUUID = sm.uuid.new("0dba257b-b907-4919-baaf-2fefe19f4e24")
+local shellColour = sm.color.new("ffff00")
+
 
 
 function MinigunSeat:client_onCreate()
@@ -46,8 +49,8 @@ function MinigunSeat:client_onUpdate(dt)
         self:cl_displayAmmoInfo()
 
         sm.gui.setProgressFraction(self.fireCharge)
-        local red = math.ceil(self.overheatProgress * 1000/100)
-        sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>[%s%s#444444]</p>"):format(string.rep("#ff0000|", red), string.rep("#00f000|", 10 - red)))
+        local red = math.ceil(self.overheatProgress * 10)
+        sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>[#ff0000%s#00f000%s#444444]</p>"):format(string.rep("|", red), string.rep("|", 10 - red)))
     end
 end
 
@@ -111,12 +114,12 @@ function MinigunSeat:cl_shoot(args)
 
         local rot = self.harvestable.worldRotation
         sm.debris.createDebris(
-            sm.uuid.new("0dba257b-b907-4919-baaf-2fefe19f4e24"),
+            shellUUID,
             args.pos - rot * vec3_up,
             rot,
             rot * sm.quat.angleAxis(math.rad(30), vec3_up) * vec3_forward * 5,
             sm.vec3.new(math.random(-100, 100) * 0.01, math.random(-100, 100) * 0.01, math.random(-100, 100) * 0.01):normalize() * 10,
-            sm.color.new("ffff00")
+            shellColour
         )
     else
         sm.effect.playEffect("Turret - FailedShoot", args.pos)
