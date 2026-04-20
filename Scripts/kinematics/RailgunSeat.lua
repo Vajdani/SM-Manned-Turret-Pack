@@ -12,7 +12,7 @@ RailgunSeat.ammoTypes = {
         fireCooldown = 20,
         spread = 0.1,
         chargeTime = 20,
-        effect = "Turret - Shoot",
+        effect = "Cannon - Shoot",
         ammo = sm.uuid.new("480ee8b5-d658-449e-9393-c9ac10667da9"),
         uuid = sm.uuid.new("fad5bb05-b6da-46ec-92f7-9ffb38bd6c9b")
     }
@@ -32,6 +32,50 @@ end
 
 function RailgunSeat:server_onFixedUpdate()
     self:updateCharge(self.sv_shootState, self.sv_charge)
+end
+
+local rayFilter = sm.physics.filter.dynamicBody + sm.physics.filter.staticBody + sm.physics.filter.terrainAsset + sm.physics.filter.terrainSurface + sm.physics.filter.harvestable
+function RailgunSeat:sv_shoot(ammoType, caller)
+    if not self.sv_controlsEnabled then return end
+
+    self.sv_shotCounter = self.sv_shotCounter + 1
+
+    local ammoData = sm.GetTurretAmmoData(self, ammoType)
+    local startPos, endPos = self:getFirePos()
+    local rot = self.harvestable.worldRotation
+    local hit, result = sm.physics.spherecast(startPos, endPos, 0.1, self.harvestable, rayFilter)
+    if hit then
+        self.network:sendToClients("cl_shoot", { canShoot = false, pos = endPos })
+        return
+    end
+
+    local dir = rot * vec3_up
+    local canShoot = self:canShoot(ammoType, true) or ammoData.ignoreAmmoConsumption
+    if canShoot then
+        local finalFirePos
+        if sm.item.isPart(ammoData.uuid) then
+            local projectileRot = rot * turret_projectile_rotation_adjustment
+            finalFirePos = endPos - projectileRot * sm.item.getShapeOffset(ammoData.uuid)
+            local projectile = sm.shape.createPart(ammoData.uuid, finalFirePos, projectileRot)
+
+            if ammoData.velocity then
+                sm.physics.applyImpulse(projectile, (dir * ammoData.velocity + self.base.body.velocity) * projectile.mass, true)
+            end
+
+            self:sv_OnPartFire(ammoType, ammoData, projectile, caller)
+        else
+            finalFirePos = endPos + dir * (hit and 0 or 0.25)
+            for i = 1, 100 do
+                sm.projectile.projectileAttack( ammoData.uuid, ammoData.damage, finalFirePos, sm.noise.gunSpread(dir, ammoData.spread or 0) * ammoData.velocity + self.base.body.velocity, caller, nil, nil, i/100 * 10 )
+            end
+
+            self:sv_OnProjectileFire(ammoType, ammoData, caller)
+        end
+
+        self:sv_applyFiringImpulse(ammoData, dir, finalFirePos)
+    end
+
+    self.network:sendToClients("cl_shoot", { canShoot = canShoot, pos = endPos, dir = dir, shotCount = self.sv_shotCounter, ammoType = ammoType })
 end
 
 

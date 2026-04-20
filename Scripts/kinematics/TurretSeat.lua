@@ -325,7 +325,7 @@ function TurretSeat:client_onCreate()
 
     self.baseClassName = sm.item.getFeatureData(sm.uuid.new(self.baseUUID)).classname
 
-    self.harvestable.clientPublicData = { health = TurretBase.maxHealth, controlsEnabled = true }
+    self.harvestable.clientPublicData = { health = _G[self.baseClassName].maxHealth, controlsEnabled = true }
 
     BindOnTurretLMB(self.harvestable, "cl_e_onLMB")
     BindOnTurretRMB(self.harvestable, "cl_e_onRMB")
