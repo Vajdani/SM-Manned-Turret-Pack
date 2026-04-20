@@ -239,6 +239,21 @@
 				"buoyancy": 7
 			},
 			"flammable": true
+		},
+		{
+			"consumable": true,
+			"cylinder": {
+				"axis": "Z",
+				"depth": 1,
+				"diameter": 1
+			},
+			"name": "obj_railgun_spike",
+			"physicsMaterial": "Metal",
+			"renderable": "$CONTENT_DATA/Objects/Renderables/Ammo/obj_turret_cartridge_normal.rend",
+			"rotationSet": "PropY",
+			"stackSize": 100,
+			"sticky": "-Y",
+			"uuid": "480ee8b5-d658-449e-9393-c9ac10667da9"
 		}
 	]
 }

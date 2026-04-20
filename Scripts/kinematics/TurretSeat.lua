@@ -425,7 +425,7 @@ function TurretSeat:cl_unSeat_graphics()
 end
 
 function TurretSeat:client_onAction(action, state)
-    if action == 0 then return false end
+    -- if action == 0 then return false end
     if not self.cl_controlsEnabled or not sm.exists(self.cl_base) then return true end
 
     if self.cl_base.shape.body:isOnLift() then

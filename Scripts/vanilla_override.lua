@@ -452,7 +452,7 @@ function Seat:client_onAction(action, state)
 end
 
 function Seat:cl_checkRocketInput(action, state)
-	local cannon = self.interactable:getChildren(2^14)[1]
+	local cannon = self.interactable:getChildren(connectiontype_cannonrocket)[1]
 	if cannon and sm.GetInteractableClientPublicData(cannon --[[@as Interactable]]).hasRocket then
 		self.network:sendToServer("sv_onRocketInput", { cannon = cannon, action = action, state = state })
 

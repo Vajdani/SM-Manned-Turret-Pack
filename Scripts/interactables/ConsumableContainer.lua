@@ -1,5 +1,4 @@
-dofile( "$SURVIVAL_DATA/Scripts/game/survival_items.lua" )
-dofile( "$SURVIVAL_DATA/Scripts/game/survival_projectiles.lua" )
+dofile "$CONTENT_DATA/Scripts/util.lua"
 
 ConsumableContainer = class( nil )
 ConsumableContainer.maxChildCount = 255
@@ -29,37 +28,8 @@ function ConsumableContainer.client_onInteract( self, character, state )
 	if state == true then
 		local container = self.shape.interactable:getContainer( 0 )
 		if container then
-			local gui = nil
-
-			local shapeUuid = self.shape:getShapeUuid()
-
-			if shapeUuid == obj_container_ammo then
-				gui = sm.gui.createAmmunitionContainerGui( true )
-
-			elseif shapeUuid == obj_container_battery then
-				gui = sm.gui.createBatteryContainerGui( true )
-
-			elseif shapeUuid == obj_container_chemical then
-				gui = sm.gui.createChemicalContainerGui( true )
-
-			elseif shapeUuid == obj_container_fertilizer then
-				gui = sm.gui.createFertilizerContainerGui( true )
-
-			elseif shapeUuid == obj_container_gas then
-				gui = sm.gui.createGasContainerGui( true )
-
-			elseif shapeUuid == obj_container_seed then
-				gui = sm.gui.createSeedContainerGui( true )
-
-			elseif shapeUuid == obj_container_water then
-				gui = sm.gui.createWaterContainerGui( true )
-			end
-
-			if gui == nil then
-				gui = sm.gui.createContainerGui( true )
-				gui:setText( "UpperName", "#{CONTAINER_TITLE_GENERIC}" )
-			end
-
+			local gui = sm.gui.createContainerGui( true )
+			gui:setText( "UpperName", "#{CONTAINER_TITLE_GENERIC}" )
 			gui:setContainer( "UpperGrid", container )
 			gui:setText( "LowerName", "#{INVENTORY_TITLE}" )
 			gui:setContainer( "LowerGrid", sm.localPlayer.getInventory() )
@@ -84,21 +54,26 @@ function ConsumableContainer.client_onUpdate( self, dt )
 end
 
 TurretNormalAmmoContainer = class( ConsumableContainer )
-TurretNormalAmmoContainer.connectionOutput = 2^13
+TurretNormalAmmoContainer.connectionOutput = connectiontype_turretnormal
 TurretNormalAmmoContainer.colorNormal = sm.color.new( 0x84ff32ff )
 TurretNormalAmmoContainer.colorHighlight = sm.color.new( 0xa7ff4fff )
 
 TurretExplosiveAmmoContainer = class( ConsumableContainer )
-TurretExplosiveAmmoContainer.connectionOutput = 2^14
+TurretExplosiveAmmoContainer.connectionOutput = connectiontype_turretexplosive
 TurretExplosiveAmmoContainer.colorNormal = sm.color.new( 0x84ff32ff )
 TurretExplosiveAmmoContainer.colorHighlight = sm.color.new( 0xa7ff4fff )
 
 CannonRocketContainer = class( ConsumableContainer )
-CannonRocketContainer.connectionOutput = 2^15
+CannonRocketContainer.connectionOutput = connectiontype_cannonrocket
 CannonRocketContainer.colorNormal = sm.color.new( 0x84ff32ff )
 CannonRocketContainer.colorHighlight = sm.color.new( 0xa7ff4fff )
 
 CannonRatshotContainer = class( ConsumableContainer )
-CannonRatshotContainer.connectionOutput = 2^16
+CannonRatshotContainer.connectionOutput = connectiontype_cannonratshot
 CannonRatshotContainer.colorNormal = sm.color.new( 0x84ff32ff )
 CannonRatshotContainer.colorHighlight = sm.color.new( 0xa7ff4fff )
+
+RailgunSpikeContainer = class( ConsumableContainer )
+RailgunSpikeContainer.connectionOutput = connectiontype_railgunspike
+RailgunSpikeContainer.colorNormal = sm.color.new( 0x84ff32ff )
+RailgunSpikeContainer.colorHighlight = sm.color.new( 0xa7ff4fff )

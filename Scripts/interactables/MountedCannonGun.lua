@@ -4,7 +4,7 @@ dofile "$CONTENT_DATA/Scripts/ControlHud.lua"
 ---@class MountedCannonGun : MountedTurretGun
 MountedCannonGun = class(MountedTurretGun)
 MountedCannonGun.maxParentCount = 3
-MountedCannonGun.connectionInput = 1 + 2 + 8 + 2^14 + 2^15 + 2^16
+MountedCannonGun.connectionInput = 1 + 2 + 8 --[[+ connectiontype_turretexplosive]] + connectiontype_cannonrocket + connectiontype_cannonratshot
 MountedCannonGun.fireOffset = sm.vec3.new( 0.0, 0.0, 2 )
 MountedCannonGun.ammoTypes = {
     {
@@ -320,9 +320,9 @@ function MountedCannonGun:client_onUpdate(dt)
 end
 
 local connectionTypes = {
-    2^14,
-    2^15,
-    2^16
+    -- connectiontype_turretexplosive,
+    connectiontype_cannonrocket,
+    connectiontype_cannonratshot
 }
 
 function MountedCannonGun:client_getAvailableParentConnectionCount( connectionType )
@@ -400,11 +400,11 @@ function MountedCannonGun:cl_n_toggleHud(toggle, forceSurvivalOff)
     end
 
     if toggle then
-        if sm.SURVIVALHUD then
+        if sm.exists(sm.SURVIVALHUD) then
             sm.SURVIVALHUD:close()
         end
     else
-        if sm.SURVIVALHUD and not forceSurvivalOff then
+        if sm.exists(sm.SURVIVALHUD) and not forceSurvivalOff then
             sm.SURVIVALHUD:open()
         end
     end

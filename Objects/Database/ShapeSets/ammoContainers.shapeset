@@ -123,6 +123,37 @@
             "filename" : "$CONTENT_DATA/Scripts/interactables/ConsumableContainer.lua"
          },
          "uuid" : "da615034-dd24-4090-ba66-9d36785d7483"
+      },
+      {
+         "box" : {
+            "x" : 4,
+            "y" : 3,
+            "z" : 2
+         },
+         "color" : "505c30",
+         "flammable" : false,
+         "name" : "obj_container_railgun_spike",
+         "physicsMaterial" : "Metal",
+         "ratings" : {
+            "buoyancy" : 6,
+            "density" : 5,
+            "durability" : 6,
+            "friction" : 4
+         },
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/AmmoContainer/obj_container_turret_normal_ammo.rend",
+         "restrictions" : {
+            "usable" : true
+         },
+         "rotationSet" : "PropYZ",
+         "scripted" : {
+            "classname" : "RailgunSpikeContainer",
+            "data" : {
+               "filterUid" : "480ee8b5-d658-449e-9393-c9ac10667da9",
+               "stackSize" : 5
+            },
+            "filename" : "$CONTENT_DATA/Scripts/interactables/ConsumableContainer.lua"
+         },
+         "uuid" : "d021e2ac-ef62-415c-a0a3-c6da0c43cef2"
       }
    ]
 }

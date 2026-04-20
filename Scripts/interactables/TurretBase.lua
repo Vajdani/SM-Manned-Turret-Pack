@@ -12,7 +12,7 @@
 TurretBase = class()
 TurretBase.maxParentCount = 1
 TurretBase.maxChildCount = 255
-TurretBase.connectionInput = sm.interactable.connectionType.ammo + sm.interactable.connectionType.water + 2^13 + 2^14
+TurretBase.connectionInput = sm.interactable.connectionType.ammo + sm.interactable.connectionType.water + connectiontype_turretnormal + connectiontype_turretexplosive
 TurretBase.connectionOutput = sm.interactable.connectionType.seated + sm.interactable.connectionType.power + sm.interactable.connectionType.bearing
 TurretBase.colorNormal = sm.color.new( 0xcb0a00ff )
 TurretBase.colorHighlight = sm.color.new( 0xee0a00ff )
@@ -473,12 +473,12 @@ function TurretBase:cl_n_toggleHud(toggle, forceSurvivalOff)
 
     if toggle then
         self.healthBar:open()
-        if sm.SURVIVALHUD then
+        if sm.exists(sm.SURVIVALHUD) then
             sm.SURVIVALHUD:close()
         end
     else
         self.healthBar:close()
-        if sm.SURVIVALHUD and not forceSurvivalOff then
+        if sm.exists(sm.SURVIVALHUD) and not forceSurvivalOff then
             sm.SURVIVALHUD:open()
         end
     end

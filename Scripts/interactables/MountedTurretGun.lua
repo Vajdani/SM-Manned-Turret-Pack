@@ -4,7 +4,7 @@ dofile( "$SURVIVAL_DATA/Scripts/game/survival_projectiles.lua" )
 MountedTurretGun = class()
 MountedTurretGun.maxParentCount = 2
 MountedTurretGun.maxChildCount = 0
-MountedTurretGun.connectionInput = 1 + 1024 + 2048 + 2^13 + 2^14
+MountedTurretGun.connectionInput = 1 + 1024 + 2048 + connectiontype_turretnormal + connectiontype_turretexplosive
 MountedTurretGun.connectionOutput = sm.interactable.connectionType.none
 MountedTurretGun.colorNormal = sm.color.new( 0xcb0a00ff )
 MountedTurretGun.colorHighlight = sm.color.new( 0xee0a00ff )
@@ -82,8 +82,8 @@ MountedTurretGun.containerToAmmoType = {
 local connectionTypes = {
 	1024,
 	2048,
-	2^13,
-	2^14
+	connectiontype_turretnormal,
+	connectiontype_turretexplosive
 }
 
 function MountedTurretGun:server_onCreate()

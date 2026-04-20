@@ -40,6 +40,12 @@ HotbarIcon = {
     pLauncher    = "242b84e4-c008-4780-a2dd-abacea821637",
 }
 
+connectiontype_turretnormal    = 2^13
+connectiontype_turretexplosive = 2^14
+connectiontype_cannonrocket    = 2^15
+connectiontype_cannonratshot   = 2^16
+connectiontype_railgunspike    = 2^17
+
 local repairTick = 0
 local checkedTick = 0
 function getRepairText()

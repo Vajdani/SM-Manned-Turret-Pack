@@ -87,6 +87,35 @@
          "sticky" : "-Y",
          "uuid" : "ae0a8816-00d8-4515-932b-00661ef20a0a",
          "showInInventory": false
+      },
+      {
+         "color" : "6b7d07",
+         "hull" : {
+            "col" : "$CONTENT_DATA/Objects/Mesh/Collision/obj_interactive_turret_base_col.obj",
+            "x" : 7,
+            "y" : 3,
+            "z" : 7
+         },
+         "name" : "obj_interactive_railgun_base",
+         "physicsMaterial" : "Metal",
+         "ratings" : {
+            "durability" : 10
+         },
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/TurretBase/obj_interactive_railgun_base.rend",
+         "restrictions" : {
+            "destructable" : false
+         },
+         "rotationSet" : "PropY",
+         "scripted" : {
+            "classname" : "RailgunBase",
+            "data" : {},
+            "filename" : "$CONTENT_DATA/Scripts/interactables/RailgunBase.lua",
+            "steering": {
+               "steerAngle": 45.0
+            }
+         },
+         "sticky" : "-Y",
+         "uuid" : "48700b0e-6f0b-40b5-bdde-e0ba0c9f2e69"
       }
    ]
 }
