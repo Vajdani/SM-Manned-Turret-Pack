@@ -8,6 +8,7 @@
 ---@field effect string|EffectName
 ---@field ignoreAmmoConsumption? boolean
 ---@field overheatPerShot? number
+---@field chargeTime? number
 ---@field ammo Uuid
 ---@field uuid Uuid
 

@@ -84,7 +84,8 @@ TurretSeat.containerToAmmoType = {
 TurretSeat.baseUUID = "e4497545-5f77-4d59-bfbf-ce5692284322"
 
 function TurretSeat:server_onCreate()
-    self.shotCounter = 0
+    self.sv_shootState = ShootState.null
+    self.sv_shotCounter = 0
     self.base = self.params.base
     if not sm.exists(self.base) then
         self.harvestable:destroy()
@@ -223,7 +224,7 @@ local rayFilter = sm.physics.filter.dynamicBody + sm.physics.filter.staticBody +
 function TurretSeat:sv_shoot(ammoType, caller)
     if not self.sv_controlsEnabled then return end
 
-    self.shotCounter = self.shotCounter + 1
+    self.sv_shotCounter = self.sv_shotCounter + 1
 
     local ammoData = sm.GetTurretAmmoData(self, ammoType)
     local startPos, endPos = self:getFirePos()
@@ -257,7 +258,7 @@ function TurretSeat:sv_shoot(ammoType, caller)
         self:sv_applyFiringImpulse(ammoData, dir, finalFirePos)
     end
 
-    self.network:sendToClients("cl_shoot", { canShoot = canShoot, pos = endPos, dir = dir, shotCount = self.shotCounter, ammoType = ammoType })
+    self.network:sendToClients("cl_shoot", { canShoot = canShoot, pos = endPos, dir = dir, shotCount = self.sv_shotCounter, ammoType = ammoType })
 end
 
 function TurretSeat:sv_applyFiringImpulse(ammoData, dir, finalFirePos)
@@ -299,6 +300,7 @@ function TurretSeat:sv_OnPartFire(ammoType, ammoData, part, player) end
 function TurretSeat:sv_OnProjectileFire(ammoType, ammoData, player) end
 
 function TurretSeat:sv_updateShootState(state)
+    self.sv_shootState = state
     self.network:sendToClients("cl_updateShootState", state)
 end
 
@@ -307,7 +309,7 @@ end
 function TurretSeat:client_onCreate()
     self.hotbar = sm.gui.createSeatGui()
 
-    self.shootState = ShootState.null
+    self.cl_shootState = ShootState.null
     self.shootTimer = 0
     self.ammoType = 1
 
@@ -414,7 +416,7 @@ function TurretSeat:cl_unSeat()
 end
 
 function TurretSeat:cl_unSeat_graphics()
-    self.shootState = ShootState.null
+    self.cl_shootState = ShootState.null
     self.shootTimer = 0
     self.seated = false
     self.hotbar:close()
@@ -436,9 +438,9 @@ function TurretSeat:client_onAction(action, state)
         return true
     end
 
-    if (action == 5 or action == 19) and self.shootState ~= ShootState.toggle then
-        self.shootState = state and ShootState.hold or ShootState.null
-        self.network:sendToServer("sv_updateShootState", self.shootState)
+    if (action == 5 or action == 19) and self.cl_shootState ~= ShootState.toggle then
+        self.cl_shootState = state and ShootState.hold or ShootState.null
+        self.network:sendToServer("sv_updateShootState", self.cl_shootState)
         self:cl_updateHotbar()
     end
 
@@ -452,8 +454,8 @@ function TurretSeat:client_onAction(action, state)
 		elseif action == 4 then
 			self.cl_base:setSteeringFlag( 8 )
         elseif action == 6 or action == 18 then
-            self.shootState = self.shootState == ShootState.toggle and ShootState.null or ShootState.toggle
-            self.network:sendToServer("sv_updateShootState", self.shootState)
+            self.cl_shootState = self.cl_shootState == ShootState.toggle and ShootState.null or ShootState.toggle
+            self.network:sendToServer("sv_updateShootState", self.cl_shootState)
             self:cl_updateHotbar()
         elseif action == 7 then
             self.lightActive = not self.lightActive
@@ -465,7 +467,7 @@ function TurretSeat:client_onAction(action, state)
             end
 
             if #self.ammoTypes > 1 and not sm.game.getEnableAmmoConsumption() and self.cl_base:getSingleParent() == nil then
-                if self.shootState == ShootState.null then
+                if self.cl_shootState == ShootState.null then
                     local ammoType = self.ammoType < #self.ammoTypes and self.ammoType + 1 or 1
                     sm.gui.displayAlertText("Ammunition selected: #df7f00"..sm.GetTurretAmmoData(self, ammoType).name, 2)
                     sm.audio.play("PaintTool - ColorPick")
@@ -505,8 +507,8 @@ function TurretSeat:client_onFixedUpdate()
 
     if not self.seated then return end
 
-    if self.cl_base.body:isOnLift() and self.shootState ~= ShootState.null then
-        self.shootState = ShootState.null
+    if self.cl_base.body:isOnLift() and self.cl_shootState ~= ShootState.null then
+        self.cl_shootState = ShootState.null
         self:cl_updateHotbar()
     end
 
@@ -517,7 +519,7 @@ function TurretSeat:client_onFixedUpdate()
     end
 
     self.shootTimer = math.max(self.shootTimer - 1, 0)
-    if self.shootState ~= ShootState.null and self.shootTimer <= 0 then
+    if self.cl_shootState ~= ShootState.null and self.shootTimer <= 0 then
         self.shootTimer = sm.GetTurretAmmoData(self).fireCooldown
         self.network:sendToServer("sv_shoot", self.ammoType)
     end
@@ -543,12 +545,12 @@ end
 function TurretSeat:cl_updateHotbar()
     self.hotbar:setGridItem( "ButtonGrid", 0, {
         itemId = HotbarIcon.shoot,
-        active = self.shootState == ShootState.hold
+        active = self.cl_shootState == ShootState.hold
     })
 
     self.hotbar:setGridItem( "ButtonGrid", 1, {
         itemId = HotbarIcon.shoot_toggle,
-        active = self.shootState == ShootState.toggle
+        active = self.cl_shootState == ShootState.toggle
     })
 
     self.hotbar:setGridItem( "ButtonGrid", 2, {
@@ -611,14 +613,14 @@ function TurretSeat:cl_SetTurretControlsEnabled(state)
     self.cl_controlsEnabled = state
     self.harvestable.clientPublicData.controlsEnabled = state
 
-    if self.seated and self.shootState ~= ShootState.null then
-        self.shootState = ShootState.null
+    if self.seated and self.cl_shootState ~= ShootState.null then
+        self.cl_shootState = ShootState.null
         self:cl_updateHotbar()
     end
 end
 
 function TurretSeat:cl_updateShootState(state)
-    self.shootState = state
+    self.cl_shootState = state
 end
 
 function TurretSeat:cl_e_onLMB(state)
@@ -655,7 +657,7 @@ end
 function TurretSeat:getFirePos()
     local pos = self:getTurretPosition()
     local rot = self.harvestable.worldRotation
-    if self.shotCounter%2==0 then
+    if self.sv_shotCounter%2==0 then
         local offsetBase =  vec3_right * 0.27 + vec3_forward * 0.35
         return pos + rot * offsetBase, pos + rot * (vec3_up * 1.7 + offsetBase)
     else
