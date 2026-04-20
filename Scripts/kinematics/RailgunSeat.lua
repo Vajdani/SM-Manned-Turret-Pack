@@ -24,30 +24,26 @@ RailgunSeat.containerToAmmoType = {
 function RailgunSeat:server_onCreate()
     TurretSeat.server_onCreate(self)
 
-    self.sv_shotCharge = 0
-    self.sv_shootingDisabledTick = 0
+    self.sv_charge = {
+        current = 0,
+        disabledTick = 0
+    }
 end
 
 function RailgunSeat:server_onFixedUpdate()
-    local char = self.harvestable:getSeatCharacter()
-    local tick = sm.game.getServerTick()
-    if not char or tick < self.sv_shootingDisabledTick then return end
-
-    if self.sv_shootState ~= ShootState.null then
-        local ammoData = sm.GetTurretAmmoData(self)
-        self.sv_shotCharge = math.min(self.sv_shotCharge + 1, ammoData.chargeTime)
-
-        if self.sv_shotCharge == ammoData.chargeTime then
-            self.sv_shotCharge = 0
-            self.sv_shootingDisabledTick = tick + ammoData.fireCooldown
-            self:sv_shoot(self.ammoType, self.harvestable:getSeatCharacter():getPlayer())
-        end
-    else
-        self.sv_shotCharge = math.max(self.sv_shotCharge - 1, 0)
-    end
+    self:updateCharge(self.sv_shootState, self.sv_charge)
 end
 
 
+
+function RailgunSeat:client_onCreate()
+    TurretSeat.client_onCreate(self)
+
+    self.cl_charge = {
+        current = 0,
+        disabledTick = 0
+    }
+end
 
 function RailgunSeat:client_onFixedUpdate()
     if not sm.exists(self.cl_base) then return end
@@ -57,6 +53,8 @@ function RailgunSeat:client_onFixedUpdate()
         self.col = col
         self.harvestable:setColor(col)
     end
+
+    self.cl_chargeData = self:updateCharge(self.cl_shootState, self.cl_charge)
 
     if not self.seated then return end
 
@@ -72,7 +70,63 @@ function RailgunSeat:client_onFixedUpdate()
     end
 end
 
+function RailgunSeat:client_onUpdate(dt)
+    if not sm.exists(self.cl_base) then return end
 
+    local chargeProgress = 0
+    if self.cl_chargeData then
+        chargeProgress = self.cl_charge.current/self.cl_chargeData.chargeTime
+    end
+
+    self.harvestable:setPoseWeight(0, sm.util.easing("easeOutCubic", chargeProgress))
+
+    self.recoil_r = math.max(self.recoil_r - dt * 7.5, 0)
+    self.harvestable:setPoseWeight(1, sm.util.easing("easeOutCubic", self.recoil_r))
+
+    if self.seated then
+        SetPlayerCamOverride({ cameraState = 5 })
+
+        sm.gui.setProgressFraction(chargeProgress)
+
+        self:cl_displayAmmoInfo()
+    end
+end
+
+function RailgunSeat:cl_shoot(args)
+    if args.canShoot then
+        self.recoil_r = 1
+
+        sm.effect.playEffect(sm.GetTurretAmmoData(self, args.ammoType).effect, args.pos, vec3_zero, sm.vec3.getRotation(vec3_up, args.dir))
+    else
+        sm.effect.playEffect("Turret - FailedShoot", args.pos)
+    end
+end
+
+
+
+function RailgunSeat:updateCharge(shootState, charge)
+    local char = self.harvestable:getSeatCharacter()
+    local tick = sm.game.getServerTick()
+    if not char or tick < charge.disabledTick then return end
+
+    if shootState ~= ShootState.null then
+        local ammoData = sm.GetTurretAmmoData(self)
+        charge.current = math.min(charge.current + 1, ammoData.chargeTime)
+
+        if charge.current >= ammoData.chargeTime then
+            charge.current = 0
+            charge.disabledTick = tick + ammoData.fireCooldown
+
+            if sm.isServerMode() then
+                self:sv_shoot(self.ammoType, char:getPlayer())
+            end
+        end
+
+        return ammoData
+    else
+        charge.current = math.max(charge.current - 1, 0)
+    end
+end
 
 function RailgunSeat:getFirePos()
     local pos = self:getTurretPosition()
