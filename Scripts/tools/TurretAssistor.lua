@@ -58,7 +58,7 @@ end
 oldHudCreate = oldHudCreate or sm.gui.createSurvivalHudGui
 function sm.gui.createSurvivalHudGui(close)
     local gui = oldHudCreate(close)
-    if not sm.SURVIVALHUD then
+    if not sm.SURVIVALHUD then --sm.exists(sm.SURVIVALHUD)
         sm.SURVIVALHUD = gui
     end
 

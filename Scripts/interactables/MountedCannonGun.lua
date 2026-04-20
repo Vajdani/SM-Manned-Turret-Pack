@@ -279,7 +279,7 @@ function MountedCannonGun:client_onDestroy()
 
     SetPlayerCamOverride()
 
-    if sm.GetInteractableClientPublicData({ id = self.id }).hasRocket and sm.SURVIVALHUD then
+    if sm.GetInteractableClientPublicData({ id = self.id }).hasRocket and sm.exists(sm.SURVIVALHUD) then
         sm.SURVIVALHUD:open()
     end
 end

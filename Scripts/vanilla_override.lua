@@ -504,7 +504,7 @@ local MountedCannonGun = {
 
 
 oldDriverSeatUpdate = oldDriverSeatUpdate or DriverSeat.client_onUpdate
----@param self ShapeClass
+---@param self { gui? : GuiInterface, interactable : Interactable }
 function DriverSeat:client_onUpdate(dt)
 	oldDriverSeatUpdate(self, dt)
 
