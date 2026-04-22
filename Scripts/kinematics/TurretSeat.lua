@@ -407,7 +407,7 @@ function TurretSeat:cl_seat_partial()
     sm.camera.setCameraPullback(0,0)
     SetPlayerCamOverride({ cameraState = 5 })
 
-    sm.tool.forceTool(g_turretInput.tool)
+    -- sm.tool.forceTool(g_turretInput.tool)
 end
 
 function TurretSeat:cl_unSeat()
@@ -423,7 +423,7 @@ function TurretSeat:cl_unSeat_graphics()
     sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", false)
     SetPlayerCamOverride()
 
-    sm.tool.forceTool(nil)
+    -- sm.tool.forceTool(nil)
 end
 
 function TurretSeat:client_onAction(action, state)
@@ -592,7 +592,7 @@ function TurretSeat:cl_shoot(args)
             self.recoil_r = 1
         end
 
-        sm.effect.playEffect(sm.GetTurretAmmoData(self, args.ammoType).effect, args.pos, vec3_zero, sm.vec3.getRotation(vec3_up, args.dir))
+        sm.effect.playEffect(sm.GetTurretAmmoData(self, args.ammoType).effect, args.pos, vec3_zero, vec3_getRotation(vec3_up, args.dir))
     else
         sm.effect.playEffect("Turret - FailedShoot", args.pos)
     end

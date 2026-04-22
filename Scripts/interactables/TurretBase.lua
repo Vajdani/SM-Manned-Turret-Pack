@@ -20,14 +20,14 @@ TurretBase.maxHealth = 1000
 TurretBase.seatUUID = "22b00c9e-e040-48e2-b67a-3f41a6470354"
 TurretBase.seatHologramUUID = "49ce0ee7-7d9b-43b0-8160-5dc3fb127cfb"
 TurretBase.explosionDebrisData = { --swap the blender y and z coordinates, invert z afterwards
-    { uuid = sm.uuid.new("81b668f4-af00-4fbc-b359-dd1b35b939e5"), offset = sm.vec3.new(0.960741,    -2.49486,   -0.842322) * 0.25 },
-    { uuid = sm.uuid.new("81b668f4-af00-4fbc-b359-dd1b35b939e5"), offset = sm.vec3.new(-0.960741,   -2.49486,   -0.842322) * 0.25 },
-    { uuid = sm.uuid.new("5dde0f36-1cbb-47ba-a9ba-a0cc2b1db555"), offset = sm.vec3.new(-1.07416,    1.37402,      5.55211) * 0.25 },
-    { uuid = sm.uuid.new("5dde0f36-1cbb-47ba-a9ba-a0cc2b1db555"), offset = sm.vec3.new(1.07416,     1.37402,      5.55211) * 0.25 },
-    { uuid = sm.uuid.new("a58a7a52-6737-468f-a499-aee18faedabb"), offset = sm.vec3.new(0.971095,    1.18554,      2.06928) * 0.25 },
-    { uuid = sm.uuid.new("17a8ce54-0617-422c-bac7-9c5c07203094"), offset = sm.vec3.new(-0.971095,   1.18554,      2.06928) * 0.25 },
-    { uuid = sm.uuid.new("ea9511ab-26bf-4dcb-9929-7c688f2b240e"), offset = sm.vec3.new(1.45117,     -0.877968,    2.84755) * 0.25 },
-    { uuid = sm.uuid.new("d793783b-6ac8-4fb7-b9b4-b7f2d159efed"), offset = sm.vec3.new(-1.45117,    -0.877968,    2.84755) * 0.25 },
+    { uuid = sm.uuid.new("81b668f4-af00-4fbc-b359-dd1b35b939e5"), offset = vec3(0.960741,    -2.49486,   -0.842322) * 0.25 },
+    { uuid = sm.uuid.new("81b668f4-af00-4fbc-b359-dd1b35b939e5"), offset = vec3(-0.960741,   -2.49486,   -0.842322) * 0.25 },
+    { uuid = sm.uuid.new("5dde0f36-1cbb-47ba-a9ba-a0cc2b1db555"), offset = vec3(-1.07416,    1.37402,      5.55211) * 0.25 },
+    { uuid = sm.uuid.new("5dde0f36-1cbb-47ba-a9ba-a0cc2b1db555"), offset = vec3(1.07416,     1.37402,      5.55211) * 0.25 },
+    { uuid = sm.uuid.new("a58a7a52-6737-468f-a499-aee18faedabb"), offset = vec3(0.971095,    1.18554,      2.06928) * 0.25 },
+    { uuid = sm.uuid.new("17a8ce54-0617-422c-bac7-9c5c07203094"), offset = vec3(-0.971095,   1.18554,      2.06928) * 0.25 },
+    { uuid = sm.uuid.new("ea9511ab-26bf-4dcb-9929-7c688f2b240e"), offset = vec3(1.45117,     -0.877968,    2.84755) * 0.25 },
+    { uuid = sm.uuid.new("d793783b-6ac8-4fb7-b9b4-b7f2d159efed"), offset = vec3(-1.45117,    -0.877968,    2.84755) * 0.25 },
 }
 
 function TurretBase:server_onCreate()
@@ -351,8 +351,8 @@ function TurretBase:client_onUpdate(dt)
     end
 
     --semi functional worldrot
-    --local worldRot1 = sm.quat.angleAxis(self.dir.x, vec3_up) * sm.quat.angleAxis(-self.dir.y + math.pi * 0.5, vec3_right)
-    self.cl_turret:setRotation(self.shape.worldRotation * sm.quat.angleAxis(self.dir.x, vec3_forward) * sm.quat.angleAxis(-self.dir.y, vec3_right))
+    --local worldRot1 = angleAxis(self.dir.x, vec3_up) * angleAxis(-self.dir.y + math.pi * 0.5, vec3_right)
+    self.cl_turret:setRotation(self.shape.worldRotation * angleAxis(self.dir.x, vec3_forward) * angleAxis(-self.dir.y, vec3_right))
 end
 
 function TurretBase:cl_syncToLateJoiner(data)
@@ -492,7 +492,7 @@ end
 function TurretBase:cl_onDestroy(rot)
     local seatPos = self:getSeatPos()
 
-    --sm.effect.playEffect("Turret - Explode", seatPos, vec3_zero, self.turret.worldRotation * sm.quat.angleAxis(math.rad(-90), vec3_right))
+    --sm.effect.playEffect("Turret - Explode", seatPos, vec3_zero, self.turret.worldRotation * angleAxis(rad(-90), vec3_right))
 
     rot = rot or self.shape.worldRotation
     local col = self.shape.color
@@ -501,7 +501,7 @@ function TurretBase:cl_onDestroy(rot)
         --sm.debris.createDebris(data.uuid, pos, rot, (pos - seatPos):normalize() * (math.random(100, 0) * 0.1), vec3_zero, col)
         sm.effect.playEffect(
             "Explosion - Debris", pos, vec3_zero,
-            rot * sm.quat.angleAxis(math.rad(math.random(-600, -1200) * 0.1), vec3_right) * sm.quat.angleAxis(math.rad(math.random(-300, 300) * 0.1), vec3_forward),
+            rot * angleAxis(rad(math.random(-600, -1200) * 0.1), vec3_right) * angleAxis(rad(math.random(-300, 300) * 0.1), vec3_forward),
             vec3_one, { Renderable = data.uuid, Material = 9, Color = col }
         )
     end
@@ -567,7 +567,7 @@ end
 
 
 
-local SpeedPerStep = 1 / math.rad( 27 ) / 3
+local SpeedPerStep = 1 / rad( 27 ) / 3
 function TurretBase:client_onFixedUpdate( timeStep )
 	if self.bearingSettings.updateDelay > 0.0 then
 		self.bearingSettings.updateDelay = math.max( 0.0, self.bearingSettings.updateDelay - timeStep )

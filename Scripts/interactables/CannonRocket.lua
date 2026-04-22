@@ -83,7 +83,7 @@ function CannonRocket:sv_explode(position)
     local char = self.interactable:getSeatCharacter()
     if char and sm.exists(char) then
         self.interactable:setSeatCharacter(char)
-        char:setWorldPosition(sm.vec3.new(self.shape.worldPosition.x, self.shape.worldPosition.y, -512))
+        char:setWorldPosition(vec3(self.shape.worldPosition.x, self.shape.worldPosition.y, -512))
         sm.log.warning("ROCKET LOADER DESTROYED")
     else
         sm.log.error("ROCKET LOADER NOT DESTROYED")
@@ -119,7 +119,7 @@ function CannonRocket:client_onCreate()
 
     self.thrustEffect = sm.effect.createEffect("Thruster - Level 5", self.interactable)
     self.thrustEffect:setOffsetPosition(-vec3_forward * 0.25)
-    self.thrustEffect:setOffsetRotation(sm.quat.angleAxis(math.rad(90), vec3_right))
+    self.thrustEffect:setOffsetRotation(quat_right_90deg)
 end
 
 function CannonRocket:client_onUpdate(dt)

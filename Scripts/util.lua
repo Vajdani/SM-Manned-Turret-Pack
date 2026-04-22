@@ -14,16 +14,21 @@
 
 dofile "$SURVIVAL_DATA/Scripts/game/survival_projectiles.lua"
 
-vec3_right    = sm.vec3.new(1,0,0)
-vec3_forward  = sm.vec3.new(0,1,0)
-vec3_up       = sm.vec3.new(0,0,1)
-vec3_zero     = sm.vec3.zero()
-vec3_one      = sm.vec3.one()
-camOffset     = sm.vec3.new(0,0,0.575)
-camOffset_c   = sm.vec3.new(0,0,0.3)
+vec3             = sm.vec3.new
+vec3_right       = vec3(1,0,0)
+vec3_forward     = vec3(0,1,0)
+vec3_up          = vec3(0,0,1)
+vec3_zero        = sm.vec3.zero()
+vec3_one         = sm.vec3.one()
+camOffset        = vec3(0,0,0.575)
+camOffset_c      = vec3(0,0,0.3)
+vec3_getRotation = sm.vec3.getRotation
 
-quat_right_90deg = sm.quat.angleAxis(math.rad(90), vec3_right)
-turret_projectile_rotation_adjustment = quat_right_90deg * sm.quat.angleAxis(math.rad(180), vec3_forward)
+rad = math.rad
+angleAxis = sm.quat.angleAxis
+
+quat_right_90deg = angleAxis(rad(90), vec3_right)
+turret_projectile_rotation_adjustment = quat_right_90deg * angleAxis(rad(180), vec3_forward)
 
 ShootState = {
     null    = 0,
@@ -104,6 +109,21 @@ function sm.GetInteractableClientPublicData(int)
     return sm.MANNEDTURRET_turretBases_clientPublicData[int.id] or {}
 end
 
+-- #region Functions
+---@param char Character
+function SendDamageEventToCharacter(char, args)
+	if not sm.exists(char) then return end
+
+	if char:isPlayer() then
+		sm.event.sendToPlayer(char:getPlayer(), "sv_e_takeDamage", args)
+	else
+		local unit = char:getUnit()
+		if not sm.exists(unit) then return end
+
+		sm.event.sendToUnit(unit, "sv_e_takeDamage", args)
+	end
+end
+
 ---Get the yaw and pitch from a normalized directional vector
 ---@param direction Vec3 The normalized directional vector
 ---@return number yaw The yaw
@@ -144,34 +164,20 @@ end
 
 -- #region quat lerp
 -- https://stackoverflow.com/questions/46156903/how-to-lerp-between-two-quaternions
+local quat_slerp = sm.quat.slerp
+local quat       = sm.quat.new
+
 local function dot(a, b)
     return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
 end
 
-local function negate(a)
-    return sm.quat.new(-a.x, -a.y, -a.z, -a.w);
-end
-
 local function normalise(a)
     local l = 1.0 / math.sqrt(dot(a, a));
-    return sm.quat.new(l*a.x, l*a.y, l*a.z, l*a.w);
-end
-
-local function quat_lerp(a, b,t)
-    local l2 = dot(a, b);
-    if(l2 < 0.0) then
-        b = negate(b);
-    end
-    local c = sm.quat.identity();
-    c.x = a.x - t*(a.x - b.x);
-    c.y = a.y - t*(a.y - b.y);
-    c.z = a.z - t*(a.z - b.z);
-    c.w = a.w - t*(a.w - b.w);
-    return c;
+    return quat(l*a.x, l*a.y, l*a.z, l*a.w);
 end
 
 function nlerp(a, b, t)
-    return normalise(quat_lerp(a, b, t));
+    return normalise(quat_slerp(a, b, t));
 end
 -- #endregion
 

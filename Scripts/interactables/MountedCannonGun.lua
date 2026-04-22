@@ -5,7 +5,7 @@ dofile "$CONTENT_DATA/Scripts/ControlHud.lua"
 MountedCannonGun = class(MountedTurretGun)
 MountedCannonGun.maxParentCount = 3
 MountedCannonGun.connectionInput = 1 + 2 + 8 --[[+ connectiontype_turretexplosive]] + connectiontype_cannonrocket + connectiontype_cannonratshot
-MountedCannonGun.fireOffset = sm.vec3.new( 0.0, 0.0, 2 )
+MountedCannonGun.fireOffset = vec3( 0.0, 0.0, 2 )
 MountedCannonGun.ammoTypes = {
     {
         name = "Guided Missile",

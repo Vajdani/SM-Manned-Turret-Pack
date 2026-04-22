@@ -110,15 +110,15 @@ function MinigunSeat:cl_shoot(args)
             self.overheated = true
         end
 
-        sm.effect.playEffect(ammoData.effect, args.pos, vec3_zero, sm.vec3.getRotation(vec3_up, args.dir))
+        sm.effect.playEffect(ammoData.effect, args.pos, vec3_zero, vec3_getRotation(vec3_up, args.dir))
 
         local rot = self.harvestable.worldRotation
         sm.debris.createDebris(
             shellUUID,
             args.pos - rot * vec3_up,
             rot,
-            rot * sm.quat.angleAxis(math.rad(30), vec3_up) * vec3_forward * 5,
-            sm.vec3.new(math.random(-100, 100) * 0.01, math.random(-100, 100) * 0.01, math.random(-100, 100) * 0.01):normalize() * 10,
+            rot * angleAxis(rad(30), vec3_up) * vec3_forward * 5,
+            vec3(math.random(-100, 100) * 0.01, math.random(-100, 100) * 0.01, math.random(-100, 100) * 0.01):normalize() * 10,
             shellColour
         )
     else

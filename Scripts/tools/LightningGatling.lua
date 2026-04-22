@@ -133,14 +133,14 @@ function LightningGatling:client_onUpdate(dt)
 
 		self.shootEffectFP:setPosition(effectPos)
 		self.shootEffectFP:setVelocity(self.tool:getMovementVelocity())
-		self.shootEffectFP:setRotation(sm.vec3.getRotation(vec3_forward, dir))
+		self.shootEffectFP:setRotation(vec3_getRotation(vec3_forward, dir))
 	end
 
 	local dir = self.tool:getTpBoneDir("pejnt_barrel")
 	local effectPos = self.tool:getTpBonePos("pejnt_barrel") + dir * 0.2
 	self.shootEffect:setPosition(effectPos)
 	self.shootEffect:setVelocity(self.tool:getMovementVelocity())
-	self.shootEffect:setRotation(sm.vec3.getRotation(vec3_forward, dir))
+	self.shootEffect:setRotation(vec3_getRotation(vec3_forward, dir))
 
 	self.windupEffect:setPosition(effectPos)
 
@@ -193,7 +193,7 @@ function LightningGatling:client_onUpdate(dt)
 	self.tool:setBlockSprint(blockSprint)
 
 	local playerDir = self.tool:getSmoothDirection()
-	local angle = math.asin(playerDir:dot(sm.vec3.new(0, 0, 1))) / (math.pi / 2)
+	local angle = math.asin(playerDir:dot(vec3(0, 0, 1))) / (math.pi / 2)
 
 	local crouchWeight = isCrouching and 1.0 or 0.0
 	local normalWeight = 1.0 - crouchWeight
@@ -257,13 +257,13 @@ function LightningGatling:client_onUpdate(dt)
 	local normalTotalOffsetX = clamp((angle * 50.0), -45.0, 50.0)
 	local totalOffsetX = lerp(normalTotalOffsetX, crouchTotalOffsetX, crouchWeight)
 	local finalJointWeight = (self.jointWeight)
-	self.tool:updateJoint("jnt_hips", sm.vec3.new(totalOffsetX, totalOffsetY, totalOffsetZ), 0.35 * finalJointWeight * (normalWeight))
+	self.tool:updateJoint("jnt_hips", vec3(totalOffsetX, totalOffsetY, totalOffsetZ), 0.35 * finalJointWeight * (normalWeight))
 
 	local crouchSpineWeight = (0.35 / 3) * crouchWeight
-	self.tool:updateJoint("jnt_spine1", sm.vec3.new(totalOffsetX, totalOffsetY, totalOffsetZ), (0.10 + crouchSpineWeight) * finalJointWeight)
-	self.tool:updateJoint("jnt_spine2", sm.vec3.new(totalOffsetX, totalOffsetY, totalOffsetZ), (0.10 + crouchSpineWeight) * finalJointWeight)
-	self.tool:updateJoint("jnt_spine3", sm.vec3.new(totalOffsetX, totalOffsetY, totalOffsetZ), (0.45 + crouchSpineWeight) * finalJointWeight)
-	self.tool:updateJoint("jnt_head", sm.vec3.new(totalOffsetX, totalOffsetY, totalOffsetZ), 0.3 * finalJointWeight)
+	self.tool:updateJoint("jnt_spine1", vec3(totalOffsetX, totalOffsetY, totalOffsetZ), (0.10 + crouchSpineWeight) * finalJointWeight)
+	self.tool:updateJoint("jnt_spine2", vec3(totalOffsetX, totalOffsetY, totalOffsetZ), (0.10 + crouchSpineWeight) * finalJointWeight)
+	self.tool:updateJoint("jnt_spine3", vec3(totalOffsetX, totalOffsetY, totalOffsetZ), (0.45 + crouchSpineWeight) * finalJointWeight)
+	self.tool:updateJoint("jnt_head", vec3(totalOffsetX, totalOffsetY, totalOffsetZ), 0.3 * finalJointWeight)
 
 	-- Camera update
 	local bobbing = 1
@@ -277,8 +277,8 @@ function LightningGatling:client_onUpdate(dt)
 		bobbing = 1
 	end
 
-	self.tool:updateCamera(2.8, 30.0, sm.vec3.new(0.65, 0.0, 0.05), self.aimWeight)
-	self.tool:updateFpCamera(30.0, sm.vec3.new(0.0, 0.0, 0.0), self.aimWeight, bobbing)
+	self.tool:updateCamera(2.8, 30.0, vec3(0.65, 0.0, 0.05), self.aimWeight)
+	self.tool:updateFpCamera(30.0, vec3_zero, self.aimWeight, bobbing)
 
 	self:cl_updateGatling(dt)
 end
@@ -400,7 +400,7 @@ function LightningGatling:calculateFirePosition()
 	local pitch = math.asin(dir.z)
 	local right = sm.localPlayer.getRight()
 
-	local fireOffset = sm.vec3.new(0.0, 0.0, 0.0)
+	local fireOffset = vec3_zero
 
 	if crouching then
 		fireOffset.z = 0.15
@@ -414,7 +414,7 @@ function LightningGatling:calculateFirePosition()
 		end
 	else
 		fireOffset = fireOffset + right * 0.25
-		fireOffset = fireOffset:rotate(math.rad(pitch), right)
+		fireOffset = fireOffset:rotate(rad(pitch), right)
 	end
 	local firePosition = GetOwnerPosition(self.tool) + fireOffset
 	return firePosition
@@ -509,9 +509,9 @@ function LightningGatling:doLightningCast(owner)
 	local char = owner.character
 	local startPos = char.worldPosition
 	if char:isCrouching() then
-		startPos = startPos + sm.vec3.new(0,0,0.3)
+		startPos = startPos + vec3(0,0,0.3)
 	else
-		startPos = startPos + sm.vec3.new(0,0,0.575)
+		startPos = startPos + vec3(0,0,0.575)
 	end
 
 	local endPos = startPos + char.direction * Range
@@ -600,7 +600,7 @@ function LightningGatling:calculateTpMuzzlePos()
 	local right = sm.localPlayer.getRight()
 	local up = right:cross(dir)
 
-	local fakeOffset = sm.vec3.new(0.0, 0.0, 0.0)
+	local fakeOffset = vec3_zero
 
 	--General offset
 	fakeOffset = fakeOffset + right * 0.25
@@ -634,8 +634,8 @@ function LightningGatling:calculateFpMuzzlePos()
 	local dir = sm.localPlayer.getDirection()
 	local right = sm.localPlayer.getRight()
 
-	local muzzlePos45 = sm.vec3.new(0.0, 0.0, 0.0)
-	local muzzlePos90 = sm.vec3.new(0.0, 0.0, 0.0)
+	local muzzlePos45 = vec3_zero
+	local muzzlePos90 = vec3_zero
 
 	if self.aiming then
 		muzzlePos45 = muzzlePos45 - up * 0.2

@@ -9,7 +9,7 @@ MountedTurretGun.connectionOutput = sm.interactable.connectionType.none
 MountedTurretGun.colorNormal = sm.color.new( 0xcb0a00ff )
 MountedTurretGun.colorHighlight = sm.color.new( 0xee0a00ff )
 MountedTurretGun.poseWeightCount = 1
-MountedTurretGun.fireOffset = sm.vec3.new( 0.0, 0.0, 0.375 )
+MountedTurretGun.fireOffset = vec3( 0.0, 0.0, 0.375 )
 MountedTurretGun.ammoTypes = {
     {
         name = "AA Rounds",

@@ -169,7 +169,7 @@ local function _updateTpAnimations( self, data, dt )
                     local hit, result = self:getRaycast()
 					if hit then
 						if type(effectData) == "table" then
-							sm.effect.playEffect(effectData.name, result.pointWorld, vec3_zero, sm.vec3.getRotation(vec3_up, result.normalWorld), vec3_one, effectData.params)
+							sm.effect.playEffect(effectData.name, result.pointWorld, vec3_zero, vec3_getRotation(vec3_up, result.normalWorld), vec3_one, effectData.params)
 						else
 							effectData(self)
 						end
@@ -285,7 +285,7 @@ local function _updateFpAnimations( self, data, equipped, dt )
 						if type(effectData) == "table" then
 							local hit, result = sm.localPlayer.getRaycast(7.5)
 							if hit then
-								sm.effect.playEffect(effectData.name, result.pointWorld, vec3_zero, sm.vec3.getRotation(vec3_up, result.normalWorld), vec3_one, effectData.params)
+								sm.effect.playEffect(effectData.name, result.pointWorld, vec3_zero, vec3_getRotation(vec3_up, result.normalWorld), vec3_one, effectData.params)
 							end
 						else
 							effectData(self)

@@ -8,6 +8,10 @@ function BasePlayer:client_onCreate()
 	mannedTurret_oldClientCreate(self)
 
 	sm.BASEPLAYERENABLED = true
+
+	if g_survivalHud then
+		sm.SURVIVALHUD = g_survivalHud
+	end
 end
 -- #endregion
 
@@ -653,6 +657,34 @@ for k, v in pairs(_G) do
 			-- sm.MANNEDTURRET_turretChunkLoaders[cellKey].handle:release()
 			sm.MANNEDTURRET_turretChunkLoaders[cellKey] = nil
 		end
+	elseif v.server_onUnitUpdate then
+		function v:sv_e_takeDamage(args)
+			if not sm.exists(self.unit) then return end
+
+			local char = self.unit.character
+			if isAnyOf(char:getCharacterType(), g_tapebots) then
+				self:sv_takeDamage( args.damage or 0, args.impact or sm.vec3.zero(), args.headHit or false )
+			else
+				self:sv_takeDamage( args.damage or 0, args.impact or sm.vec3.zero(), args.hitPos or self.unit.character.worldPosition )
+			end
+		end
+
+		print("[MANNED TURRET] HOOKED UNIT CLASS", k)
+	elseif v.client_onCancel or v.server_onInventoryChanges then
+		function v:sv_e_takeDamage(args)
+			local char = self.player.character
+			if sm.exists(char) then
+				self:sv_takeDamage( args.damage or 0, args.impact or sm.vec3.zero(), args.hitPos or self.player.character.worldPosition )
+			end
+		end
+
+		print("[MANNED TURRET] HOOKED PLAYER CLASS", k)
+	elseif v.sv_onHit then
+		function v:sv_e_onHit(args)
+			self:sv_onHit(args.damage, args.position)
+		end
+
+		print("[MANNED TURRET] HOOKED HARVESTABLE CLASS", k)
 	end
 
 	::continue::

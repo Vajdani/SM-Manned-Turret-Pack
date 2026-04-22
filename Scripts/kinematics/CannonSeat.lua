@@ -93,7 +93,7 @@ CannonSeat.containerToAmmoType = {
 CannonSeat.baseUUID = "a0c96d35-37ca-4cf9-82d8-9b9077132918"
 CannonSeat.airStrikeDistanceLimit = 256
 CannonSeat.maxZoom = 5
-CannonSeat.beaconScale = sm.vec3.new(0.5, 50, 0.5)
+CannonSeat.beaconScale = vec3(0.5, 50, 0.5)
 
 
 
@@ -203,7 +203,7 @@ function CannonSeat:sv_startAirStrike(pos, caller)
             if self.delay < 10 then return false end
 
             self.turretSelf.network:sendToClients("cl_shoot", { canShoot = true })
-            if not self:fire(self.position + vec3_right:rotate(math.rad(self.angleOffset + self.currentTick * 30 * self.spinDirection), vec3_up) * 3 * self.circleCounter) then
+            if not self:fire(self.position + vec3_right:rotate(rad(self.angleOffset + self.currentTick * 30 * self.spinDirection), vec3_up) * 3 * self.circleCounter) then
                 return true
             end
             self.currentTick = self.currentTick + 1
@@ -440,7 +440,7 @@ function CannonSeat:cl_shoot(args)
         self.recoil_l = 1
 
         local ammoType = args.ammoType or self.ammoType
-        sm.effect.playEffect(sm.GetTurretAmmoData(self, ammoType).effect, args.pos or self:getFirePosEnd(), vec3_zero, sm.vec3.getRotation(vec3_up, args.dir or self.harvestable.worldRotation * vec3_up))
+        sm.effect.playEffect(sm.GetTurretAmmoData(self, ammoType).effect, args.pos or self:getFirePosEnd(), vec3_zero, vec3_getRotation(vec3_up, args.dir or self.harvestable.worldRotation * vec3_up))
 
         if self.seated and ammoType == 1 then
 			sm.audio.play("Blueprint - Build")
@@ -555,7 +555,7 @@ end
 
 function CannonSeat:cl_updateAirStrikeBeacon(pos)
     if pos then
-        local rot = sm.vec3.getRotation(vec3_forward, vec3_up)
+        local rot = vec3_getRotation(vec3_forward, vec3_up)
         self.airStrikeBeacon = sm.effect.createEffect("Cannon - AirStrike - Beacon")
         self.airStrikeBeacon:setPosition(pos + vec3_up * self.beaconScale.y * 0.5)
         self.airStrikeBeacon:setRotation(rot)

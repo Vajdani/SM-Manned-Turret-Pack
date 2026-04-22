@@ -46,9 +46,9 @@ function CannonNuke.server_tryExplode( self )
 
 			local blueprint = data.blueprint
 			if blueprint then
-				local placementOffset = sm.vec3.new( -0.5, -0.5, -0.5 )
+				local placementOffset = vec3( -0.5, -0.5, -0.5 )
 				if data.offset then
-					placementOffset = sm.vec3.new( data.offset.x, data.offset.y, data.offset.z )
+					placementOffset = vec3( data.offset.x, data.offset.y, data.offset.z )
 				end
 				placementOffset = harvestable.worldRotation * placementOffset
 
@@ -70,7 +70,7 @@ function CannonNuke.server_tryExplode( self )
 							if fData and fData.data.fallenEffects then
 								local rotation = shape.worldRotation
 								for _, effect in ipairs( fData.data.fallenEffects ) do
-									local offsetPosition = sm.vec3.new( effect.offsetPosition.x, effect.offsetPosition.y, effect.offsetPosition.z )
+									local offsetPosition = vec3( effect.offsetPosition.x, effect.offsetPosition.y, effect.offsetPosition.z )
 									sm.effect.playEffect( effect.effectName, shape.worldPosition + rotation * offsetPosition, nil, rotation, nil, { Color = colour } )
 								end
 							end
@@ -454,9 +454,9 @@ function CannonNuke_Tool:cl_toss()
 		local item = sm.localPlayer.getActiveItem()
 		if sm.container.canSpend( sm.localPlayer.getInventory(), item, 1 ) then
 			local dir = sm.localPlayer.getDirection()
-			local forward = sm.vec3.new( 0, 0, 1 ):cross( sm.localPlayer.getRight() )
+			local forward = vec3( 0, 0, 1 ):cross( sm.localPlayer.getRight() )
 			local pitchScale = forward:dot( dir )
-			dir = dir:rotate( math.rad( pitchScale * 18 ), sm.camera.getRight() )
+			dir = dir:rotate( rad( pitchScale * 18 ), sm.camera.getRight() )
 
 			local params = {
                 firePos = self:calculateFirePosition(),
@@ -479,7 +479,7 @@ function CannonNuke_Tool:sv_n_onUse(params)
 
 	local item = params.item
     local dir = params.dir
-    local rot = sm.vec3.getRotation(vec3_forward, dir)
+    local rot = vec3_getRotation(vec3_forward, dir)
     local nuke = sm.shape.createPart(item, params.firePos + dir - rot * sm.item.getShapeOffset(item), rot, true, true )
     sm.physics.applyImpulse(nuke, (self.tool:getOwner().character.velocity + dir * 10) * nuke.mass, true)
 
@@ -511,7 +511,7 @@ function CannonNuke_Tool:calculateFirePosition()
 	local dir = sm.localPlayer.getDirection()
 	local pitch = math.asin( dir.z )
 	local right = sm.localPlayer.getRight()
-	local fireOffset = sm.vec3.new( 0.0, 0.0, 0.0 )
+	local fireOffset = vec3_zero
 
 	if crouching then
 		fireOffset.z = 0.15
@@ -523,7 +523,7 @@ function CannonNuke_Tool:calculateFirePosition()
         fireOffset = fireOffset + right * 0.05
 	else
 		fireOffset = fireOffset + right * 0.25
-		fireOffset = fireOffset:rotate( math.rad( pitch ), right )
+		fireOffset = fireOffset:rotate( rad( pitch ), right )
 	end
 	local firePosition = GetOwnerPosition( self.tool ) + fireOffset + self.tool:getOwner().character.velocity * 0.1
 	return firePosition

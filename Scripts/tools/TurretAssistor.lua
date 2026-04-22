@@ -55,17 +55,6 @@ function sm.visualization.isBodyHighlighted(body, lift)
     return false
 end
 
-oldHudCreate = oldHudCreate or sm.gui.createSurvivalHudGui
-function sm.gui.createSurvivalHudGui(close)
-    local gui = oldHudCreate(close)
-    if not sm.SURVIVALHUD then --sm.exists(sm.SURVIVALHUD)
-        sm.SURVIVALHUD = gui
-    end
-
-    return gui
-end
-
-
 
 
 local function ReadFile(path)
@@ -147,7 +136,7 @@ function TurretAssistor:server_onFixedUpdate()
     for k, v in pairs(self.charQueue) do
         if v and sm.exists(v) then
             sm.log.warning("CHARACTER DISCARDED")
-            v:setWorldPosition(sm.vec3.new(0, 0, -512))
+            v:setWorldPosition(vec3(0, 0, -512))
             self.charQueue[k] = nil
         end
     end

@@ -8,7 +8,7 @@ RailgunSeat.ammoTypes = {
         name = "Spike",
         damage = 1000,
         velocity = 450,
-        recoilStrength = 1,
+        recoilStrength = 5,
         fireCooldown = 20,
         spread = 0.1,
         chargeTime = 20,
@@ -51,27 +51,36 @@ function RailgunSeat:sv_shoot(ammoType, caller)
 
     local dir = rot * vec3_up
     local canShoot = self:canShoot(ammoType, true) or ammoData.ignoreAmmoConsumption
+    local damage = ammoData.damage
     if canShoot then
-        local finalFirePos
-        if sm.item.isPart(ammoData.uuid) then
-            local projectileRot = rot * turret_projectile_rotation_adjustment
-            finalFirePos = endPos - projectileRot * sm.item.getShapeOffset(ammoData.uuid)
-            local projectile = sm.shape.createPart(ammoData.uuid, finalFirePos, projectileRot)
-
-            if ammoData.velocity then
-                sm.physics.applyImpulse(projectile, (dir * ammoData.velocity + self.base.body.velocity) * projectile.mass, true)
+        local finalFirePos = endPos + dir * (hit and 0 or 0.25)
+        for k, v in pairs(self:getLaserIntersects(finalFirePos)) do
+            local obj, pos = v.obj, v.pos
+            if type(obj) == "Shape" then
+                if obj.isBlock then
+                    obj:destroyBlock(obj:getClosestBlockLocalPosition(pos))
+                else
+                    local int = obj.interactable
+                    local classname = (sm.item.getFeatureData(obj.uuid) or {}).classname
+                    if classname == "Package" then
+                        sm.event.sendToInteractable( int, "sv_e_open" )
+                    elseif not int or int.type ~= "scripted" or not sm.event.sendToInteractable(int, "sv_e_onHit", {
+                        damage = damage,
+                        source = caller,
+                        position = pos,
+                        normal = v.normal
+                    }) then
+                        obj:destroyShape()
+                    end
+                end
+            elseif type(obj) == "Character" then
+                SendDamageEventToCharacter(obj, { damage = damage })
+            elseif not sm.event.sendToHarvestable(obj, "sv_e_onHit", { damage = damage, position = pos }) then
+                sm.physics.explode( pos, 100, 1, 1, 1 )
             end
-
-            self:sv_OnPartFire(ammoType, ammoData, projectile, caller)
-        else
-            finalFirePos = endPos + dir * (hit and 0 or 0.25)
-            for i = 1, 100 do
-                sm.projectile.projectileAttack( ammoData.uuid, ammoData.damage, finalFirePos, sm.noise.gunSpread(dir, ammoData.spread or 0) * ammoData.velocity + self.base.body.velocity, caller, nil, nil, i/100 * 10 )
-            end
-
-            self:sv_OnProjectileFire(ammoType, ammoData, caller)
         end
 
+        self:sv_OnProjectileFire(ammoType, ammoData, caller)
         self:sv_applyFiringImpulse(ammoData, dir, finalFirePos)
     end
 
@@ -140,7 +149,7 @@ function RailgunSeat:cl_shoot(args)
     if args.canShoot then
         self.recoil_r = 1
 
-        sm.effect.playEffect(sm.GetTurretAmmoData(self, args.ammoType).effect, args.pos, vec3_zero, sm.vec3.getRotation(vec3_up, args.dir))
+        sm.effect.playEffect(sm.GetTurretAmmoData(self, args.ammoType).effect, args.pos, vec3_zero, vec3_getRotation(vec3_up, args.dir))
     else
         sm.effect.playEffect("Turret - FailedShoot", args.pos)
     end
@@ -177,4 +186,30 @@ function RailgunSeat:getFirePos()
     local rot = self.harvestable.worldRotation
     local offsetBase = vec3_forward * 0.22
     return pos + rot * offsetBase, pos + rot * (vec3_up * 2 + offsetBase)
+end
+
+---@param pos Vec3
+---@return {obj: Shape|Character|Harvestable, pos: Vec3, normal: Vec3}[]
+function RailgunSeat:getLaserIntersects(pos)
+    pos = pos or self:getFirePos()
+    local dir = self.harvestable.worldRotation * vec3_up
+    local lastIntersect
+    local intersects = {}
+    repeat
+        -- local hit, result = sm.physics.spherecast(pos, pos + dir * 1000, 0.1, lastIntersect)
+        local hit, result = sm.physics.raycast(pos, pos + dir * 1000, lastIntersect)
+        if hit then
+            pos = result.pointWorld --+ dir * 0.01
+            lastIntersect = result:getShape() or result:getCharacter() or result:getHarvestable()
+            if lastIntersect then
+                table.insert(intersects, {
+                    obj = lastIntersect,
+                    pos = pos,
+                    normal = result.normalWorld
+                })
+            end
+        end
+    until lastIntersect == nil
+
+    return intersects
 end
