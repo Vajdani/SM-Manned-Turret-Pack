@@ -3,9 +3,9 @@
 -- #region Player
 dofile( "$GAME_DATA/Scripts/game/BasePlayer.lua" )
 
-mannedTurret_oldClientCreate = mannedTurret_oldClientCreate or BasePlayer.client_onCreate
+mannedTurret_oldPlayerClientCreate = mannedTurret_oldPlayerClientCreate or BasePlayer.client_onCreate
 function BasePlayer:client_onCreate()
-	mannedTurret_oldClientCreate(self)
+	mannedTurret_oldPlayerClientCreate(self)
 
 	sm.BASEPLAYERENABLED = true
 
@@ -210,9 +210,9 @@ if not StoneChunk then
 	dofile( "$SURVIVAL_DATA/Scripts/game/harvestable/StoneChunk.lua" )
 end
 
-oldStoneChunkCreate = oldStoneChunkCreate or StoneChunk.server_onCreate
-function newStoneChunkCreate( self )
-	oldStoneChunkCreate(self)
+mannedTurret_oldStoneChunkCreate = mannedTurret_oldStoneChunkCreate or StoneChunk.server_onCreate
+function StoneChunk.server_onCreate( self )
+	mannedTurret_oldStoneChunkCreate(self)
 
 	if self.params then
 		if self.params.markedForDeath then
@@ -221,11 +221,9 @@ function newStoneChunkCreate( self )
 		end
 	end
 end
-StoneChunk.server_onCreate = newStoneChunkCreate
 
---no way around replacing outight
+--no way around replacing outright
 function StoneChunk.sv_onHit( self, damage )
-
 	if self.health > 0 then
 		self.health = self.health - damage
 		if self.health <= 0 then
@@ -289,9 +287,9 @@ if not TreeTrunk then
 	dofile( "$SURVIVAL_DATA/Scripts/game/harvestable/TreeTrunk.lua" )
 end
 
-oldTreeTrunkCreate = oldTreeTrunkCreate or TreeTrunk.server_onCreate
-function newTreeTrunkCreate( self )
-	oldTreeTrunkCreate(self)
+mannedTurret_oldTreeTrunkCreate = mannedTurret_oldTreeTrunkCreate or TreeTrunk.server_onCreate
+function TreeTrunk.server_onCreate( self )
+	mannedTurret_oldTreeTrunkCreate(self)
 
 	if self.params then
 		if self.params.markedForDeath then
@@ -300,7 +298,6 @@ function newTreeTrunkCreate( self )
 		end
 	end
 end
-TreeTrunk.server_onCreate = newTreeTrunkCreate
 
 function TreeTrunk.sv_onHit( self, damage )
 	if self.sv.health > 0 then
@@ -365,9 +362,9 @@ if not TreeLog then
 	dofile( "$SURVIVAL_DATA/Scripts/game/harvestable/TreeLog.lua" )
 end
 
-oldTreeLogCreate = oldTreeLogCreate or TreeLog.server_onCreate
-function newTreeLogCreate( self )
-	oldTreeLogCreate(self)
+mannedTurret_oldTreeLogCreate = mannedTurret_oldTreeLogCreate or TreeLog.server_onCreate
+function TreeLog.server_onCreate( self )
+	mannedTurret_oldTreeLogCreate(self)
 
 	if self.params then
 		if self.params.markedForDeath then
@@ -376,7 +373,6 @@ function newTreeLogCreate( self )
 		end
 	end
 end
-TreeLog.server_onCreate = newTreeLogCreate
 
 function TreeLog.sv_onHit( self, damage )
 	if self.health > 0 then
@@ -450,14 +446,15 @@ if not Seat then
 	dofile "$SURVIVAL_DATA/Scripts/game/interactables/Seat.lua"
 end
 
-oldSeatAction = oldSeatAction or Seat.client_onAction
+mannedTurret_oldSeatAction = mannedTurret_oldSeatAction or Seat.client_onAction
 function Seat:client_onAction(action, state)
-	return self:cl_checkRocketInput(action, state) or oldSeatAction(self, action, state)
+	return self:cl_checkRocketInput(action, state) or mannedTurret_oldSeatAction(self, action, state)
 end
 
 function Seat:cl_checkRocketInput(action, state)
+	---@type Interactable
 	local cannon = self.interactable:getChildren(connectiontype_cannonrocket)[1]
-	if cannon and sm.GetInteractableClientPublicData(cannon --[[@as Interactable]]).hasRocket then
+	if cannon and sm.GetInteractableClientPublicData(cannon).hasRocket then
 		self.network:sendToServer("sv_onRocketInput", { cannon = cannon, action = action, state = state })
 
 		if state then
@@ -486,9 +483,9 @@ if not DriverSeat then
 	dofile "$SURVIVAL_DATA/Scripts/game/interactables/DriverSeat.lua"
 end
 
-oldDriverSeatAction = oldDriverSeatAction or DriverSeat.client_onAction
+mannedTurret_oldDriverSeatAction = mannedTurret_oldDriverSeatAction or DriverSeat.client_onAction
 function DriverSeat:client_onAction(action, state)
-	return self:cl_checkRocketInput(action, state) or oldDriverSeatAction(self, action, state)
+	return self:cl_checkRocketInput(action, state) or mannedTurret_oldDriverSeatAction(self, action, state)
 end
 
 local mountedCannonUUID = "0af5379e-29e8-4eb3-b965-6b3993c8f1df"
@@ -507,10 +504,10 @@ local MountedCannonGun = {
 }
 
 
-oldDriverSeatUpdate = oldDriverSeatUpdate or DriverSeat.client_onUpdate
+mannedTurret_oldDriverSeatUpdate = mannedTurret_oldDriverSeatUpdate or DriverSeat.client_onUpdate
 ---@param self { gui? : GuiInterface, interactable : Interactable }
 function DriverSeat:client_onUpdate(dt)
-	oldDriverSeatUpdate(self, dt)
+	mannedTurret_oldDriverSeatUpdate(self, dt)
 
 	if self.gui then
 		local interactables = self.interactable:getSeatInteractables()
