@@ -282,6 +282,8 @@ function MountedCannonGun:client_onDestroy()
     if sm.GetInteractableClientPublicData({ id = self.id }).hasRocket and sm.exists(sm.SURVIVALHUD) then
         sm.SURVIVALHUD:open()
     end
+
+    sm.SetInteractableClientPublicData({ id = self.id }, nil)
 end
 
 function MountedCannonGun:client_onFixedUpdate(dt)

@@ -451,6 +451,7 @@ function Seat:client_onAction(action, state)
 	return self:cl_checkRocketInput(action, state) or mannedTurret_oldSeatAction(self, action, state)
 end
 
+connectiontype_cannonrocket = 2^15
 function Seat:cl_checkRocketInput(action, state)
 	---@type Interactable
 	local cannon = self.interactable:getChildren(connectiontype_cannonrocket)[1]
@@ -482,6 +483,8 @@ end
 if not DriverSeat then
 	dofile "$SURVIVAL_DATA/Scripts/game/interactables/DriverSeat.lua"
 end
+
+DriverSeat.cl_checkRocketInput = Seat.cl_checkRocketInput
 
 mannedTurret_oldDriverSeatAction = mannedTurret_oldDriverSeatAction or DriverSeat.client_onAction
 function DriverSeat:client_onAction(action, state)
