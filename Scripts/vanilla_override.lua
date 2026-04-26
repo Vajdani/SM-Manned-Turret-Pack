@@ -446,51 +446,6 @@ if not Seat then
 	dofile "$SURVIVAL_DATA/Scripts/game/interactables/Seat.lua"
 end
 
-mannedTurret_oldSeatAction = mannedTurret_oldSeatAction or Seat.client_onAction
-function Seat:client_onAction(action, state)
-	return self:cl_checkRocketInput(action, state) or mannedTurret_oldSeatAction(self, action, state)
-end
-
-connectiontype_cannonrocket = 2^15
-function Seat:cl_checkRocketInput(action, state)
-	---@type Interactable
-	local cannon = self.interactable:getChildren(connectiontype_cannonrocket)[1]
-	if cannon and sm.GetInteractableClientPublicData(cannon).hasRocket then
-		self.network:sendToServer("sv_onRocketInput", { cannon = cannon, action = action, state = state })
-
-		if state then
-			return true
-		end
-	end
-
-	return false
-end
-
-function Seat:sv_onRocketInput(data)
-	sm.event.sendToInteractable(data.cannon, "sv_onRocketInput", { action = data.action, state = data.state })
-end
-
-function Seat:cl_onRocketFire()
-	self.gui:close()
-end
-
-function Seat:cl_onRocketExplode()
-	self.gui:open()
-end
-
-
-
-if not DriverSeat then
-	dofile "$SURVIVAL_DATA/Scripts/game/interactables/DriverSeat.lua"
-end
-
-DriverSeat.cl_checkRocketInput = Seat.cl_checkRocketInput
-
-mannedTurret_oldDriverSeatAction = mannedTurret_oldDriverSeatAction or DriverSeat.client_onAction
-function DriverSeat:client_onAction(action, state)
-	return self:cl_checkRocketInput(action, state) or mannedTurret_oldDriverSeatAction(self, action, state)
-end
-
 local mountedCannonUUID = "0af5379e-29e8-4eb3-b965-6b3993c8f1df"
 local MountedCannonGun = {
 	ammoTypes = {
@@ -507,14 +462,14 @@ local MountedCannonGun = {
 }
 
 
-mannedTurret_oldDriverSeatUpdate = mannedTurret_oldDriverSeatUpdate or DriverSeat.client_onUpdate
+mannedTurret_oldSeatUpdate = mannedTurret_oldSeatUpdate or Seat.client_onUpdate
 ---@param self { gui? : GuiInterface, interactable : Interactable }
-function DriverSeat:client_onUpdate(dt)
-	mannedTurret_oldDriverSeatUpdate(self, dt)
+function Seat:client_onUpdate(dt)
+	mannedTurret_oldSeatUpdate(self, dt)
 
 	if self.gui then
 		local interactables = self.interactable:getSeatInteractables()
-		for i=1, 10 do
+		for i = 1, 10 do
 			local value = interactables[i]
 			if value and bit.band(value:getConnectionInputType(), 2) then
 				local uuid = tostring(value.shape.uuid)
@@ -523,18 +478,73 @@ function DriverSeat:client_onUpdate(dt)
 						["itemId"] = sm.GetTurretAmmoData(MountedCannonGun, sm.GetInteractableClientPublicData(value).ammoType),
 						["active"] = value.active
 					})
-				else
-					self.gui:setGridItem( "ButtonGrid", i-1, {
-						["itemId"] = uuid,
-						["active"] = value.active
-					})
 				end
-			else
-				self.gui:setGridItem( "ButtonGrid", i-1, nil)
 			end
 		end
 	end
 end
+
+mannedTurret_oldSeatAction = mannedTurret_oldSeatAction or Seat.client_onAction
+function Seat:client_onAction(action, state)
+	return self:cl_checkRocketInput(action, state) or mannedTurret_oldSeatAction(self, action, state)
+end
+
+connectiontype_cannonrocket = 2^15
+function Seat:cl_checkRocketInput(action, state)
+	local consume = false
+	for k, int in pairs(self.interactable:getChildren(connectiontype_cannonrocket)) do
+		if sm.GetInteractableClientPublicData(int).hasRocket then
+			self.network:sendToServer("sv_onRocketInput", { cannon = int, action = action, state = state })
+
+			consume = consume or state
+		end
+	end
+
+	return consume
+end
+
+function Seat:sv_onRocketInput(data)
+	sm.event.sendToInteractable(data.cannon, "sv_onRocketInput", { action = data.action, state = data.state })
+end
+
+function Seat:cl_onRocketFire()
+	self.gui:close()
+end
+
+function Seat:cl_onRocketExplode()
+	self.gui:open()
+end
+
+
+
+dofile "$SURVIVAL_DATA/Scripts/game/interactables/DriverSeat.lua"
+
+DriverSeat.cl_checkRocketInput = Seat.cl_checkRocketInput
+
+mannedTurret_oldDriverSeatAction = mannedTurret_oldDriverSeatAction or DriverSeat.client_onAction
+function DriverSeat:client_onAction(action, state)
+	return self:cl_checkRocketInput(action, state) or mannedTurret_oldDriverSeatAction(self, action, state)
+end
+
+
+
+Saddle = class( Seat )
+Saddle.Levels = {
+	[tostring(obj_interactive_saddle_01)] = { maxConnections = 3, upgrade = obj_interactive_saddle_02, cost = 1, title = "#{LEVEL} 1" },
+	[tostring(obj_interactive_saddle_02)] = { maxConnections = 4, upgrade = obj_interactive_saddle_03, cost = 1, title = "#{LEVEL} 2" },
+	[tostring(obj_interactive_saddle_03)] = { maxConnections = 6, upgrade = obj_interactive_saddle_04, cost = 1, title = "#{LEVEL} 3" },
+	[tostring(obj_interactive_saddle_04)] = { maxConnections = 8, upgrade = obj_interactive_saddle_05, cost = 1, title = "#{LEVEL} 4" },
+	[tostring(obj_interactive_saddle_05)] = { maxConnections = 10, title = "#{LEVEL} 5" },
+}
+
+DriverSaddle = class( DriverSeat )
+DriverSaddle.Levels = {
+	[tostring(obj_interactive_driversaddle_01)] = { maxConnections = 6, allowAdjustingJoints = false, upgrade = obj_interactive_driversaddle_02, cost = 1, title = "#{LEVEL} 1" },
+	[tostring(obj_interactive_driversaddle_02)] = { maxConnections = 8, allowAdjustingJoints = false, upgrade = obj_interactive_driversaddle_03, cost = 2, title = "#{LEVEL} 2" },
+	[tostring(obj_interactive_driversaddle_03)] = { maxConnections = 12, allowAdjustingJoints = false, upgrade = obj_interactive_driversaddle_04, cost = 3, title = "#{LEVEL} 3" },
+	[tostring(obj_interactive_driversaddle_04)] = { maxConnections = 16, allowAdjustingJoints = false, upgrade = obj_interactive_driversaddle_05, cost = 5, title = "#{LEVEL} 4" },
+	[tostring(obj_interactive_driversaddle_05)] = { maxConnections = 20, allowAdjustingJoints = true, title = "#{LEVEL} 5" },
+}
 -- #endregion
 
 

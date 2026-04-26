@@ -74,6 +74,8 @@ function CannonRocket:server_onFixedUpdate(dt)
 end
 
 function CannonRocket:sv_explode(position)
+    if self.destroyed then return end
+
     self.destroyed = true
 
     if sm.exists(self.seat) then
