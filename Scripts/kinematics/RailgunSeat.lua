@@ -53,7 +53,7 @@ function RailgunSeat:sv_shoot(ammoType, caller)
     local canShoot = self:canShoot(ammoType, true) or ammoData.ignoreAmmoConsumption
     local damage = ammoData.damage
     if canShoot then
-        local finalFirePos = endPos + dir * (hit and 0 or 0.25)
+        local finalFirePos = endPos + dir * 0.25
         for k, v in pairs(self:getLaserIntersects(finalFirePos)) do
             local obj, pos = v.obj, v.pos
             if type(obj) == "Shape" then

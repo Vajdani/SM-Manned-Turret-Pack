@@ -250,7 +250,7 @@ function TurretSeat:sv_shoot(ammoType, caller)
 
             self:sv_OnPartFire(ammoType, ammoData, projectile, caller)
         else
-            finalFirePos = endPos + dir * (hit and 0 or 0.25)
+            finalFirePos = endPos + dir * 0.25
             sm.projectile.projectileAttack( ammoData.uuid, ammoData.damage, finalFirePos, sm.noise.gunSpread(dir, ammoData.spread or 0) * ammoData.velocity + self.base.body.velocity, caller )
             self:sv_OnProjectileFire(ammoType, ammoData, caller)
         end
