@@ -293,8 +293,14 @@ function CannonSeat:client_onDestroy()
 
     self.controlHud:destroy()
 
+    if sm.exists(self.airStrikeBeacon) then
+        self.airStrikeBeaconRange:destroy()
+        self.airStrikeBeacon:destroy()
+    end
+
     if sm.exists(self.airStrikeRadius) then
         self.airStrikeRadius:destroy()
+        self.airStrikeBaseMarker:destroy()
     end
 end
 
@@ -628,8 +634,8 @@ function CannonSeat:cl_SetTurretControlsEnabled(state)
     self.cl_controlsEnabled = state
     self.harvestable.clientPublicData.controlsEnabled = state
 
-    if self.seated and self.ammoType ~= 2 and self.shootState ~= ShootState.null then
-        self.shootState = ShootState.null
+    if self.seated and self.ammoType ~= 2 and self.cl_shootState ~= ShootState.null then
+        self.cl_shootState = ShootState.null
         self:cl_updateHotbar()
     end
 end

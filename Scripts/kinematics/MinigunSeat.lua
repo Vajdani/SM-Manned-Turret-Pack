@@ -63,7 +63,7 @@ function MinigunSeat:client_onFixedUpdate(dt)
         self.harvestable:setColor(col)
     end
 
-    local isFiring = self.shootState ~= ShootState.null
+    local isFiring = self.cl_shootState ~= ShootState.null
     if isFiring and not self.overheated then
         self.fireCharge = math.min(self.fireCharge + dt * 2, 1)
         if self.fireCharge < 1 then
@@ -85,7 +85,7 @@ function MinigunSeat:client_onFixedUpdate(dt)
     if not self.seated then return end
 
     if self.cl_base.body:isOnLift() and isFiring then
-        self.shootState = ShootState.null
+        self.cl_shootState = ShootState.null
         self:cl_updateHotbar()
     end
 

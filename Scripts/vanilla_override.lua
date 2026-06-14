@@ -636,7 +636,7 @@ for k, v in pairs(_G) do
 			local pos_64 = data.position / 64
 			local x, y = math.floor(pos_64.x), math.floor(pos_64.y)
 			local cellKey = CellKey(x, y)
-			if sm.MANNEDTURRET_turretChunkLoaders[cellKey] == nil then
+			if not sm.MANNEDTURRET_turretChunkLoaders[cellKey] then
 				sm.log.error("NO CHUNK DATA FOR BASE REQUESTING REMOVAL", data, x, y)
 				return
 			end
@@ -645,13 +645,18 @@ for k, v in pairs(_G) do
 				table.sort(sm.MANNEDTURRET_turretChunkLoaders[cellKey].bases, function(a, b)
 					return b == data.int
 				end)
-			else
-				table.sort(sm.MANNEDTURRET_turretChunkLoaders[cellKey].bases, function(a, b)
-					return not sm.exists(b)
-				end)
-			end
 
-			table.remove(sm.MANNEDTURRET_turretChunkLoaders[cellKey].bases)
+				table.remove(sm.MANNEDTURRET_turretChunkLoaders[cellKey].bases)
+			else
+				local new = {}
+				for baseIdx, base in pairs(sm.MANNEDTURRET_turretChunkLoaders[cellKey].bases) do
+					if sm.exists(base) then
+						table.insert(new, base)
+					end
+				end
+
+				sm.MANNEDTURRET_turretChunkLoaders[cellKey].bases = new
+			end
 
 			if #sm.MANNEDTURRET_turretChunkLoaders[cellKey].bases == 0 then
 				self:sv_releaseTurretChunkLoaderHandle(cellKey)
