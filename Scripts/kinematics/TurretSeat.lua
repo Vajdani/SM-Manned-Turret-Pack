@@ -196,12 +196,16 @@ function TurretSeat:sv_unSeat_event(player)
 end
 
 function TurretSeat:server_onProjectile(position, airTime, velocity, projectileName, shooter, damage, customData, normal, uuid)
-    sm.physics.applyImpulse(self.base.shape, velocity, true, self.base.shape:transformPoint(position))
+    if sm.exists(self.harvestable) then
+        sm.physics.applyImpulse(self.base.shape, velocity, true, self.base.shape:transformPoint(position))
+    end
     sm.event.sendToInteractable(self.base, "sv_takeDamage", damage)
 end
 
 function TurretSeat:server_onMelee(position, attacker, damage, power, direction, normal)
-    sm.physics.applyImpulse(self.base.shape, direction * power, true, self.base.shape:transformPoint(position))
+    if sm.exists(self.harvestable) then
+        sm.physics.applyImpulse(self.base.shape, direction * power, true, self.base.shape:transformPoint(position))
+    end
     sm.event.sendToInteractable(self.base, "sv_takeDamage", damage)
 end
 
