@@ -400,7 +400,7 @@ function LightningGatling:calculateFirePosition()
 	local pitch = math.asin(dir.z)
 	local right = sm.localPlayer.getRight()
 
-	local fireOffset = vec3_zero
+	local fireOffset = vec3_GetZero()
 
 	if crouching then
 		fireOffset.z = 0.15
@@ -600,7 +600,7 @@ function LightningGatling:calculateTpMuzzlePos()
 	local right = sm.localPlayer.getRight()
 	local up = right:cross(dir)
 
-	local fakeOffset = vec3_zero
+	local fakeOffset = vec3_GetZero()
 
 	--General offset
 	fakeOffset = fakeOffset + right * 0.25
@@ -634,8 +634,8 @@ function LightningGatling:calculateFpMuzzlePos()
 	local dir = sm.localPlayer.getDirection()
 	local right = sm.localPlayer.getRight()
 
-	local muzzlePos45 = vec3_zero
-	local muzzlePos90 = vec3_zero
+	local muzzlePos45 = vec3_GetZero()
+	local muzzlePos90 = vec3_GetZero()
 
 	if self.aiming then
 		muzzlePos45 = muzzlePos45 - up * 0.2

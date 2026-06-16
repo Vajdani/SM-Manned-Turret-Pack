@@ -511,7 +511,7 @@ function CannonNuke_Tool:calculateFirePosition()
 	local dir = sm.localPlayer.getDirection()
 	local pitch = math.asin( dir.z )
 	local right = sm.localPlayer.getRight()
-	local fireOffset = vec3_zero
+	local fireOffset = vec3_GetZero()
 
 	if crouching then
 		fireOffset.z = 0.15

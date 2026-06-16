@@ -19,6 +19,7 @@ vec3_right       = vec3(1,0,0)
 vec3_forward     = vec3(0,1,0)
 vec3_up          = vec3(0,0,1)
 vec3_zero        = sm.vec3.zero()
+vec3_GetZero        = sm.vec3.zero
 vec3_one         = sm.vec3.one()
 camOffset        = vec3(0,0,0.575)
 camOffset_c      = vec3(0,0,0.3)
