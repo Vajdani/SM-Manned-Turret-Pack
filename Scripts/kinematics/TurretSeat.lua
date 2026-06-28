@@ -33,11 +33,11 @@ TurretSeat.ammoTypes = {
         spread = 6,
         effect = "Turret - Shoot",
         ammo = sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"),
-        uuid = projectile_explosivetape,
-        variations = {
-            default = { sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"), projectile_explosivetape },
-            ["4c69fa44-dd0d-42ce-9892-e61d13922bd2"] = projectile_explosivetape,
-            ["2eddca4c-11b4-436a-b041-352bb3978546"] = sm.uuid.new("8e94e087-a12c-472f-a3d1-78b3fd696605"),
+        uuid = projectile_turret_explosive,
+		variations = {
+            default = { sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"), projectile_turret_explosive },
+            ["4c69fa44-dd0d-42ce-9892-e61d13922bd2"] = projectile_turret_explosive,
+            ["2eddca4c-11b4-436a-b041-352bb3978546"] = projectile_turret_explosive_tracer,
         }
     },
     {
@@ -232,6 +232,31 @@ function TurretSeat:sv_updateAmmoType(ammoType)
 
     sm.event.sendToInteractable(self.base, "sv_e_setAmmoType", ammoType)
     self.network:setClientData(ammoType, 2)
+end
+
+function TurretSeat:sv_switchAmmoType(args, caller)
+    if not self.sv_controlsEnabled then return end
+    local ammoData = sm.GetTurretAmmoData(self)
+    local enumerated = {}
+    for k, v in pairs(ammoData.variations) do
+        if k ~= "default" then
+            enumerated[#enumerated+1] = { k, v }
+        end
+    end
+
+    local ammoId = -1
+    for k, v in ipairs(enumerated) do
+        if v[2] == ammoData.uuid then
+            ammoId = k
+            break
+        end
+    end
+
+    local nextAmmo = enumerated[ammoId + 1 > #enumerated and 1 or ammoId + 1]
+    ammoData.ammo = sm.uuid.new(nextAmmo[1])
+    ammoData.uuid = nextAmmo[2]
+
+    self.network:sendToClient(caller, "cl_updateHotbar")
 end
 
 local rayFilter = sm.physics.filter.dynamicBody + sm.physics.filter.staticBody + sm.physics.filter.terrainAsset + sm.physics.filter.terrainSurface + sm.physics.filter.harvestable
@@ -492,6 +517,11 @@ function TurretSeat:client_onAction(action, state)
                     self.network:sendToServer("sv_updateAmmoType", ammoType)
                 end
             end
+        elseif action == 9 then
+            local ammoData = sm.GetTurretAmmoData(self)
+            if ammoData.variations and not self.cl_base:getParents(connectionfilter_modcontainers)[1] then
+                self.network:sendToServer("sv_switchAmmoType")
+            end
         elseif action == 15 then
             self:cl_unSeat()
         end
@@ -582,6 +612,14 @@ function TurretSeat:cl_updateHotbar()
             itemId = tostring(sm.GetTurretAmmoData(self).ammo),
             active = false
         })
+
+        local ammoData = sm.GetTurretAmmoData(self)
+        if ammoData.variations and not self.cl_base:getParents(connectionfilter_modcontainers)[1] then
+            self.hotbar:setGridItem( "ButtonGrid", 4, {
+                itemId = tostring(obj_decor_babyduck),
+                active = false
+            })
+        end
     end
 end
 

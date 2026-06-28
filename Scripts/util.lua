@@ -51,6 +51,8 @@ HotbarIcon = {
 
 projectile_turret_normal = sm.uuid.new("fad5bb05-b6da-46ec-92f7-9ffb38bd6c9b")
 projectile_turret_normal_tracer = sm.uuid.new("f6836e94-67e7-4cbd-8f65-f928b4a3bbf0")
+projectile_turret_explosive = sm.uuid.new("cec68b0a-fc9d-4c9d-ae3b-c9d231148c4d")
+projectile_turret_explosive_tracer = sm.uuid.new("8e94e087-a12c-472f-a3d1-78b3fd696605")
 
 connectiontype_turretnormal    = 2^13
 connectiontype_turretexplosive = 2^14

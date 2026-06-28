@@ -586,7 +586,7 @@ for k, v in pairs(_G) do
 				end
 			end
 
-			if uuidstr == "8e94e087-a12c-472f-a3d1-78b3fd696605" then
+			if uuidstr == "8e94e087-a12c-472f-a3d1-78b3fd696605" or uuidstr == "cec68b0a-fc9d-4c9d-ae3b-c9d231148c4d" then --Explosive, tracer explosive
 				return mannedTurret_originalHookFuncs[k].server_onProjectile(self, position, airTime, velocity, "explosivetape", shooter, damage, customData, normal, target, projectile_explosivetape)
 			end
 

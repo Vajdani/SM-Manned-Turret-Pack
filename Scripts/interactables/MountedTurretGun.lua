@@ -34,11 +34,11 @@ MountedTurretGun.ammoTypes = {
         spread = 6,
         effect = "Turret - Shoot",
         ammo = sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"),
-        uuid = projectile_explosivetape,
+        uuid = projectile_turret_explosive,
 		variations = {
-            default = { sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"), projectile_explosivetape },
-            ["4c69fa44-dd0d-42ce-9892-e61d13922bd2"] = projectile_explosivetape,
-            ["2eddca4c-11b4-436a-b041-352bb3978546"] = sm.uuid.new("8e94e087-a12c-472f-a3d1-78b3fd696605"),
+            default = { sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"), projectile_turret_explosive },
+            ["4c69fa44-dd0d-42ce-9892-e61d13922bd2"] = projectile_turret_explosive,
+            ["2eddca4c-11b4-436a-b041-352bb3978546"] = projectile_turret_explosive_tracer,
         }
     },
     {
