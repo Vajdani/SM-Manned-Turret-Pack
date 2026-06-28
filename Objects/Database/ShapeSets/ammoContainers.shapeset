@@ -24,7 +24,10 @@
          "scripted" : {
             "classname" : "TurretNormalAmmoContainer",
             "data" : {
-               "filterUid" : "cabf45e9-a47d-4086-8f5f-4f806d5ec3a2",
+               "filterUid" : [
+                  "cabf45e9-a47d-4086-8f5f-4f806d5ec3a2",
+                  "cc63ddb0-960d-4cf6-941d-d3ee73441d70"
+               ],
                "stackSize" : 50
             },
             "filename" : "$CONTENT_DATA/Scripts/interactables/ConsumableContainer.lua"
@@ -55,7 +58,10 @@
          "scripted" : {
             "classname" : "TurretExplosiveAmmoContainer",
             "data" : {
-               "filterUid" : "4c69fa44-dd0d-42ce-9892-e61d13922bd2",
+               "filterUid" : [
+                  "4c69fa44-dd0d-42ce-9892-e61d13922bd2",
+                  "2eddca4c-11b4-436a-b041-352bb3978546"
+               ],
                "stackSize" : 50
             },
             "filename" : "$CONTENT_DATA/Scripts/interactables/ConsumableContainer.lua"

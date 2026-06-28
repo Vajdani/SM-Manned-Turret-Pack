@@ -273,6 +273,19 @@ function MountedCannonGun:client_onCreate()
     })
 end
 
+function MountedCannonGun:client_onInteract(char, state)
+	if not state then return end
+    if self:getSeatCharacter() == char then return end
+	if sm.isOverrideAmmoType(self) then return end
+
+	local ammoType = self.ammoType < (self:getSeat() and #self.ammoTypes or #self.ammoTypes - 1) and self.ammoType + 1 or 1
+	sm.gui.displayAlertText("Ammunition selected: #df7f00"..self.ammoTypes[ammoType].name, 2)
+	sm.audio.play("PaintTool - ColorPick")
+
+	self.ammoType = ammoType
+	self.network:sendToServer("sv_updateAmmoType", ammoType)
+end
+
 function MountedCannonGun:client_onDestroy()
     self.controlHud:destroy()
     self.hotbar:destroy()
@@ -286,7 +299,7 @@ function MountedCannonGun:client_onDestroy()
     sm.SetInteractableClientPublicData({ id = self.id }, nil)
 end
 
-function MountedCannonGun:client_onFixedUpdate(dt)
+function MountedCannonGun:client_onFixedUpdate()
     if not sm.exists(self.shape) then return end
 
     local char = self:getSeatCharacter()
@@ -297,7 +310,7 @@ function MountedCannonGun:client_onFixedUpdate(dt)
         SetPlayerCamOverride()
     end
 
-    self.seated = self:getSeatCharacter() == sm.localPlayer.getPlayer().character
+    self.seated = char == sm.localPlayer.getPlayer().character
 end
 
 function MountedCannonGun:client_onUpdate(dt)

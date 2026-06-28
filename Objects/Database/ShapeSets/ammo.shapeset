@@ -22,6 +22,21 @@
 				"depth": 1,
 				"diameter": 1
 			},
+			"name": "obj_turret_cartridge_normal_tracer",
+			"physicsMaterial": "Metal",
+			"renderable": "$CONTENT_DATA/Objects/Renderables/Ammo/obj_turret_cartridge_normal_tracer.rend",
+			"rotationSet": "PropY",
+			"stackSize": 100,
+			"sticky": "-Y",
+			"uuid": "cc63ddb0-960d-4cf6-941d-d3ee73441d70"
+		},
+		{
+			"consumable": true,
+			"cylinder": {
+				"axis": "Z",
+				"depth": 1,
+				"diameter": 1
+			},
 			"name": "obj_turret_cartridge_explosive",
 			"physicsMaterial": "Metal",
 			"renderable": "$CONTENT_DATA/Objects/Renderables/Ammo/obj_turret_cartridge_explosive.rend",
@@ -29,6 +44,21 @@
 			"stackSize": 100,
 			"sticky": "-Y",
 			"uuid": "4c69fa44-dd0d-42ce-9892-e61d13922bd2"
+		},
+		{
+			"consumable": true,
+			"cylinder": {
+				"axis": "Z",
+				"depth": 1,
+				"diameter": 1
+			},
+			"name": "obj_turret_cartridge_explosive_tracer",
+			"physicsMaterial": "Metal",
+			"renderable": "$CONTENT_DATA/Objects/Renderables/Ammo/obj_turret_cartridge_explosive_tracer.rend",
+			"rotationSet": "PropY",
+			"stackSize": 100,
+			"sticky": "-Y",
+			"uuid": "2eddca4c-11b4-436a-b041-352bb3978546"
 		},
 		{
 			"color": "9f2600",

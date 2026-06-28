@@ -44,6 +44,92 @@
          "uuid": "fad5bb05-b6da-46ec-92f7-9ffb38bd6c9b"
       },
       {
+         "attachedEffect": "Part - Upgrade",
+         "audiomass": 250.0,
+         "destruction": {
+            "destructionLevels": [
+               {
+                  "chance": 1.0,
+                  "qualityLevel": 1
+               },
+               {
+                  "chance": 0.80,
+                  "qualityLevel": 2
+               },
+               {
+                  "chance": 0.70,
+                  "qualityLevel": 3
+               },
+               {
+                  "chance": 0.50,
+                  "qualityLevel": 4
+               },
+               {
+                  "chance": 0.20,
+                  "qualityLevel": 5
+               },
+               {
+                  "chance": 0.10,
+                  "qualityLevel": 6
+               }
+            ]
+         },
+         "effect": "Sledgehammer - Hit",
+         "effectmaterial": "Metal",
+         "enableGravity": true,
+         "enableImpactEffect": false,
+         "friction": 0.2000000029802322,
+         "mass": 3.0,
+         "mesh": "$CONTENT_DATA/Projectiles/Renderables/turret_bullet_normal_tracer.rend",
+         "name": "turret_bullet_normal_tracer",
+         "radius": 0.250,
+         "spin": 7.0,
+         "uuid": "f6836e94-67e7-4cbd-8f65-f928b4a3bbf0"
+      },
+      {
+         "attachedEffect": "Part - Upgrade",
+         "audiomass": 250.0,
+         "destruction": {
+            "destructionLevels": [
+               {
+                  "chance": 1.0,
+                  "qualityLevel": 1
+               },
+               {
+                  "chance": 0.80,
+                  "qualityLevel": 2
+               },
+               {
+                  "chance": 0.70,
+                  "qualityLevel": 3
+               },
+               {
+                  "chance": 0.50,
+                  "qualityLevel": 4
+               },
+               {
+                  "chance": 0.20,
+                  "qualityLevel": 5
+               },
+               {
+                  "chance": 0.10,
+                  "qualityLevel": 6
+               }
+            ]
+         },
+         "effect": "Sledgehammer - Hit",
+         "effectmaterial": "Metal",
+         "enableGravity": true,
+         "enableImpactEffect": false,
+         "friction": 0.2000000029802322,
+         "mass": 3.0,
+         "mesh": "$CONTENT_DATA/Projectiles/Renderables/turret_bullet_explosive_tracer.rend",
+         "name": "turret_bullet_explosive_tracer",
+         "radius": 0.250,
+         "spin": 7.0,
+         "uuid": "8e94e087-a12c-472f-a3d1-78b3fd696605"
+      },
+      {
          "amount": 25,
          "attachedEffect": "",
          "audiomass": 250.0,

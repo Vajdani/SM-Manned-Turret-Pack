@@ -19,17 +19,27 @@ MountedTurretGun.ammoTypes = {
         spread = 5,
         effect = "Turret - Shoot",
         ammo = sm.uuid.new("cabf45e9-a47d-4086-8f5f-4f806d5ec3a2"),
-        uuid = sm.uuid.new("fad5bb05-b6da-46ec-92f7-9ffb38bd6c9b")
+        uuid = projectile_turret_normal,
+		variations = {
+            default = { sm.uuid.new("cabf45e9-a47d-4086-8f5f-4f806d5ec3a2"), projectile_turret_normal },
+            ["cabf45e9-a47d-4086-8f5f-4f806d5ec3a2"] = projectile_turret_normal,
+            ["cc63ddb0-960d-4cf6-941d-d3ee73441d70"] = projectile_turret_normal_tracer,
+        }
     },
     {
         name = "Explosive Rounds",
         damage = 10,
         velocity = 130,
         fireCooldown = 15,
-        spread = 8,
+        spread = 6,
         effect = "Turret - Shoot",
         ammo = sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"),
-        uuid = projectile_explosivetape
+        uuid = projectile_explosivetape,
+		variations = {
+            default = { sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"), projectile_explosivetape },
+            ["4c69fa44-dd0d-42ce-9892-e61d13922bd2"] = projectile_explosivetape,
+            ["2eddca4c-11b4-436a-b041-352bb3978546"] = sm.uuid.new("8e94e087-a12c-472f-a3d1-78b3fd696605"),
+        }
     },
     {
         name = "Water drops",

@@ -115,7 +115,8 @@
             }
          },
          "sticky" : "-Y",
-         "uuid" : "48700b0e-6f0b-40b5-bdde-e0ba0c9f2e69"
+         "uuid" : "48700b0e-6f0b-40b5-bdde-e0ba0c9f2e69",
+         "showInInventory": false
       }
    ]
 }

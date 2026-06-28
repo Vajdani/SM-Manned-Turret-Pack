@@ -14,7 +14,7 @@ MinigunSeat.ammoTypes = {
         overheatPerShot = 0.015,
         effect = "Turret - Shoot",
         ammo = sm.uuid.new("cabf45e9-a47d-4086-8f5f-4f806d5ec3a2"),
-        uuid = sm.uuid.new("fad5bb05-b6da-46ec-92f7-9ffb38bd6c9b")
+        uuid = projectile_turret_normal
     }
 }
 

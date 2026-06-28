@@ -9,8 +9,10 @@
 ---@field ignoreAmmoConsumption? boolean
 ---@field overheatPerShot? number
 ---@field chargeTime? number
----@field ammo Uuid
----@field uuid Uuid
+---@field ammo? Uuid
+---@field uuid? Uuid
+---@field variations? { default: [ Uuid, Uuid ], [string]: Uuid }
+---@field isVaried? boolean
 
 dofile "$SURVIVAL_DATA/Scripts/game/survival_projectiles.lua"
 
@@ -19,7 +21,7 @@ vec3_right       = vec3(1,0,0)
 vec3_forward     = vec3(0,1,0)
 vec3_up          = vec3(0,0,1)
 vec3_zero        = sm.vec3.zero()
-vec3_GetZero        = sm.vec3.zero
+vec3_GetZero     = sm.vec3.zero
 vec3_one         = sm.vec3.one()
 camOffset        = vec3(0,0,0.575)
 camOffset_c      = vec3(0,0,0.3)
@@ -47,11 +49,18 @@ HotbarIcon = {
     pLauncher    = "242b84e4-c008-4780-a2dd-abacea821637",
 }
 
+projectile_turret_normal = sm.uuid.new("fad5bb05-b6da-46ec-92f7-9ffb38bd6c9b")
+projectile_turret_normal_tracer = sm.uuid.new("f6836e94-67e7-4cbd-8f65-f928b4a3bbf0")
+
 connectiontype_turretnormal    = 2^13
 connectiontype_turretexplosive = 2^14
 connectiontype_cannonrocket    = 2^15
 connectiontype_cannonratshot   = 2^16
 connectiontype_railgunspike    = 2^17
+
+connectionfilter_modcontainers = connectiontype_turretnormal + connectiontype_turretexplosive +
+                                 connectiontype_cannonrocket + connectiontype_cannonratshot +
+                                 connectiontype_railgunspike
 
 local repairTick = 0
 local checkedTick = 0
@@ -137,14 +146,61 @@ function sm.isOverrideAmmoType(self, ammoType)
     return type(ammoType or self.ammoType) == "table"
 end
 
+---@param self TurretSeat|MountedTurretGun
 ---@return AmmoType
 function sm.GetTurretAmmoData(self, ammoType)
     ammoType = ammoType or self.ammoType
-    if sm.isOverrideAmmoType(self, ammoType) then
-        return self.overrideAmmoTypes[ammoType.index]
+
+    local ammoData
+    local isOverride = sm.isOverrideAmmoType(self, ammoType)
+    if isOverride then
+        ammoData = self.overrideAmmoTypes[ammoType.index]
+    else
+        ammoData = self.ammoTypes[ammoType]
     end
 
-    return self.ammoTypes[ammoType]
+    if type(ammoData) ~= "table" then
+        return ammoData
+    end
+
+    if ammoData.variations then
+        local parent
+        if self.base or self.cl_base then
+            parent = (self.base or self.cl_base):getParents(connectionfilter_modcontainers)[1]
+        else
+            parent = self.interactable:getParents(connectionfilter_modcontainers)[1]
+        end
+
+        local container
+        if parent then
+            container = parent:getContainer(0)
+        end
+
+        if not sm.game.getEnableAmmoConsumption() and not container then
+            goto isDefault
+        end
+
+        local item = sm.container.getFirstItem(container)
+        if not item then
+            goto isDefault
+        end
+
+        local ammo = item.uuid
+        ammoData.ammo = ammo
+        ammoData.uuid = ammoData.variations[tostring(ammo)]
+        ammoData.isVaried = true
+
+        return ammoData
+    end
+
+    ::isDefault::
+    if ammoData.isVaried then
+        ammoData.ammo = ammoData.variations.default[1]
+        ammoData.uuid = ammoData.variations.default[2]
+        ammoData.isVaried = false
+    end
+
+    return ammoData
 end
 
 local g_eventBindings =

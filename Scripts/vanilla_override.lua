@@ -458,6 +458,7 @@ local MountedCannonGun = {
 		"47b43e6e-280d-497e-9896-a3af721d89d2",
 		"24001201-40dd-4950-b99f-17d878a9e07b",
 		"8d3b98de-c981-4f05-abfe-d22ee4781d33",
+		"254360f7-ba19-431d-ac1a-92c1ee9ba483"
 	}
 }
 
@@ -568,7 +569,8 @@ for k, v in pairs(_G) do
 		end
 
 		function v:server_onProjectile(position, airTime, velocity, projectileName, shooter, damage, customData, normal, target, uuid)
-			if tostring(uuid) == "a385b242-ce0c-4e3b-82a7-99da38510709" then --Big Potato
+			local uuidstr = tostring(uuid)
+			if uuidstr == "a385b242-ce0c-4e3b-82a7-99da38510709" then --Big Potato
 				local hor = 45
 				local ver = 20
 				local spreadAngle = 90
@@ -582,6 +584,10 @@ for k, v in pairs(_G) do
 						sm.projectile.projectileAttack(projectile, 28, position, sm.noise.gunSpread(dir, spreadAngle) * 5, source)
 					end
 				end
+			end
+
+			if uuidstr == "8e94e087-a12c-472f-a3d1-78b3fd696605" then
+				return mannedTurret_originalHookFuncs[k].server_onProjectile(self, position, airTime, velocity, "explosivetape", shooter, damage, customData, normal, target, projectile_explosivetape)
 			end
 
 			return mannedTurret_originalHookFuncs[k].server_onProjectile(self, position, airTime, velocity, projectileName, shooter, damage, customData, normal, target, uuid)
