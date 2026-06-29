@@ -92,7 +92,10 @@
          "scripted" : {
             "classname" : "CannonRocketContainer",
             "data" : {
-               "filterUid" : "24d5e812-3902-4ac3-b214-a0c924a5c40f",
+               "filterUid" : [
+                  "24d5e812-3902-4ac3-b214-a0c924a5c40f",
+                  "667171c3-e8b5-4198-814f-425cbd830b0b"
+               ],
                "stackSize" : 5
             },
             "filename" : "$CONTENT_DATA/Scripts/interactables/ConsumableContainer.lua"

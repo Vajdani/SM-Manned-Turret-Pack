@@ -1,6 +1,8 @@
 dofile( "$SURVIVAL_DATA/Scripts/game/survival_projectiles.lua" )
 
 ---@class MountedTurretGun : ShapeClass
+---@field sv_ammoType number|table
+---@field cl_ammoType number|table
 MountedTurretGun = class()
 MountedTurretGun.maxParentCount = 2
 MountedTurretGun.maxChildCount = 0
@@ -15,31 +17,45 @@ MountedTurretGun.ammoTypes = {
         name = "AA Rounds",
         damage = 100,
         velocity = 300,
+        recoilStrength = 1,
         fireCooldown = 6,
         spread = 5,
         effect = "Turret - Shoot",
         ammo = sm.uuid.new("cabf45e9-a47d-4086-8f5f-4f806d5ec3a2"),
-        uuid = projectile_turret_normal,
-		variations = {
-            default = { sm.uuid.new("cabf45e9-a47d-4086-8f5f-4f806d5ec3a2"), projectile_turret_normal },
-            ["cabf45e9-a47d-4086-8f5f-4f806d5ec3a2"] = projectile_turret_normal,
-            ["cc63ddb0-960d-4cf6-941d-d3ee73441d70"] = projectile_turret_normal_tracer,
-        }
+        uuid = projectile_turret_normal
+    },
+    {
+        name = "Tracer AA Rounds",
+        damage = 100,
+        velocity = 300,
+        recoilStrength = 1,
+        fireCooldown = 6,
+        spread = 5,
+        effect = "Turret - Shoot",
+        ammo = sm.uuid.new("cc63ddb0-960d-4cf6-941d-d3ee73441d70"),
+        uuid = projectile_turret_normal_tracer
     },
     {
         name = "Explosive Rounds",
         damage = 10,
         velocity = 130,
+        recoilStrength = 1,
         fireCooldown = 15,
         spread = 6,
         effect = "Turret - Shoot",
         ammo = sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"),
-        uuid = projectile_turret_explosive,
-		variations = {
-            default = { sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"), projectile_turret_explosive },
-            ["4c69fa44-dd0d-42ce-9892-e61d13922bd2"] = projectile_turret_explosive,
-            ["2eddca4c-11b4-436a-b041-352bb3978546"] = projectile_turret_explosive_tracer,
-        }
+        uuid = projectile_turret_explosive
+    },
+     {
+        name = "Tracer Explosive Rounds",
+        damage = 10,
+        velocity = 130,
+        recoilStrength = 1,
+        fireCooldown = 15,
+        spread = 6,
+        effect = "Turret - Shoot",
+        ammo = sm.uuid.new("2eddca4c-11b4-436a-b041-352bb3978546"),
+        uuid = projectile_turret_explosive_tracer
     },
     {
         name = "Water drops",
@@ -103,6 +119,7 @@ function MountedTurretGun:server_onCreate()
 	self.sv.parentActive = false
 
 	local ammoType = self.storage:load()
+	self.sv_ammoType = ammoType or 1
 	if ammoType then
 		self:sv_updateAmmoType(ammoType)
 	end
@@ -126,6 +143,10 @@ function MountedTurretGun:server_onFixedUpdate()
 		self:sv_updateAmmoType(self:getAmmoType(ammoInteractable))
 		self.ammoInteractable = ammoInteractable
 	end
+
+	if ammoInteractable and ammoInteractable:getContainer(0):hasChanged(sm.game.getServerTick() - 1) then
+        self:sv_updateAmmoType(self:getAmmoType(ammoInteractable))
+    end
 end
 
 function MountedTurretGun:sv_tryFire()
@@ -135,16 +156,16 @@ function MountedTurretGun:sv_tryFire()
 	local freeFire = not sm.game.getEnableAmmoConsumption() and not ammoContainer
 
 	if freeFire then
-		if active and not self.sv.parentActive and self.sv.canFire and self:sv_beforeFiring(self.ammoType) then
-			self:sv_fire(sm.GetTurretAmmoData(self, self.ammoType))
+		if active and not self.sv.parentActive and self.sv.canFire and self:sv_beforeFiring(self.sv_ammoType) then
+			self:sv_fire(sm.GetTurretAmmoData(self, self.sv_ammoType))
 		end
 	else
 		if active and not self.sv.parentActive and self.sv.canFire and ammoContainer then
-			local ammoData = sm.GetTurretAmmoData(self, self.ammoType)
+			local ammoData = sm.GetTurretAmmoData(self, self.sv_ammoType)
 
 			sm.container.beginTransaction()
 			sm.container.spend( ammoContainer, ammoData.ammo, 1 )
-			if sm.container.endTransaction() and self:sv_beforeFiring(self.ammoType) then
+			if sm.container.endTransaction() and self:sv_beforeFiring(self.sv_ammoType) then
 				self:sv_fire(ammoData)
 			end
 		end
@@ -173,29 +194,33 @@ function MountedTurretGun:sv_fire(ammoData)
 		end
 
 		local char = self:getSeatCharacter()
-		self:sv_OnPartFire(self.ammoType, ammoData, projectile, char and char:getPlayer())
+		self:sv_OnPartFire(self.sv_ammoType, ammoData, projectile, char and char:getPlayer())
 	else
 		finalFirePos = self.shape.worldPosition + rot * self.fireOffset
 		sm.projectile.shapeProjectileAttack( ammoData.uuid, ammoData.damage, self.fireOffset, sm.noise.gunSpread(vec3_up, ammoData.spread or 0) * ammoData.velocity + self.shape.velocity, self.shape )
 
 		local char = self:getSeatCharacter()
-		self:sv_OnProjectileFire(self.ammoType, ammoData, char and char:getPlayer())
+		self:sv_OnProjectileFire(self.sv_ammoType, ammoData, char and char:getPlayer())
 	end
 
 	self:sv_applyFiringImpulse(ammoData, dir, finalFirePos)
-	self.network:sendToClients( "cl_onShoot", { effect = ammoData.effect, ammoType = self.ammoType } )
+	self.network:sendToClients( "cl_onShoot", { effect = ammoData.effect, ammoType = self.sv_ammoType } )
+
+	self:sv_OnFiringFinished()
 end
 
----@param ammoType number
+---@param ammoType number|table
 ---@param ammoData AmmoType
 ---@param part Shape
 ---@param player Player|nil
 function MountedTurretGun:sv_OnPartFire(ammoType, ammoData, part, player) end
 
----@param ammoType number
+---@param ammoType number|table
 ---@param ammoData AmmoType
 ---@param player Player|nil
 function MountedTurretGun:sv_OnProjectileFire(ammoType, ammoData, player) end
+
+function MountedTurretGun:sv_OnFiringFinished() end
 
 function MountedTurretGun:sv_applyFiringImpulse(ammoData, dir, finalFirePos)
     if ammoData.recoilStrength then
@@ -204,24 +229,27 @@ function MountedTurretGun:sv_applyFiringImpulse(ammoData, dir, finalFirePos)
 end
 
 function MountedTurretGun:sv_updateAmmoType(ammoType)
+	if self.sv_ammoType == ammoType then return end
+
+	self.sv_ammoType = ammoType
 	self.storage:save(ammoType)
 	self.network:sendToClients("cl_updateAmmoType", ammoType)
 end
 
 function MountedTurretGun:sv_setOverrideAmmoType(id)
-    local previous = sm.isOverrideAmmoType(self) and self.ammoType.previous or self.ammoType
+    local previous = sm.isOverrideAmmoType(self) and self.sv_ammoType.previous or self.sv_ammoType
     self:sv_updateAmmoType({ index = id, previous = previous })
 end
 
 function MountedTurretGun:sv_unSetOverrideAmmoType()
-    self:sv_updateAmmoType(self.ammoType.previous)
+    self:sv_updateAmmoType(self.sv_ammoType.previous)
 end
 
 
 
 function MountedTurretGun:client_onCreate()
 	self.boltValue = 0.0
-	self.ammoType = 1
+	self.cl_ammoType = 1
 end
 
 function MountedTurretGun:client_canInteract()
@@ -238,11 +266,11 @@ function MountedTurretGun:client_onInteract(char, state)
 	if not state then return end
 	if sm.isOverrideAmmoType(self) then return end
 
-	local ammoType = self.ammoType < #self.ammoTypes and self.ammoType + 1 or 1
+	local ammoType = self.cl_ammoType < #self.ammoTypes and self.cl_ammoType + 1 or 1
 	sm.gui.displayAlertText("Ammunition selected: #df7f00"..self.ammoTypes[ammoType].name, 2)
 	sm.audio.play("PaintTool - ColorPick")
 
-	self.ammoType = ammoType
+	self.cl_ammoType = ammoType
 	self.network:sendToServer("sv_updateAmmoType", ammoType)
 end
 
@@ -271,7 +299,7 @@ function MountedTurretGun:client_getAvailableParentConnectionCount( connectionTy
 end
 
 function MountedTurretGun:cl_updateAmmoType(ammoType)
-	self.ammoType = ammoType
+	self.cl_ammoType = ammoType
 end
 
 local effectOffsets = {
@@ -302,15 +330,25 @@ end
 
 function MountedTurretGun:getAmmoType(parent)
 	if sm.isOverrideAmmoType(self) then
-        return self.ammoType
+        return self.sv_ammoType or self.cl_ammoType
     end
 
     if parent then
+		local item = sm.container.getFirstItem(parent:getContainer(0))
+        if item then
+            local nextAmmo = item.uuid
+            for k, v in pairs(self.ammoTypes) do
+                if v.ammo == nextAmmo then
+                    return k
+                end
+            end
+        end
+
         return self.containerToAmmoType[tostring(parent.shape.uuid)]
     end
 
     if not sm.game.getEnableAmmoConsumption() then
-        return self.ammoType
+        return self.sv_ammoType or self.cl_ammoType
     end
 
     for k, v in pairs(self.ammoTypes) do

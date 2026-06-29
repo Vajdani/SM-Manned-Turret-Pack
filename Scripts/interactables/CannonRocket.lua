@@ -92,8 +92,13 @@ function CannonRocket:sv_explode(position)
         sm.event.sendToTool(sm.MANNEDTURRET_turretAssistor, "sv_addCharToDestroyQueue", self.dummy)
     end
 
-    sm.physics.explode( position or self.shape.worldPosition, 7, 5, 7, 15, "PropaneTank - ExplosionBig", self.shape )
+    self:sv_OnExplode(position or self.shape.worldPosition)
+
     self.shape:destroyShape()
+end
+
+function CannonRocket:sv_OnExplode(position)
+    sm.physics.explode(position, 7, 5, 7, 15, "PropaneTank - ExplosionBig", self.shape)
 end
 
 function CannonRocket:sv_controlRocket(dt)
@@ -101,7 +106,7 @@ function CannonRocket:sv_controlRocket(dt)
     local fwd = shape.at
 
     local controlData = sm.exists(self.seat) and self.seat.publicData or { rocketBoost = 0, rocketRoll = 0 }
-    sm.physics.applyImpulse(shape, ((fwd * 20) - ( shape.velocity * 0.3 ) + fwd * controlData.rocketBoost * 10) * shape.mass, true)
+    sm.physics.applyImpulse(shape, ((fwd * (20 + controlData.rocketBoost * 10)) - ( shape.velocity * 0.3 )) * shape.mass, true)
 
     local body = shape.body
     sm.physics.applyTorque(body, (-body.angularVelocity * 0.5 + fwd * controlData.rocketRoll) * shape.mass * dt, true)
@@ -147,14 +152,6 @@ function CannonRocket:client_onUpdate(dt)
     end
 
     sm.gui.setProgressFraction(fraction)
-    --[[sm.gui.setInteractionText(
-        sm.gui.getKeyBinding("Forward", true).."Boost\t",
-        sm.gui.getKeyBinding("Backward", true).."Slow Down\t",
-        sm.gui.getKeyBinding("StrafeLeft", true).."Roll Left\t",
-        sm.gui.getKeyBinding("StrafeRight", true).."Roll Right\t",
-        ""
-    )
-    sm.gui.setInteractionText("<p textShadow='false' bg='gui_keybinds_bg_orange' color='#66440C' spacing='9'>Mouse</p>Yaw/Pitch", "")]]
 end
 
 function CannonRocket:client_onClientDataUpdate(data)

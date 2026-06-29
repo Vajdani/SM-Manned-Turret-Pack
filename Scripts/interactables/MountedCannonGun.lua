@@ -2,6 +2,7 @@ dofile "MountedTurretGun.lua"
 dofile "$CONTENT_DATA/Scripts/ControlHud.lua"
 
 ---@class MountedCannonGun : MountedTurretGun
+---@field cl_ammoType table|number
 MountedCannonGun = class(MountedTurretGun)
 MountedCannonGun.maxParentCount = 3
 MountedCannonGun.connectionInput = 1 + 2 + 8 --[[+ connectiontype_turretexplosive]] + connectiontype_cannonrocket + connectiontype_cannonratshot
@@ -9,12 +10,21 @@ MountedCannonGun.fireOffset = vec3( 0.0, 0.0, 2 )
 MountedCannonGun.ammoTypes = {
     {
         name = "Guided Missile",
-        velocity = 10,
+        velocity = 100,
         recoilStrength = 1,
         fireCooldown = 40,
         effect = "Cannon - Shoot",
         ammo = sm.uuid.new("24d5e812-3902-4ac3-b214-a0c924a5c40f"),
         uuid = sm.uuid.new("24d5e812-3902-4ac3-b214-a0c924a5c40f")
+    },
+    {
+        name = "AP Missile",
+        velocity = 100,
+        recoilStrength = 1,
+        fireCooldown = 80,
+        effect = "Cannon - Shoot",
+        ammo = sm.uuid.new("667171c3-e8b5-4198-814f-425cbd830b0b"),
+        uuid = sm.uuid.new("667171c3-e8b5-4198-814f-425cbd830b0b")
     },
     -- {
     --     name = "Air Strike",
@@ -90,7 +100,7 @@ MountedCannonGun.overrideAmmoTypes = {
 MountedCannonGun.containerToAmmoType = {
     ["d9e6453a-2e8c-47f8-a843-d0e700957d39"] = 1,
     -- ["037e3ecb-e0a6-402b-8187-a7264863c64f"] = 2,
-    ["da615034-dd24-4090-ba66-9d36785d7483"] = 2,
+    ["da615034-dd24-4090-ba66-9d36785d7483"] = 3,
 }
 
 
@@ -141,7 +151,7 @@ function MountedCannonGun:sv_beforeFiring(ammoType)
     --     print("airstrike")
     --     return false
     -- else
-    if ammoType == 3 then
+    if ammoType == 4 then
         local char = self:getSeatCharacter()
         if not char then return end
 
@@ -181,7 +191,6 @@ function MountedCannonGun:sv_tryLaunchPlayer(player)
     local ammoData = sm.GetTurretAmmoData(self)
     char:applyTumblingImpulse(rot * vec3_up * ammoData.velocity * char.mass)
 
-    --self.network:sendToClients("cl_shoot", { canShoot = true, ammoType = self.ammoType })
 	self.network:sendToClients( "cl_onShoot", ammoData )
 end
 
@@ -195,18 +204,18 @@ function MountedCannonGun:sv_OnPartFire(ammoType, ammoData, part, player)
         else
             part.interactable.publicData = {}
         end
-    elseif sm.isOverrideAmmoType(self, ammoType) then
+    elseif ammoType == 2 then
+        part.interactable.publicData = {}
+    end
+end
+
+function MountedCannonGun:sv_OnFiringFinished()
+    if sm.isOverrideAmmoType(self, self.sv_ammoType) then
         self:sv_unSetOverrideAmmoType()
         self.network:sendToClients("cl_updateLoadedNuke", false)
     end
 end
 
-function MountedCannonGun:sv_OnProjectileFire(ammoType, ammoData, player)
-    if sm.isOverrideAmmoType(self, ammoType) then
-        self:sv_unSetOverrideAmmoType()
-        self.network:sendToClients("cl_updateLoadedNuke", false)
-    end
-end
 
 function MountedCannonGun:sv_onRocketExplode(detonated)
     self.rocket = nil
@@ -278,11 +287,11 @@ function MountedCannonGun:client_onInteract(char, state)
     if self:getSeatCharacter() == char then return end
 	if sm.isOverrideAmmoType(self) then return end
 
-	local ammoType = self.ammoType < (self:getSeat() and #self.ammoTypes or #self.ammoTypes - 1) and self.ammoType + 1 or 1
+	local ammoType = self.cl_ammoType < (self:getSeat() and #self.ammoTypes or #self.ammoTypes - 1) and self.cl_ammoType + 1 or 1
 	sm.gui.displayAlertText("Ammunition selected: #df7f00"..self.ammoTypes[ammoType].name, 2)
 	sm.audio.play("PaintTool - ColorPick")
 
-	self.ammoType = ammoType
+	self.cl_ammoType = ammoType
 	self.network:sendToServer("sv_updateAmmoType", ammoType)
 end
 
@@ -315,6 +324,10 @@ end
 
 function MountedCannonGun:client_onUpdate(dt)
     MountedTurretGun.client_onUpdate(self, dt)
+
+    if self.controlHud:isActive() then
+        self.controlHud:update(dt)
+    end
 
     if self.nukeEffect == nil then return end
 
@@ -446,7 +459,7 @@ function MountedCannonGun:cl_updateLoadedNuke(state)
     if state then
         self.nukeEffect = sm.effect.createEffect("ShapeRenderable", self.interactable)
 
-        local ammoData = self.overrideAmmoTypes[self.ammoType.index]
+        local ammoData = self.overrideAmmoTypes[self.cl_ammoType.index]
         local transform = itemTransforms[tostring(ammoData.uuid)]
         local uuid = transform.overrideUUID or ammoData.uuid
         self.nukeEffect:setParameter("uuid", uuid)

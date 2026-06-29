@@ -87,7 +87,7 @@
          "uuid": "cec68b0a-fc9d-4c9d-ae3b-c9d231148c4d"
       },
       {
-         "attachedEffect": "Part - Upgrade",
+         "attachedEffect": "Tracer - Glow",
          "audiomass": 250.0,
          "destruction": {
             "destructionLevels": [
@@ -130,7 +130,7 @@
          "uuid": "f6836e94-67e7-4cbd-8f65-f928b4a3bbf0"
       },
       {
-         "attachedEffect": "Part - Upgrade",
+         "attachedEffect": "Tracer - Glow",
          "audiomass": 250.0,
          "destruction": {
             "destructionLevels": [

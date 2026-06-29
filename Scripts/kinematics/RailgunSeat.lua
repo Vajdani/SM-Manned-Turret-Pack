@@ -31,6 +31,8 @@ function RailgunSeat:server_onCreate()
 end
 
 function RailgunSeat:server_onFixedUpdate()
+    TurretSeat.server_onFixedUpdate(self)
+
     self:updateCharge(self.sv_shootState, self.sv_charge)
 end
 
@@ -115,12 +117,6 @@ function RailgunSeat:client_onFixedUpdate()
         self.cl_shootState = ShootState.null
         self:cl_updateHotbar()
     end
-
-    local parent = self.cl_base:getSingleParent()
-    if parent ~= self.parent then
-        self.ammoType = self:getAmmoType(parent)
-        self.parent = parent
-    end
 end
 
 function RailgunSeat:client_onUpdate(dt)
@@ -171,7 +167,7 @@ function RailgunSeat:updateCharge(shootState, charge)
             charge.disabledTick = tick + ammoData.fireCooldown
 
             if sm.isServerMode() then
-                self:sv_shoot(self.ammoType, char:getPlayer())
+                self:sv_shoot(self.sv_ammoType or self.cl_ammoType, char:getPlayer())
             end
         end
 

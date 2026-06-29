@@ -291,5 +291,15 @@
 			{"type":"pointLight","name":"","offset":{"x":0.0,"y":0.0,"z":0.5},"parameters":["color","radius","intensity"],"duration":1.2,"delay":0.0},
 			{"type":"particle","name":"p_nuke_explosion","delay":0.0}
 		]
+	},
+	"Tracer - Glow": {
+		"effectList":
+		[
+			{
+				"type": "particle",
+				"name": "p_tracer_glow",
+				"delay": 0.0
+			}
+		]
 	}
 }

@@ -24,8 +24,8 @@
         "title": "Explosive Ammo Container"
     },
     "d9e6453a-2e8c-47f8-a843-d0e700957d39": {
-        "description": "Can store Guided Missiles to be used with the Manned Cannon.",
-        "title": "Guided Missile Container"
+        "description": "Can store missiles to be used with the Manned Cannon.",
+        "title": "Missile Container"
     },
     "da615034-dd24-4090-ba66-9d36785d7483": {
         "description": "Can store Ratshot Rounds to be used with the Manned Cannon.",
@@ -35,13 +35,25 @@
         "description": "Used as ammunition for the Manned Turret.\n\n'We fire the whole bullet! That's 65% more bullet per bullet!'",
         "title": "AA Round"
     },
+    "cc63ddb0-960d-4cf6-941d-d3ee73441d70": {
+        "description": "Used as ammunition for the Manned Turret. The bullet's special coating ignites upon firing, and continuously emitting a bright light visible from far away.\n\n'We fire the whole bullet! That's 65% more bullet per bullet!'",
+        "title": "Tracer AA Round"
+    },
     "4c69fa44-dd0d-42ce-9892-e61d13922bd2": {
-        "description": "Used as ammunition for the Manned Turret.\n\n'We fire the whole bullet! That's 65% more bullet per bullet!'",
+        "description": "Used as ammunition for the Manned Turret. Explodes on impact.\n\n'We fire the whole bullet! That's 65% more bullet per bullet!'",
         "title": "Explosive Round"
     },
+    "2eddca4c-11b4-436a-b041-352bb3978546": {
+        "description": "Used as ammunition for the Manned Turret. Explodes on impact. The bullet's special coating ignites upon firing, continuously emitting a bright light visible from far away.\n\n'We fire the whole bullet! That's 65% more bullet per bullet!'",
+        "title": "Tracer Explosive Round"
+    },
     "24d5e812-3902-4ac3-b214-a0c924a5c40f": {
-        "description": "Used as ammunition for the Manned Cannon.\n\nWhile controlling the rocket:\n-#df7f00Mouse#919191: Yaw/Pitch\n-#df7f00W#919191/#df7f00S#919191: Boost/Slow down\n-#df7f00A#919191/#df7f00D#919191: Roll",
+        "description": "Used as ammunition for the Manned Cannon.\n\nWhen fired, the player gains control of the rocket.\nControls\n-#df7f00Mouse#919191: Yaw/Pitch\n-#df7f00W#919191/#df7f00S#919191: Boost/Slow down\n-#df7f00A#919191/#df7f00D#919191: Roll",
         "title": "Guided Missile"
+    },
+    "667171c3-e8b5-4198-814f-425cbd830b0b": {
+        "description": "Used as ammunition for the Manned Cannon.\n\nThe missile penetrates the target and deals damage to its internals.",
+        "title": "AP Missile"
     },
     "e36b172c-ae2d-4697-af44-8041d9cbde0e": {
         "description": "Used as ammunition for the Manned Cannon.",

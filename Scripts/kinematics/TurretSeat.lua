@@ -1,5 +1,5 @@
 ---@class TurretSeat : HarvestableClass
----@field base Interactable
+---@field sv_base Interactable
 ---@field cl_base Interactable
 ---@field ammoTypes AmmoType[]
 ---@field overrideAmmoTypes AmmoType[]
@@ -17,12 +17,18 @@ TurretSeat.ammoTypes = {
         spread = 5,
         effect = "Turret - Shoot",
         ammo = sm.uuid.new("cabf45e9-a47d-4086-8f5f-4f806d5ec3a2"),
-        uuid = projectile_turret_normal,
-        variations = {
-            default = { sm.uuid.new("cabf45e9-a47d-4086-8f5f-4f806d5ec3a2"), projectile_turret_normal },
-            ["cabf45e9-a47d-4086-8f5f-4f806d5ec3a2"] = projectile_turret_normal,
-            ["cc63ddb0-960d-4cf6-941d-d3ee73441d70"] = projectile_turret_normal_tracer,
-        }
+        uuid = projectile_turret_normal
+    },
+    {
+        name = "Tracer AA Rounds",
+        damage = 100,
+        velocity = 300,
+        recoilStrength = 1,
+        fireCooldown = 6,
+        spread = 5,
+        effect = "Turret - Shoot",
+        ammo = sm.uuid.new("cc63ddb0-960d-4cf6-941d-d3ee73441d70"),
+        uuid = projectile_turret_normal_tracer
     },
     {
         name = "Explosive Rounds",
@@ -33,12 +39,18 @@ TurretSeat.ammoTypes = {
         spread = 6,
         effect = "Turret - Shoot",
         ammo = sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"),
-        uuid = projectile_turret_explosive,
-		variations = {
-            default = { sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"), projectile_turret_explosive },
-            ["4c69fa44-dd0d-42ce-9892-e61d13922bd2"] = projectile_turret_explosive,
-            ["2eddca4c-11b4-436a-b041-352bb3978546"] = projectile_turret_explosive_tracer,
-        }
+        uuid = projectile_turret_explosive
+    },
+     {
+        name = "Tracer Explosive Rounds",
+        damage = 10,
+        velocity = 130,
+        recoilStrength = 1,
+        fireCooldown = 15,
+        spread = 6,
+        effect = "Turret - Shoot",
+        ammo = sm.uuid.new("2eddca4c-11b4-436a-b041-352bb3978546"),
+        uuid = projectile_turret_explosive_tracer
     },
     {
         name = "Water drops",
@@ -85,42 +97,47 @@ TurretSeat.ammoTypes = {
 TurretSeat.overrideAmmoTypes = {}
 TurretSeat.containerToAmmoType = {
     ["756594d6-6fdd-4f60-9289-a2416287f942"] = 1,
-    ["037e3ecb-e0a6-402b-8187-a7264863c64f"] = 2,
-    ["ea10d1af-b97a-46fb-8895-dfd1becb53bb"] = 3,
+    ["037e3ecb-e0a6-402b-8187-a7264863c64f"] = 3,
+    ["ea10d1af-b97a-46fb-8895-dfd1becb53bb"] = 5,
     --["be29592a-ef58-4b1d-b18c-895023abd27f"] = 4,
     --["76331bbf-abbd-4b8d-bb54-f721a5b6193b"] = 5,
-    ["096d4daf-639e-4947-a1a6-1890eaa94464"] = 4,
+    ["096d4daf-639e-4947-a1a6-1890eaa94464"] = 6,
 }
 TurretSeat.baseUUID = "e4497545-5f77-4d59-bfbf-ce5692284322"
 
 function TurretSeat:server_onCreate()
     self.sv_shootState = ShootState.null
     self.sv_shotCounter = 0
-    self.base = self.params.base
-    if not sm.exists(self.base) then
+    self.sv_ammoType = self.params.ammoType
+    self.sv_base = self.params.base
+    if not sm.exists(self.sv_base) then
         self.harvestable:destroy()
         return
     end
 
-    self.network:setClientData(self.base, 1)
-    self.network:setClientData(self.params.ammoType, 2)
+    self.network:setClientData(self.sv_base, 1)
+    self.network:setClientData(self.sv_ammoType, 2)
 
     self.sv_controlsEnabled = true
 
     self.harvestable.publicData = {
         isTurret = true,
-        base = self.base,
-        health = self.base.publicData.maxHealth,
-        maxHealth = self.base.publicData.maxHealth,
+        base = self.sv_base,
+        health = self.sv_base.publicData.maxHealth,
+        maxHealth = self.sv_base.publicData.maxHealth,
         controlsEnabled = true
     }
 end
 
 function TurretSeat:sv_syncToLateJoiner(player)
-    self.network:sendToClient(player, "cl_syncToLateJoiner", { self.base, self.ammoType })
+    self.network:sendToClient(player, "cl_syncToLateJoiner", { self.sv_base, self.sv_ammoType })
 end
 
 function TurretSeat:server_onFixedUpdate()
+    if sm.exists(self.sv_base) then
+        self:sv_checkForAmmoUpdate()
+    end
+
     if not self.sv_seated then return end
 
     if not sm.exists(self.sv_seated) then
@@ -138,6 +155,18 @@ function TurretSeat:server_onFixedUpdate()
     end
 end
 
+function TurretSeat:sv_checkForAmmoUpdate()
+    local parent = self.sv_base:getSingleParent()
+    if parent ~= self.parent then
+        self:sv_setAmmoType(self:getAmmoType(parent))
+        self.parent = parent
+    end
+
+    if parent and parent:getContainer(0):hasChanged(sm.game.getServerTick() - 1) then
+        self:sv_setAmmoType(self:getAmmoType(parent))
+    end
+end
+
 function TurretSeat:sv_OnPlayerDeath(player)
     self:sv_OnPlayerSuddenUnSeated()
     self.network:sendToClient(player, "cl_unSeat_graphics")
@@ -146,21 +175,21 @@ end
 function TurretSeat:sv_OnPlayerSuddenUnSeated() end
 
 function TurretSeat:server_onUnload()
-    if not sm.exists(self.base) then return end
-    sm.event.sendToInteractable(self.base, "sv_respawnSeat")
+    if not sm.exists(self.sv_base) then return end
+    sm.event.sendToInteractable(self.sv_base, "sv_respawnSeat")
 end
 
 ---@param player Player
 function TurretSeat:server_onRemoved(player)
-    local container = self.base:addContainer(5, 1)
+    local container = self.sv_base:addContainer(5, 1)
     sm.container.beginTransaction()
     sm.container.collect(container, sm.uuid.new(self.baseUUID), 1)
-    sm.container.moveAllToCarryContainer( container, player, self.base.shape.color )
+    sm.container.moveAllToCarryContainer( container, player, self.sv_base.shape.color )
     sm.container.endTransaction()
-    self.base:removeContainer(5)
+    self.sv_base:removeContainer(5)
 
     self.harvestable:destroy()
-    self.base.shape:destroyShape()
+    self.sv_base.shape:destroyShape()
 end
 
 function TurretSeat:sv_seatRespawn(player)
@@ -196,7 +225,7 @@ function TurretSeat:sv_unSeat(args, caller)
     )
 
     caller.publicData.turretSeat = nil
-	sm.event.sendToInteractable(self.base, "sv_clearDrivingFlags", false)
+	sm.event.sendToInteractable(self.sv_base, "sv_clearDrivingFlags", false)
 end
 
 ---@param player Player
@@ -207,56 +236,38 @@ end
 
 function TurretSeat:server_onProjectile(position, airTime, velocity, projectileName, shooter, damage, customData, normal, uuid)
     if sm.exists(self.harvestable) then
-        sm.physics.applyImpulse(self.base.shape, velocity, true, self.base.shape:transformPoint(position))
+        sm.physics.applyImpulse(self.sv_base.shape, velocity, true, self.sv_base.shape:transformPoint(position))
     end
-    sm.event.sendToInteractable(self.base, "sv_takeDamage", damage)
+    sm.event.sendToInteractable(self.sv_base, "sv_takeDamage", damage)
 end
 
 function TurretSeat:server_onMelee(position, attacker, damage, power, direction, normal)
     if sm.exists(self.harvestable) then
-        sm.physics.applyImpulse(self.base.shape, direction * power, true, self.base.shape:transformPoint(position))
+        sm.physics.applyImpulse(self.sv_base.shape, direction * power, true, self.sv_base.shape:transformPoint(position))
     end
-    sm.event.sendToInteractable(self.base, "sv_takeDamage", damage)
+    sm.event.sendToInteractable(self.sv_base, "sv_takeDamage", damage)
 end
 
 function TurretSeat:server_onExplosion(center, destructionLevel)
-    sm.event.sendToInteractable(self.base, "sv_takeDamage", destructionLevel * 25)
+    sm.event.sendToInteractable(self.sv_base, "sv_takeDamage", destructionLevel * 25)
 end
 
 function TurretSeat:server_canErase()
-    return self.harvestable.publicData.health >= self.base.publicData.maxHealth and self.sv_seated == nil
+    return self.harvestable.publicData.health >= self.sv_base.publicData.maxHealth and self.sv_seated == nil
 end
 
 function TurretSeat:sv_updateAmmoType(ammoType)
     if not self.sv_controlsEnabled then return end
 
-    sm.event.sendToInteractable(self.base, "sv_e_setAmmoType", ammoType)
-    self.network:setClientData(ammoType, 2)
+    self:sv_setAmmoType(ammoType)
 end
 
-function TurretSeat:sv_switchAmmoType(args, caller)
-    if not self.sv_controlsEnabled then return end
-    local ammoData = sm.GetTurretAmmoData(self)
-    local enumerated = {}
-    for k, v in pairs(ammoData.variations) do
-        if k ~= "default" then
-            enumerated[#enumerated+1] = { k, v }
-        end
-    end
+function TurretSeat:sv_setAmmoType(ammoType)
+    if ammoType == self.sv_ammoType then return end
 
-    local ammoId = -1
-    for k, v in ipairs(enumerated) do
-        if v[2] == ammoData.uuid then
-            ammoId = k
-            break
-        end
-    end
-
-    local nextAmmo = enumerated[ammoId + 1 > #enumerated and 1 or ammoId + 1]
-    ammoData.ammo = sm.uuid.new(nextAmmo[1])
-    ammoData.uuid = nextAmmo[2]
-
-    self.network:sendToClient(caller, "cl_updateHotbar")
+    self.sv_ammoType = ammoType
+    sm.event.sendToInteractable(self.sv_base, "sv_e_setAmmoType", ammoType)
+    self.network:setClientData(ammoType, 2)
 end
 
 local rayFilter = sm.physics.filter.dynamicBody + sm.physics.filter.staticBody + sm.physics.filter.terrainAsset + sm.physics.filter.terrainSurface + sm.physics.filter.harvestable
@@ -284,13 +295,13 @@ function TurretSeat:sv_shoot(ammoType, caller)
             local projectile = sm.shape.createPart(ammoData.uuid, finalFirePos, projectileRot)
 
             if ammoData.velocity then
-                sm.physics.applyImpulse(projectile, (dir * ammoData.velocity + self.base.body.velocity) * projectile.mass, true)
+                sm.physics.applyImpulse(projectile, (dir * ammoData.velocity + self.sv_base.body.velocity) * projectile.mass, true)
             end
 
             self:sv_OnPartFire(ammoType, ammoData, projectile, caller)
         else
             finalFirePos = endPos + dir * 0.25
-            sm.projectile.projectileAttack( ammoData.uuid, ammoData.damage, finalFirePos, sm.noise.gunSpread(dir, ammoData.spread or 0) * ammoData.velocity + self.base.body.velocity, caller )
+            sm.projectile.projectileAttack( ammoData.uuid, ammoData.damage, finalFirePos, sm.noise.gunSpread(dir, ammoData.spread or 0) * ammoData.velocity + self.sv_base.body.velocity, caller )
             self:sv_OnProjectileFire(ammoType, ammoData, caller)
         end
 
@@ -298,11 +309,12 @@ function TurretSeat:sv_shoot(ammoType, caller)
     end
 
     self.network:sendToClients("cl_shoot", { canShoot = canShoot, pos = endPos, dir = dir, shotCount = self.sv_shotCounter, ammoType = ammoType })
+    self:sv_OnFiringFinished()
 end
 
 function TurretSeat:sv_applyFiringImpulse(ammoData, dir, finalFirePos)
     if ammoData.recoilStrength then
-        local baseShape = self.base.shape
+        local baseShape = self.sv_base.shape
         sm.physics.applyImpulse(baseShape, -dir * ammoData.recoilStrength * baseShape.mass, true, baseShape:transformPoint(finalFirePos))
     end
 end
@@ -319,12 +331,12 @@ function TurretSeat:sv_SetTurretControlsEnabled(state)
 end
 
 function TurretSeat:sv_setOverrideAmmoType(id)
-    local previous = sm.isOverrideAmmoType(self) and self.ammoType.previous or self.ammoType
+    local previous = sm.isOverrideAmmoType(self) and self.sv_ammoType.previous or self.sv_ammoType
     self:sv_updateAmmoType({ index = id, previous = previous })
 end
 
 function TurretSeat:sv_unSetOverrideAmmoType()
-    self:sv_updateAmmoType(self.ammoType.previous)
+    self:sv_updateAmmoType(self.sv_ammoType.previous)
 end
 
 ---@param ammoType number
@@ -338,6 +350,9 @@ function TurretSeat:sv_OnPartFire(ammoType, ammoData, part, player) end
 ---@param player Player
 function TurretSeat:sv_OnProjectileFire(ammoType, ammoData, player) end
 
+function TurretSeat:sv_OnFiringFinished() end
+
+
 function TurretSeat:sv_updateShootState(state)
     self.sv_shootState = state
     self.network:sendToClients("cl_updateShootState", state)
@@ -350,7 +365,7 @@ function TurretSeat:client_onCreate()
 
     self.cl_shootState = ShootState.null
     self.shootTimer = 0
-    self.ammoType = 1
+    self.cl_ammoType = 1
 
     self.recoil_l = 0
     self.recoil_r = 0
@@ -393,7 +408,7 @@ function TurretSeat:client_onClientDataUpdate(data, channel)
         self.cl_base = data
         self.harvestable.clientPublicData.base = data
     else
-        self.ammoType = data
+        self.cl_ammoType = data
 
         if self.seated then --Override fix
             self:cl_updateHotbar()
@@ -440,7 +455,7 @@ end
 function TurretSeat:cl_seat_partial()
     self.seated = true
     self.hotbar:open()
-    self.ammoType = self:getAmmoType(self.cl_base:getSingleParent())
+    self.cl_ammoType = self:getAmmoType(self.cl_base:getSingleParent())
     self:cl_updateHotbar()
     sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", true)
     sm.camera.setCameraPullback(0,0)
@@ -507,20 +522,15 @@ function TurretSeat:client_onAction(action, state)
 
             if #self.ammoTypes > 1 and not sm.game.getEnableAmmoConsumption() and self.cl_base:getSingleParent() == nil then
                 if self.cl_shootState == ShootState.null then
-                    local ammoType = self.ammoType < #self.ammoTypes and self.ammoType + 1 or 1
+                    local ammoType = self.cl_ammoType < #self.ammoTypes and self.cl_ammoType + 1 or 1
                     sm.gui.displayAlertText("Ammunition selected: #df7f00"..sm.GetTurretAmmoData(self, ammoType).name, 2)
                     sm.audio.play("PaintTool - ColorPick")
 
-                    self.ammoType = ammoType
+                    self.cl_ammoType = ammoType
                     self:cl_updateHotbar()
 
                     self.network:sendToServer("sv_updateAmmoType", ammoType)
                 end
-            end
-        elseif action == 9 then
-            local ammoData = sm.GetTurretAmmoData(self)
-            if ammoData.variations and not self.cl_base:getParents(connectionfilter_modcontainers)[1] then
-                self.network:sendToServer("sv_switchAmmoType")
             end
         elseif action == 15 then
             self:cl_unSeat()
@@ -556,16 +566,10 @@ function TurretSeat:client_onFixedUpdate()
         self:cl_updateHotbar()
     end
 
-    local parent = self.cl_base:getSingleParent()
-    if parent ~= self.parent then
-        self.ammoType = self:getAmmoType(parent)
-        self.parent = parent
-    end
-
     self.shootTimer = math.max(self.shootTimer - 1, 0)
     if self.cl_shootState ~= ShootState.null and self.shootTimer <= 0 then
         self.shootTimer = sm.GetTurretAmmoData(self).fireCooldown
-        self.network:sendToServer("sv_shoot", self.ammoType)
+        self.network:sendToServer("sv_shoot", self.cl_ammoType)
     end
 end
 
@@ -602,7 +606,7 @@ function TurretSeat:cl_updateHotbar()
         active = self.lightActive
     })
 
-    if self.ammoType == 0 then
+    if self.cl_ammoType == 0 then
         self.hotbar:setGridItem( "ButtonGrid", 3, {
             itemId = nil,
             active = false
@@ -612,14 +616,6 @@ function TurretSeat:cl_updateHotbar()
             itemId = tostring(sm.GetTurretAmmoData(self).ammo),
             active = false
         })
-
-        local ammoData = sm.GetTurretAmmoData(self)
-        if ammoData.variations and not self.cl_base:getParents(connectionfilter_modcontainers)[1] then
-            self.hotbar:setGridItem( "ButtonGrid", 4, {
-                itemId = tostring(obj_decor_babyduck),
-                active = false
-            })
-        end
     end
 end
 
@@ -698,7 +694,7 @@ end
 
 
 function TurretSeat:getTurretPosition()
-    local base = (self.base or self.cl_base)
+    local base = (self.sv_base or self.cl_base)
     if sm.GetInteractableClientPublicData(base).isLifted then
         return _G[self.baseClassName].getSeatPos({ cl_turret = self.harvestable, shape = base.shape })
     end
@@ -725,15 +721,25 @@ end
 
 function TurretSeat:getAmmoType(parent)
     if sm.isOverrideAmmoType(self) then
-        return self.ammoType
+        return self.sv_ammoType or self.cl_ammoType
     end
 
     if parent then
+        local item = sm.container.getFirstItem(parent:getContainer(0))
+        if item then
+            local nextAmmo = item.uuid
+            for k, v in pairs(self.ammoTypes) do
+                if v.ammo == nextAmmo then
+                    return k
+                end
+            end
+        end
+
         return self.containerToAmmoType[tostring(parent.shape.uuid)]
     end
 
     if not sm.game.getEnableAmmoConsumption() then
-        return self.ammoType
+        return self.sv_ammoType or self.cl_ammoType
     end
 
     for k, v in pairs(self.ammoTypes) do
@@ -746,7 +752,7 @@ function TurretSeat:getAmmoType(parent)
 end
 
 function TurretSeat:canShoot(ammoType, consume)
-    local parent = (self.base or self.cl_base):getSingleParent()
+    local parent = (self.sv_base or self.cl_base):getSingleParent()
     if parent then
         if consume then
             sm.container.beginTransaction()

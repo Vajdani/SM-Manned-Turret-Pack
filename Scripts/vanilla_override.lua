@@ -450,6 +450,7 @@ local mountedCannonUUID = "0af5379e-29e8-4eb3-b965-6b3993c8f1df"
 local MountedCannonGun = {
 	ammoTypes = {
 		"24d5e812-3902-4ac3-b214-a0c924a5c40f",
+		"667171c3-e8b5-4198-814f-425cbd830b0b",
 		-- "4c69fa44-dd0d-42ce-9892-e61d13922bd2",
 		"e36b172c-ae2d-4697-af44-8041d9cbde0e",
 		"242b84e4-c008-4780-a2dd-abacea821637"

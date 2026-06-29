@@ -91,14 +91,14 @@ function MinigunSeat:client_onFixedUpdate(dt)
 
     local parent = self.cl_base:getSingleParent()
     if parent ~= self.parent then
-        self.ammoType = self:getAmmoType(parent)
+        self.cl_ammoType = self:getAmmoType(parent)
         self.parent = parent
     end
 
     self.shootTimer = math.max(self.shootTimer - 1, 0)
     if isFiring and self.shootTimer <= 0 then
         self.shootTimer = sm.GetTurretAmmoData(self).fireCooldown
-        self.network:sendToServer("sv_shoot", self.ammoType)
+        self.network:sendToServer("sv_shoot", self.cl_ammoType)
     end
 end
 

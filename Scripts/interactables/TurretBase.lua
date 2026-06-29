@@ -34,10 +34,10 @@ function TurretBase:server_onCreate()
     local data = self.storage:load() or {}
     local health = data.health or self.maxHealth
     self.destroyed = data.destroyed or false
-    self.ammoType = data.ammoType or 1
+    self.sv_ammoType = data.ammoType or 1
 
     self:sv_createTurret()
-    self.network:setClientData({ health = health, destroyed = self.destroyed, ammoType = self.ammoType }, 2)
+    self.network:setClientData({ health = health, destroyed = self.destroyed, ammoType = self.sv_ammoType }, 2)
 
     self.interactable.publicData = {
         isTurret = true,
@@ -52,7 +52,7 @@ function TurretBase:sv_syncToLateJoiner(player)
     self.network:sendToClient(player, "cl_syncToLateJoiner",
         {
             self.turret,
-            { health = self.cl_health, destroyed = self.destroyed, ammoType = self.ammoType },
+            { health = self.cl_health, destroyed = self.destroyed, ammoType = self.sv_ammoType },
             self.dir
         }
     )
@@ -157,13 +157,13 @@ function TurretBase:sv_takeDamage(damage)
         self.turret.publicData.health = newHealth
     end
 
-    local data = { health = newHealth, destroyed = self.destroyed, prevDestroyed = prevDestroyed, ammoType = self.ammoType }
+    local data = { health = newHealth, destroyed = self.destroyed, prevDestroyed = prevDestroyed, ammoType = self.sv_ammoType }
     self.storage:save(data)
     self.network:setClientData(data, 2)
 end
 
 function TurretBase:sv_e_setAmmoType(ammoType)
-    self.ammoType = ammoType
+    self.sv_ammoType = ammoType
     self.storage:save({ health = self.cl_health, destroyed = self.destroyed, ammoType = ammoType })
 end
 
@@ -176,7 +176,7 @@ function TurretBase:sv_createTurret()
 
     local pos = self:getSeatPos()
     self.turret = sm.harvestable.create(sm.uuid.new(self.seatUUID), pos, self.shape.worldRotation)
-    self.turret:setParams({ base = self.interactable, ammoType = self.ammoType })
+    self.turret:setParams({ base = self.interactable, ammoType = self.sv_ammoType })
     self.network:setClientData(self.turret, 1)
 
     sm.event.sendToGame("sv_addTurretChunkLoader", self.interactable)

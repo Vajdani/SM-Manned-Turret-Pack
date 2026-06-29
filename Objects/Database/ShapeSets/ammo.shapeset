@@ -68,7 +68,7 @@
 				"depth": 5,
 				"diameter": 2
 			},
-			"name": "obj_cannon_rocket",
+			"name": "obj_cannon_guidedrocket",
 			"physicsMaterial": "Metal",
 			"qualityLevel": 0,
 			"renderable": "$CONTENT_DATA/Objects/Renderables/Ammo/obj_cannon_rocket.rend",
@@ -96,6 +96,43 @@
 			"stackSize": 5,
 			"sticky": "-Y",
 			"uuid": "24d5e812-3902-4ac3-b214-a0c924a5c40f"
+		},
+		{
+			"color": "9f2600",
+			"consumable": true,
+			"cylinder": {
+				"axis": "Y",
+				"depth": 5,
+				"diameter": 2
+			},
+			"name": "obj_cannon_aprocket",
+			"physicsMaterial": "Metal",
+			"qualityLevel": 0,
+			"renderable": "$CONTENT_DATA/Objects/Renderables/Ammo/obj_cannon_rocket.rend",
+			"rotationSet": "PropY",
+			"scripted": {
+				"classname": "APCannonRocket",
+				"data": {},
+				"filename": "$CONTENT_DATA/Scripts/interactables/APCannonRocket.lua",
+				"seat": {
+					"bones": [
+						{
+							"name": "Hips",
+							"offset": {
+								"x": 0.0,
+								"y": -10000,
+								"z": 0.0
+							}
+						}
+					],
+					"ragdollFile": "$GAME_DATA/Character/bikeseat_ragdoll.json",
+					"enterAudio": "Seat seated",
+					"exitAudio": "Seat unseated"
+				}
+			},
+			"stackSize": 5,
+			"sticky": "-Y",
+			"uuid": "667171c3-e8b5-4198-814f-425cbd830b0b"
 		},
 		{
 			"consumable": true,
@@ -283,7 +320,8 @@
 			"rotationSet": "PropY",
 			"stackSize": 100,
 			"sticky": "-Y",
-			"uuid": "480ee8b5-d658-449e-9393-c9ac10667da9"
+			"uuid": "480ee8b5-d658-449e-9393-c9ac10667da9",
+			"showInInventory": false
 		}
 	]
 }

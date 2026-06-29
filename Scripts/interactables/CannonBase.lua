@@ -27,7 +27,7 @@ function CannonBase:sv_spawnNukeOnDestroy(ammoType)
                 worldPosition = self:getSeatPos(),
                 worldRotation = turretRot
             },
-            base = self.interactable,
+            sv_base = self.interactable,
             getTurretPosition = CannonSeat.getTurretPosition
         }
     )

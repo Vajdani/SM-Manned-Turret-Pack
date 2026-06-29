@@ -14,6 +14,15 @@ CannonSeat.ammoTypes = {
         uuid = sm.uuid.new("24d5e812-3902-4ac3-b214-a0c924a5c40f")
     },
     {
+        name = "AP Missile",
+        velocity = 100,
+        recoilStrength = 1,
+        fireCooldown = 80,
+        effect = "Cannon - Shoot",
+        ammo = sm.uuid.new("667171c3-e8b5-4198-814f-425cbd830b0b"),
+        uuid = sm.uuid.new("667171c3-e8b5-4198-814f-425cbd830b0b")
+    },
+    {
         name = "Air Strike",
         recoilStrength = 1,
         fireCooldown = 40,
@@ -87,8 +96,8 @@ CannonSeat.overrideAmmoTypes = {
 }
 CannonSeat.containerToAmmoType = {
     ["d9e6453a-2e8c-47f8-a843-d0e700957d39"] = 1,
-    ["037e3ecb-e0a6-402b-8187-a7264863c64f"] = 2,
-    ["da615034-dd24-4090-ba66-9d36785d7483"] = 3,
+    ["037e3ecb-e0a6-402b-8187-a7264863c64f"] = 3,
+    ["da615034-dd24-4090-ba66-9d36785d7483"] = 4,
 }
 CannonSeat.baseUUID = "a0c96d35-37ca-4cf9-82d8-9b9077132918"
 CannonSeat.airStrikeDistanceLimit = 256
@@ -110,8 +119,8 @@ function CannonSeat:server_onDestroy()
         sm.event.sendToInteractable(self.rocket.interactable, "sv_explode")
     end
 
-    if sm.exists(self.base) and sm.isOverrideAmmoType(self) then
-        sm.event.sendToInteractable(self.base, "sv_spawnNukeOnDestroy", self.ammoType)
+    if sm.exists(self.sv_base) and sm.isOverrideAmmoType(self) then
+        sm.event.sendToInteractable(self.sv_base, "sv_spawnNukeOnDestroy", self.sv_ammoType)
     end
 end
 
@@ -149,15 +158,14 @@ function CannonSeat:sv_OnPartFire(ammoType, ammoData, part, player)
         part.interactable.publicData = { owner = player, seat = self.harvestable }
         self.rocket = part
         self:sv_SetTurretControlsEnabled(false)
-        sm.event.sendToInteractable(self.base, "sv_clearDrivingFlags", true)
-    elseif sm.isOverrideAmmoType(self, ammoType) then
-        self:sv_unSetOverrideAmmoType()
-        self.network:sendToClients("cl_updateLoadedNuke", false)
+        sm.event.sendToInteractable(self.sv_base, "sv_clearDrivingFlags", true)
+    elseif ammoType == 2 then
+        part.interactable.publicData = {}
     end
 end
 
-function CannonSeat:sv_OnProjectileFire(ammoType, ammoData, player)
-    if sm.isOverrideAmmoType(self, ammoType) then
+function CannonSeat:sv_OnFiringFinished()
+    if sm.isOverrideAmmoType(self, self.sv_ammoType) then
         self:sv_unSetOverrideAmmoType()
         self.network:sendToClients("cl_updateLoadedNuke", false)
     end
@@ -180,15 +188,15 @@ function CannonSeat:sv_detonateRocket()
 end
 
 function CannonSeat:sv_startAirStrikeCasting()
-    sm.event.sendToInteractable(self.base, "sv_clearDrivingFlags", true)
+    sm.event.sendToInteractable(self.sv_base, "sv_clearDrivingFlags", true)
     self:sv_SetTurretControlsEnabled(false)
 end
 
 function CannonSeat:sv_startAirStrike(pos, caller)
-    local shape = self.base.shape
+    local shape = self.sv_base.shape
     local dir = (pos - shape.worldPosition):normalize()
     local fwd = shape.up
-    sm.event.sendToInteractable(self.base, "sv_setDirTarget", { x = math.acos(dir:dot(fwd)) * (dir:cross(fwd).z >= 0 and -1 or 1), y = 1.05 })
+    sm.event.sendToInteractable(self.sv_base, "sv_setDirTarget", { x = math.acos(dir:dot(fwd)) * (dir:cross(fwd).z >= 0 and -1 or 1), y = 1.05 })
 
     local strike = {
         turretSelf = self,
@@ -266,7 +274,7 @@ function CannonSeat:sv_tryLaunchPlayer(player)
     char:setTumbling(true)
     char:applyTumblingImpulse(self.harvestable.worldRotation * vec3_up * sm.GetTurretAmmoData(self).velocity * char.mass)
 
-    self.network:sendToClients("cl_shoot", { canShoot = true, ammoType = self.ammoType })
+    self.network:sendToClients("cl_shoot", { canShoot = true, ammoType = self.sv_ammoType })
 end
 
 local itemToOverrideAmmoType = {
@@ -315,7 +323,7 @@ function CannonSeat:client_onClientDataUpdate(data, channel)
 end
 
 function CannonSeat:client_onAction(action, state)
-    if self.ammoType == 1 then
+    if self.cl_ammoType == 1 then
         if not self.cl_controlsEnabled then
             if (action == 1 or action == 2) then
                 self.network:sendToServer("sv_rocketRollUpdate", { action = action, state = state })
@@ -331,7 +339,7 @@ function CannonSeat:client_onAction(action, state)
 
             return true
         end
-    elseif self.ammoType == 2 then
+    elseif self.cl_ammoType == 3 then
         if self.strikeMoveControls[action] ~= nil then
             self.strikeMoveControls[action] = state
         end
@@ -340,7 +348,7 @@ function CannonSeat:client_onAction(action, state)
             if self.spottingStrike then
                 self:cl_strikeControls(action)
                 return true
-            elseif (action == 5 or action == 19 or action == 6 or action == 18) and self:canShoot(self.ammoType) then
+            elseif (action == 5 or action == 19 or action == 6 or action == 18) and self:canShoot(self.cl_ammoType) then
                 self:cl_startAirStrike()
                 return true
             end
@@ -349,7 +357,7 @@ function CannonSeat:client_onAction(action, state)
         elseif self.spottingStrike then
             return true
         end
-    elseif self.ammoType == 4 then
+    elseif self.cl_ammoType == 5 then
         if state and (action == 5 or action == 19 or action == 6 or action == 18) then
             sm.gui.startFadeToBlack(1.0, 0.5)
             sm.gui.endFadeToBlack(0.8)
@@ -445,7 +453,7 @@ function CannonSeat:cl_shoot(args)
     if args.canShoot then
         self.recoil_l = 1
 
-        local ammoType = args.ammoType or self.ammoType
+        local ammoType = args.ammoType or self.cl_ammoType
         sm.effect.playEffect(sm.GetTurretAmmoData(self, ammoType).effect, args.pos or self:getFirePosEnd(), vec3_zero, vec3_getRotation(vec3_up, args.dir or self.harvestable.worldRotation * vec3_up))
 
         if self.seated and ammoType == 1 then
@@ -610,7 +618,7 @@ function CannonSeat:cl_updateLoadedNuke(state)
     if state then
         self.nukeEffect = sm.effect.createEffect("ShapeRenderable", self.harvestable)
 
-        local ammoData = self.overrideAmmoTypes[self.ammoType.index]
+        local ammoData = self.overrideAmmoTypes[self.cl_ammoType.index]
         local transform = itemTransforms[tostring(ammoData.uuid)]
         local uuid = transform.overrideUUID or ammoData.uuid
         self.nukeEffect:setParameter("uuid", uuid)
@@ -634,7 +642,7 @@ function CannonSeat:cl_SetTurretControlsEnabled(state)
     self.cl_controlsEnabled = state
     self.harvestable.clientPublicData.controlsEnabled = state
 
-    if self.seated and self.ammoType ~= 2 and self.cl_shootState ~= ShootState.null then
+    if self.seated and self.cl_ammoType ~= 2 and self.cl_shootState ~= ShootState.null then
         self.cl_shootState = ShootState.null
         self:cl_updateHotbar()
     end

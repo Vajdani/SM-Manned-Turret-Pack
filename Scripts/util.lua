@@ -9,10 +9,8 @@
 ---@field ignoreAmmoConsumption? boolean
 ---@field overheatPerShot? number
 ---@field chargeTime? number
----@field ammo? Uuid
----@field uuid? Uuid
----@field variations? { default: [ Uuid, Uuid ], [string]: Uuid }
----@field isVaried? boolean
+---@field ammo Uuid
+---@field uuid Uuid
 
 dofile "$SURVIVAL_DATA/Scripts/game/survival_projectiles.lua"
 
@@ -145,64 +143,18 @@ function getYawPitch( direction )
 end
 
 function sm.isOverrideAmmoType(self, ammoType)
-    return type(ammoType or self.ammoType) == "table"
+    return type(ammoType or self.sv_ammoType or self.cl_ammoType) == "table"
 end
 
 ---@param self TurretSeat|MountedTurretGun
 ---@return AmmoType
 function sm.GetTurretAmmoData(self, ammoType)
-    ammoType = ammoType or self.ammoType
-
-    local ammoData
-    local isOverride = sm.isOverrideAmmoType(self, ammoType)
-    if isOverride then
-        ammoData = self.overrideAmmoTypes[ammoType.index]
-    else
-        ammoData = self.ammoTypes[ammoType]
+    ammoType = ammoType or self.sv_ammoType or self.cl_ammoType
+    if sm.isOverrideAmmoType(self, ammoType) then
+        return self.overrideAmmoTypes[ammoType.index]
     end
 
-    if type(ammoData) ~= "table" then
-        return ammoData
-    end
-
-    if ammoData.variations then
-        local parent
-        if self.base or self.cl_base then
-            parent = (self.base or self.cl_base):getParents(connectionfilter_modcontainers)[1]
-        else
-            parent = self.interactable:getParents(connectionfilter_modcontainers)[1]
-        end
-
-        local container
-        if parent then
-            container = parent:getContainer(0)
-        end
-
-        if not sm.game.getEnableAmmoConsumption() and not container then
-            goto isDefault
-        end
-
-        local item = sm.container.getFirstItem(container)
-        if not item then
-            goto isDefault
-        end
-
-        local ammo = item.uuid
-        ammoData.ammo = ammo
-        ammoData.uuid = ammoData.variations[tostring(ammo)]
-        ammoData.isVaried = true
-
-        return ammoData
-    end
-
-    ::isDefault::
-    if ammoData.isVaried then
-        ammoData.ammo = ammoData.variations.default[1]
-        ammoData.uuid = ammoData.variations.default[2]
-        ammoData.isVaried = false
-    end
-
-    return ammoData
+    return self.ammoTypes[ammoType]
 end
 
 local g_eventBindings =
