@@ -26,6 +26,8 @@ function CannonRocket:server_onDestroy()
     if sm.exists(self.seat) then
         SendEventToObject(self.seat, "sv_onRocketExplode", true)
     end
+
+    self:sv_clearChunkLoader()
 end
 
 function CannonRocket:server_onProjectile()
@@ -60,6 +62,8 @@ function CannonRocket:server_onFixedUpdate(dt)
     if not self.isPrimed then return end
 
     local pos = self.shape.worldPosition
+    self.worldPos = pos
+
     local hit, result = sm.physics.spherecast(pos, pos + self.shape.at * 2, 0.1, self.shape, rayFilter)
     if hit then
         self:sv_explode(pos)
@@ -82,19 +86,26 @@ function CannonRocket:sv_explode(position)
         SendEventToObject(self.seat, "sv_onRocketExplode", position == nil)
     end
 
-    local char = self.interactable:getSeatCharacter()
-    if char and sm.exists(char) then
-        self.interactable:setSeatCharacter(char)
-        char:setWorldPosition(vec3(self.shape.worldPosition.x, self.shape.worldPosition.y, -512))
-        sm.log.warning("ROCKET LOADER DESTROYED")
-    else
-        sm.log.error("ROCKET LOADER NOT DESTROYED")
-        sm.event.sendToTool(sm.MANNEDTURRET_turretAssistor, "sv_addCharToDestroyQueue", self.dummy)
-    end
+    self:sv_clearChunkLoader()
 
     self:sv_OnExplode(position or self.shape.worldPosition)
 
     self.shape:destroyShape()
+end
+
+function CannonRocket:sv_clearChunkLoader()
+    local char = self.dummy
+    if char and sm.exists(char) then
+        if sm.exists(self.interactable) then
+            self.interactable:setSeatCharacter(char)
+        end
+
+        char:setWorldPosition(vec3(self.worldPos.x, self.worldPos.y, -512))
+        sm.log.warning("ROCKET LOADER DESTROYED")
+    else
+        sm.log.error("ROCKET LOADER NOT DESTROYED")
+        sm.event.sendToTool(sm.MANNEDTURRET_turretAssistor, "sv_addCharToDestroyQueue", char)
+    end
 end
 
 function CannonRocket:sv_OnExplode(position)
