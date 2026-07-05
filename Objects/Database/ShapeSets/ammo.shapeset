@@ -132,7 +132,8 @@
 			},
 			"stackSize": 5,
 			"sticky": "-Y",
-			"uuid": "667171c3-e8b5-4198-814f-425cbd830b0b"
+			"uuid": "667171c3-e8b5-4198-814f-425cbd830b0b",
+			"showInInventory": false
 		},
 		{
 			"consumable": true,
