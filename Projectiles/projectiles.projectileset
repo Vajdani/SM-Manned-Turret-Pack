@@ -301,7 +301,7 @@
          "radius": 1,
          "friction": 0,
          "spin": 0,
-         "mesh": "$CONTENT_DATA/Objects/Renderables/Ammo/obj_cannon_rocket.rend",
+         "mesh": "$CONTENT_DATA/Projectiles/Renderables/cannon_aprocket.rend",
          "effect": "PropaneTank - ExplosionSmall",
          "audiomass": 750.0,
          "effectmaterial": "Metal",

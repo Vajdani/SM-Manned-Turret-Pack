@@ -162,7 +162,8 @@
             },
             "filename" : "$CONTENT_DATA/Scripts/interactables/ConsumableContainer.lua"
          },
-         "uuid" : "d021e2ac-ef62-415c-a0a3-c6da0c43cef2"
+         "uuid" : "d021e2ac-ef62-415c-a0a3-c6da0c43cef2",
+         "showInInventory": false
       }
    ]
 }
