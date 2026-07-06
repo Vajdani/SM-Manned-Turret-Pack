@@ -1,0 +1,17 @@
+{
+   "lodList" : [
+      {
+         "mesh" : "$CONTENT_DATA/Projectiles/Mesh/cannon_rocket.fbx",
+         "subMeshList" : [
+            {
+               "material" : "DifAsgNor",
+               "textureList" : [
+                  "$CONTENT_DATA/Objects/Textures/Ammo/obj_cannon_rocketap_dif.tga",
+                  "$CONTENT_DATA/Objects/Textures/Ammo/obj_cannon_rocketap_asg.tga",
+                  "$CONTENT_DATA/Objects/Textures/Ammo/obj_cannon_rocketap_nor.tga"
+               ]
+            }
+         ]
+      }
+   ]
+}
