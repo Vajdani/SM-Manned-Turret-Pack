@@ -110,30 +110,9 @@
 			"qualityLevel": 0,
 			"renderable": "$CONTENT_DATA/Objects/Renderables/Ammo/obj_cannon_rocket.rend",
 			"rotationSet": "PropY",
-			"scripted": {
-				"classname": "APCannonRocket",
-				"data": {},
-				"filename": "$CONTENT_DATA/Scripts/interactables/APCannonRocket.lua",
-				"seat": {
-					"bones": [
-						{
-							"name": "Hips",
-							"offset": {
-								"x": 0.0,
-								"y": -10000,
-								"z": 0.0
-							}
-						}
-					],
-					"ragdollFile": "$GAME_DATA/Character/bikeseat_ragdoll.json",
-					"enterAudio": "Seat seated",
-					"exitAudio": "Seat unseated"
-				}
-			},
 			"stackSize": 5,
 			"sticky": "-Y",
-			"uuid": "667171c3-e8b5-4198-814f-425cbd830b0b",
-			"showInInventory": false
+			"uuid": "667171c3-e8b5-4198-814f-425cbd830b0b"
 		},
 		{
 			"consumable": true,

@@ -292,6 +292,65 @@
             ]
          },
          "enableImpactEffect": true
+      },
+      {
+         "attachedEffect": "Thruster - Level 5",
+         "uuid": "aad3baad-861c-4a19-a3f6-b444e70bd27b",
+         "name": "aprocket",
+         "mass": 500,
+         "radius": 1,
+         "friction": 0,
+         "spin": 0,
+         "mesh": "$CONTENT_DATA/Objects/Renderables/Ammo/obj_cannon_rocket.rend",
+         "effect": "PropaneTank - ExplosionSmall",
+         "audiomass": 750.0,
+         "effectmaterial": "Metal",
+         "enableGravity": false,
+         "destruction": {
+            "destructionLevels": [
+               {
+                  "qualityLevel": 1,
+                  "chance": 1.0
+               },
+               {
+                  "qualityLevel": 2,
+                  "chance": 1.0
+               },
+               {
+                  "qualityLevel": 3,
+                  "chance": 1.0
+               },
+               {
+                  "qualityLevel": 4,
+                  "chance": 1.0
+               },
+               {
+                  "qualityLevel": 5,
+                  "chance": 1.0
+               },
+               {
+                  "qualityLevel": 6,
+                  "chance": 1.0
+               },
+               {
+                  "qualityLevel": 7,
+                  "chance": 1.0
+               },
+               {
+                  "qualityLevel": 8,
+                  "chance": 1.0
+               },
+               {
+                  "qualityLevel": 9,
+                  "chance": 1.0
+               },
+               {
+                  "qualityLevel": 10,
+                  "chance": 1.0
+               }
+            ]
+         },
+         "enableImpactEffect": true
       }
    ]
 }

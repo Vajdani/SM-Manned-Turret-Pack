@@ -15,12 +15,14 @@ CannonSeat.ammoTypes = {
     },
     {
         name = "AP Missile",
+        damage = 200,
         velocity = 100,
         recoilStrength = 1,
         fireCooldown = 80,
+        spread = 0,
         effect = "Cannon - Shoot",
         ammo = sm.uuid.new("667171c3-e8b5-4198-814f-425cbd830b0b"),
-        uuid = sm.uuid.new("667171c3-e8b5-4198-814f-425cbd830b0b")
+        uuid = sm.uuid.new("aad3baad-861c-4a19-a3f6-b444e70bd27b")
     },
     {
         name = "Air Strike",

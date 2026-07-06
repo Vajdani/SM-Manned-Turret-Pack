@@ -591,6 +591,70 @@ for k, v in pairs(_G) do
 				return mannedTurret_originalHookFuncs[k].server_onProjectile(self, position, airTime, velocity, "explosivetape", shooter, damage, customData, normal, target, projectile_explosivetape)
 			end
 
+			if uuidstr == "aad3baad-861c-4a19-a3f6-b444e70bd27b" then --AP rocket
+				-- if count then
+				-- 	for i = 1, count do
+				-- 		sm.debugDraw.clear("apImpact"..i)
+				-- 	end
+				-- end
+
+				-- sm.debugDraw.addSphere("apImpactStart", position, 0.25, sm.color.new(1,0,0))
+
+				local dir = velocity:normalize()
+				local distance = 10
+
+				-- sm.debugDraw.addArrow("apLength", position, position + dir * distance)
+
+				-- count = 0
+				while distance > 0 do
+					local hit, result = sm.physics.raycast(position, position + dir * distance)
+					if hit then
+						-- count = count + 1
+
+						distance = distance - distance * result.fraction
+						position = result.pointWorld + dir * 0.01
+
+						-- if count == 1 then
+						-- 	sm.debugDraw.addSphere("apImpact"..count, position, 0.1, sm.color.new(0,1,1))
+						-- else
+						-- 	sm.debugDraw.addSphere("apImpact"..count, position, 0.1, sm.color.new(0,1,0))
+						-- end
+
+						sm.physics.explode(position, 4, 2, 3, 8)--, "PropaneTank - ExplosionSmall")
+
+						local type = result.type
+						if type == "character" then
+							sm.event.sendToCharacter(result:getCharacter(), "sv_e_takeDamage", { damage = 9999 })
+						elseif type == "body" then
+							local shape = result:getShape()
+							if shape.isBlock then
+								shape:destroyBlock(shape:getClosestBlockLocalPosition(position))
+							else
+								local int = shape.interactable
+								local classname = (sm.item.getFeatureData(shape.uuid) or {}).classname
+								if classname == "Package" then
+									sm.event.sendToInteractable( int, "sv_e_open" )
+								elseif not int or int.type ~= "scripted" or not sm.event.sendToInteractable(int, "sv_e_onHit", {
+									damage = 9999,
+									position = position,
+									normal = result.normalWorld
+								}) then
+									shape:destroyShape()
+								end
+							end
+						elseif type == "harvestable" then
+							result:getHarvestable():destroy()
+						else
+							break
+						end
+					else
+						break
+					end
+				end
+
+				sm.physics.explode(position, 7, 2, 3, 8)--, "PropaneTank - ExplosionBig")
+			end
+
 			return mannedTurret_originalHookFuncs[k].server_onProjectile(self, position, airTime, velocity, projectileName, shooter, damage, customData, normal, target, uuid)
 		end
 	elseif v.server_onPlayerJoined then
