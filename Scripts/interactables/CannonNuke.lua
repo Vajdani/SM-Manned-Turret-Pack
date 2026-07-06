@@ -107,11 +107,6 @@ end
 
 
 
-dofile( "$GAME_DATA/Scripts/game/AnimationUtil.lua")
-dofile( "$SURVIVAL_DATA/Scripts/util.lua" )
-dofile( "$SURVIVAL_DATA/Scripts/game/survival_shapes.lua" )
-dofile( "$SURVIVAL_DATA/Scripts/game/survival_projectiles.lua" )
-
 ---@class CannonNuke_Tool : ToolClass
 ---@field activeItem Uuid?
 ---@field wasOnGround boolean
@@ -126,10 +121,10 @@ dofile( "$SURVIVAL_DATA/Scripts/game/survival_projectiles.lua" )
 CannonNuke_Tool = class()
 
 local renderables = {
-	["47b43e6e-280d-497e-9896-a3af721d89d2"] = { "$CONTENT_DATA/Tools/Renderables/char_nuke.rend" }, 						--Nuclear Bomb
+	[tostring(obj_cannon_nuke)			   ] = { "$CONTENT_DATA/Tools/Renderables/char_nuke.rend" }, 						--Nuclear Bomb
 	["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = { "$CONTENT_DATA/Tools/Renderables/char_explosive_small.rend" }, 			--Small Explosive
 	["24001201-40dd-4950-b99f-17d878a9e07b"] = { "$CONTENT_DATA/Tools/Renderables/char_explosive_large.rend" }, 			--Large Explosive
-	["254360f7-ba19-431d-ac1a-92c1ee9ba483"] = { "$CONTENT_DATA/Tools/Renderables/char_big_potato.rend" }					--Big Potato
+	[tostring(obj_big_potato)			   ] = { "$CONTENT_DATA/Tools/Renderables/char_big_potato.rend" }					--Big Potato
 }
 local renderablesTp = {
     "$SURVIVAL_DATA/Character/Char_Male/Animations/char_male_tp_bucket.rend",
@@ -368,15 +363,15 @@ function CannonNuke_Tool:client_onUnequip()
 end
 
 local cannonUUIDs = {
-	["f2efb390-b77d-4587-b2ce-b895698e2fd5"] = true,
-	["0af5379e-29e8-4eb3-b965-6b3993c8f1df"] = true,
+	[tostring(obj_interactive_cannon_base)] 		= true,
+	[tostring(obj_interactive_mountable_cannongun)] = true,
 }
 
 local titles = {
-	["47b43e6e-280d-497e-9896-a3af721d89d2"] = "Nuke", 				--Nuclear Bomb
+	[tostring(obj_cannon_nuke)			   ] = "Nuke", 				--Nuclear Bomb
 	["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = "Small Explosive", 	--Small Explosive
 	["24001201-40dd-4950-b99f-17d878a9e07b"] = "Large Explosive", 	--Large Explosive
-	["254360f7-ba19-431d-ac1a-92c1ee9ba483"] = "Potato"				--Big Potato
+	[tostring(obj_big_potato)			   ] = "Potato"				--Big Potato
 }
 
 function CannonNuke_Tool:client_onEquippedUpdate( lmb, rmb, f )

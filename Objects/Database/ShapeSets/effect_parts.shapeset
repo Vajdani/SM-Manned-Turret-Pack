@@ -7,7 +7,7 @@
             "z" : 1
          },
          "color" : "ffffff",
-         "name" : "turret_seat_debris_bar",
+         "name": "obj_effect_turret_seat_debris_bar",
          "physicsMaterial" : "Plastic",
          "ratings" : {},
          "renderable" : "$CONTENT_DATA/Particles/Renderables/TurretDebris/turret_seat_debris_bar.rend",
@@ -23,7 +23,7 @@
             "z" : 1
          },
          "color" : "ffffff",
-         "name" : "turret_seat_debris_barrel",
+         "name": "obj_effect_turret_seat_debris_barrel",
          "physicsMaterial" : "Plastic",
          "ratings" : {},
          "renderable" : "$CONTENT_DATA/Particles/Renderables/TurretDebris/turret_seat_debris_barrel.rend",
@@ -39,7 +39,7 @@
             "z" : 1
          },
          "color" : "ffffff",
-         "name" : "turret_seat_debris_reciever_left",
+         "name": "obj_effect_turret_seat_debris_reciever_left",
          "physicsMaterial" : "Plastic",
          "ratings" : {},
          "renderable" : "$CONTENT_DATA/Particles/Renderables/TurretDebris/turret_seat_debris_reciever_left.rend",
@@ -55,7 +55,7 @@
             "z" : 1
          },
          "color" : "ffffff",
-         "name" : "turret_seat_debris_reciever_right",
+         "name": "obj_effect_turret_seat_debris_reciever_right",
          "physicsMaterial" : "Plastic",
          "ratings" : {},
          "renderable" : "$CONTENT_DATA/Particles/Renderables/TurretDebris/turret_seat_debris_reciever_right.rend",
@@ -71,7 +71,7 @@
             "z" : 1
          },
          "color" : "ffffff",
-         "name" : "turret_seat_debris_shield_left",
+         "name": "obj_effect_turret_seat_debris_shield_left",
          "physicsMaterial" : "Plastic",
          "ratings" : {},
          "renderable" : "$CONTENT_DATA/Particles/Renderables/TurretDebris/turret_seat_debris_shield_left.rend",
@@ -87,7 +87,7 @@
             "z" : 1
          },
          "color" : "ffffff",
-         "name" : "turret_seat_debris_shield_right",
+         "name": "obj_effect_turret_seat_debris_shield_right",
          "physicsMaterial" : "Plastic",
          "ratings" : {},
          "renderable" : "$CONTENT_DATA/Particles/Renderables/TurretDebris/turret_seat_debris_shield_right.rend",
@@ -103,23 +103,7 @@
             "z" : 1
          },
          "color" : "ffffff",
-         "name" : "kin_interactive_turret_seat_hologram",
-         "physicsMaterial" : "Plastic",
-         "ratings" : {},
-         "renderable" : "$CONTENT_DATA/Objects/Renderables/TurretSeat/kin_interactive_turret_seat_hologram.rend",
-         "rotationSet" : "Default",
-         "showInInventory" : false,
-         "stackSize" : 1,
-         "uuid" : "49ce0ee7-7d9b-43b0-8160-5dc3fb127cfb"
-      },
-      {
-         "box" : {
-            "x" : 1,
-            "y" : 1,
-            "z" : 1
-         },
-         "color" : "ffffff",
-         "name" : "cannon_seat_debris_barrel",
+         "name": "obj_effect_cannon_seat_debris_barrel",
          "physicsMaterial" : "Plastic",
          "ratings" : {},
          "renderable" : "$CONTENT_DATA/Particles/Renderables/CannonDebris/cannon_seat_debris_barrel.rend",
@@ -135,7 +119,7 @@
             "z" : 1
          },
          "color" : "ffffff",
-         "name" : "cannon_seat_debris_keyboard",
+         "name": "obj_effect_cannon_seat_debris_keyboard",
          "physicsMaterial" : "Plastic",
          "ratings" : {},
          "renderable" : "$CONTENT_DATA/Particles/Renderables/CannonDebris/cannon_seat_debris_keyboard.rend",
@@ -151,7 +135,7 @@
             "z" : 1
          },
          "color" : "ffffff",
-         "name" : "cannon_seat_debris_screen",
+         "name": "obj_effect_cannon_seat_debris_screen",
          "physicsMaterial" : "Plastic",
          "ratings" : {},
          "renderable" : "$CONTENT_DATA/Particles/Renderables/CannonDebris/cannon_seat_debris_screen.rend",
@@ -167,7 +151,7 @@
             "z" : 1
          },
          "color" : "ffffff",
-         "name" : "cannon_seat_debris_handle",
+         "name": "obj_effect_cannon_seat_debris_handle",
          "physicsMaterial" : "Plastic",
          "ratings" : {},
          "renderable" : "$CONTENT_DATA/Particles/Renderables/CannonDebris/cannon_seat_debris_handle.rend",
@@ -183,7 +167,23 @@
             "z" : 1
          },
          "color" : "ffffff",
-         "name" : "kin_interactive_cannon_seat_hologram",
+         "name": "kin_interactive_turret_seat_hologram",
+         "physicsMaterial" : "Plastic",
+         "ratings" : {},
+         "renderable" : "$CONTENT_DATA/Objects/Renderables/TurretSeat/kin_interactive_turret_seat_hologram.rend",
+         "rotationSet" : "Default",
+         "showInInventory" : false,
+         "stackSize" : 1,
+         "uuid" : "49ce0ee7-7d9b-43b0-8160-5dc3fb127cfb"
+      },
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "color" : "ffffff",
+         "name": "kin_interactive_cannon_seat_hologram",
          "physicsMaterial" : "Plastic",
          "ratings" : {},
          "renderable" : "$CONTENT_DATA/Objects/Renderables/TurretSeat/kin_interactive_cannon_seat_hologram.rend",
@@ -199,7 +199,7 @@
             "z" : 1
          },
          "color" : "ffffff",
-         "name" : "kin_interactive_cannon_seat_hologram",
+         "name": "kin_interactive_cannon_seat_hologram",
          "physicsMaterial" : "Plastic",
          "ratings" : {},
          "renderable" : "$CONTENT_DATA/Objects/Renderables/TurretSeat/kin_interactive_cannon_seat_hologram.rend",

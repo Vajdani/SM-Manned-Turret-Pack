@@ -18,16 +18,16 @@ TurretBase.colorNormal = sm.color.new( 0xcb0a00ff )
 TurretBase.colorHighlight = sm.color.new( 0xee0a00ff )
 TurretBase.maxHealth = 1000
 TurretBase.seatUUID = "22b00c9e-e040-48e2-b67a-3f41a6470354"
-TurretBase.seatHologramUUID = "49ce0ee7-7d9b-43b0-8160-5dc3fb127cfb"
+TurretBase.seatHologramUUID = tostring(kin_interactive_turret_seat_hologram)
 TurretBase.explosionDebrisData = { --swap the blender y and z coordinates, invert z afterwards
-    { uuid = sm.uuid.new("81b668f4-af00-4fbc-b359-dd1b35b939e5"), offset = vec3(0.960741,    -2.49486,   -0.842322) * 0.25 },
-    { uuid = sm.uuid.new("81b668f4-af00-4fbc-b359-dd1b35b939e5"), offset = vec3(-0.960741,   -2.49486,   -0.842322) * 0.25 },
-    { uuid = sm.uuid.new("5dde0f36-1cbb-47ba-a9ba-a0cc2b1db555"), offset = vec3(-1.07416,    1.37402,      5.55211) * 0.25 },
-    { uuid = sm.uuid.new("5dde0f36-1cbb-47ba-a9ba-a0cc2b1db555"), offset = vec3(1.07416,     1.37402,      5.55211) * 0.25 },
-    { uuid = sm.uuid.new("a58a7a52-6737-468f-a499-aee18faedabb"), offset = vec3(0.971095,    1.18554,      2.06928) * 0.25 },
-    { uuid = sm.uuid.new("17a8ce54-0617-422c-bac7-9c5c07203094"), offset = vec3(-0.971095,   1.18554,      2.06928) * 0.25 },
-    { uuid = sm.uuid.new("ea9511ab-26bf-4dcb-9929-7c688f2b240e"), offset = vec3(1.45117,     -0.877968,    2.84755) * 0.25 },
-    { uuid = sm.uuid.new("d793783b-6ac8-4fb7-b9b4-b7f2d159efed"), offset = vec3(-1.45117,    -0.877968,    2.84755) * 0.25 },
+    { uuid = obj_effect_turret_seat_debris_bar,             offset = vec3(0.960741,    -2.49486,   -0.842322) * 0.25 },
+    { uuid = obj_effect_turret_seat_debris_bar,             offset = vec3(-0.960741,   -2.49486,   -0.842322) * 0.25 },
+    { uuid = obj_effect_turret_seat_debris_barrel,          offset = vec3(-1.07416,    1.37402,      5.55211) * 0.25 },
+    { uuid = obj_effect_turret_seat_debris_barrel,          offset = vec3(1.07416,     1.37402,      5.55211) * 0.25 },
+    { uuid = obj_effect_turret_seat_debris_reciever_left,   offset = vec3(0.971095,    1.18554,      2.06928) * 0.25 },
+    { uuid = obj_effect_turret_seat_debris_reciever_right,  offset = vec3(-0.971095,   1.18554,      2.06928) * 0.25 },
+    { uuid = obj_effect_turret_seat_debris_shield_left,     offset = vec3(1.45117,     -0.877968,    2.84755) * 0.25 },
+    { uuid = obj_effect_turret_seat_debris_shield_right,    offset = vec3(-1.45117,    -0.877968,    2.84755) * 0.25 },
 }
 
 function TurretBase:server_onCreate()
@@ -240,13 +240,13 @@ function TurretBase:client_onDestroy()
     sm.SetInteractableClientPublicData(self.interactable, nil)
     self.healthBar:destroy()
 
-    if g_repairingTurret and g_turretBase == self.interactable then
+    if sm.MannedTurretRepairActive and g_turretBase == self.interactable then
         self:cl_onRepairEnd()
     end
 end
 
 function TurretBase:client_canErase()
-    local canErase = not g_repairingTurret and self.cl_health >= self.maxHealth and self.cl_turret:getSeatCharacter() == nil
+    local canErase = not sm.MannedTurretRepairActive and self.cl_health >= self.maxHealth and self.cl_turret:getSeatCharacter() == nil
     if not canErase then
         sm.gui.setInteractionText("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>Unable to pick up turret</p>")
     end
@@ -259,7 +259,7 @@ function TurretBase:client_canInteract()
     local canInteract = seatExists and self.cl_turret:getSeatCharacter() == nil
     local canRepair = self.cl_health < self.maxHealth
 
-    if not g_repairingTurret then
+    if not sm.MannedTurretRepairActive then
         local displayTexts = {}
         if canInteract then
             table.insert(displayTexts, sm.gui.getKeyBinding("Use", true))
@@ -277,13 +277,13 @@ function TurretBase:client_canInteract()
     end
 
     if canRepair then
-        if g_repairingTurret then
+        if sm.MannedTurretRepairActive then
             sm.gui.setInteractionText("", getRepairText())
         end
         sm.gui.setInteractionText("", getHealthDisplay(self.cl_health))
     end
 
-    return canInteract and not g_repairingTurret
+    return canInteract and not sm.MannedTurretRepairActive
 end
 
 function TurretBase:client_onInteract(char, state)
@@ -304,10 +304,22 @@ function TurretBase:client_getAvailableChildConnectionCount( connectionType )
 	return self.maxChildCount - #self.interactable:getChildren(connectionType)
 end
 
+function TurretBase:sv_repairstart(args)
+    sm.event.sendToTool(args.currentTool, "sv_forceUnequipOnRepairStart", args.repairTool)
+end
+
 function TurretBase:client_onTinker(char, state)
     if state then
-        sm.tool.forceTool(g_repairTool)
-        g_repairingTurret = true
+        local currentTool = (sm.localPlayer.getPlayer().clientPublicData or {}).currentTool
+        if currentTool then
+            self.network:sendToServer("sv_repairstart", {
+                currentTool = currentTool,
+                repairTool = g_repairTool
+            })
+        else
+            sm.tool.forceTool(g_repairTool)
+            sm.MannedTurretRepairActive = true
+        end
 
         ---@type Interactable?
         g_turretBase = self.interactable
@@ -429,7 +441,7 @@ function TurretBase:client_onClientDataUpdate(data, channel)
             self.seatBuilt = true
             self.gunBuilt = true
 
-            if g_repairingTurret and g_turretBase == self.interactable then
+            if sm.MannedTurretRepairActive and g_turretBase == self.interactable then
                 self:cl_onRepairEnd()
             end
 

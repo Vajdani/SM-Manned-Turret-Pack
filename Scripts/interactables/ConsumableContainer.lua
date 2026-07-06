@@ -1,5 +1,3 @@
-dofile "$CONTENT_DATA/Scripts/util.lua"
-
 ConsumableContainer = class( nil )
 ConsumableContainer.maxChildCount = 255
 

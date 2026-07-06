@@ -1,8 +1,3 @@
-dofile "$GAME_DATA/Scripts/game/AnimationUtil.lua"
-dofile "$SURVIVAL_DATA/Scripts/util.lua"
-dofile "$SURVIVAL_DATA/Scripts/game/survival_harvestable.lua"
-dofile "$SURVIVAL_DATA/Scripts/game/survival_shapes.lua"
-
 dofile "$CONTENT_DATA/Scripts/util.lua"
 
 ---@class ToolEffect
@@ -328,7 +323,7 @@ local function _updateFpAnimations( self, data, equipped, dt )
                         end
                     end
 
-					if endRepair and g_repairingTurret then
+					if endRepair and sm.MannedTurretRepairActive then
 						if not self.hasSentEnd then
 							self.hasSentEnd = true
 							self:cl_onRepairEnd()
@@ -443,7 +438,7 @@ end
 
 function RepairTool:cl_onRepairEnd()
 	sm.tool.forceTool(nil)
-	g_repairingTurret = false
+	sm.MannedTurretRepairActive = false
     g_turretBase = nil
 end
 

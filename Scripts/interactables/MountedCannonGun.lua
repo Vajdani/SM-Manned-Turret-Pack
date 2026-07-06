@@ -14,25 +14,27 @@ MountedCannonGun.ammoTypes = {
         recoilStrength = 1,
         fireCooldown = 40,
         effect = "Cannon - Shoot",
-        ammo = sm.uuid.new("24d5e812-3902-4ac3-b214-a0c924a5c40f"),
-        uuid = sm.uuid.new("24d5e812-3902-4ac3-b214-a0c924a5c40f")
+        ammo = obj_cannon_guidedrocket,
+        uuid = obj_cannon_guidedrocket
     },
     {
         name = "AP Missile",
+        damage = 200,
         velocity = 100,
         recoilStrength = 1,
         fireCooldown = 80,
+        spread = 0,
         effect = "Cannon - Shoot",
-        ammo = sm.uuid.new("667171c3-e8b5-4198-814f-425cbd830b0b"),
-        uuid = sm.uuid.new("667171c3-e8b5-4198-814f-425cbd830b0b")
+        ammo = obj_cannon_aprocket,
+        uuid = projectile_aprocket
     },
     -- {
     --     name = "Air Strike",
     --     recoilStrength = 1,
     --     fireCooldown = 40,
     --     effect = "Cannon - Shoot",
-    --     ammo = sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"),
-    --     uuid = projectile_explosivetape
+    --     ammo = obj_turret_cartridge_explosive,
+    --     uuid = projectile_turret_bullet_explosive
     -- },
     {
         name = "Ratshot",
@@ -40,9 +42,10 @@ MountedCannonGun.ammoTypes = {
         velocity = 250,
         recoilStrength = 3,
         fireCooldown = 40,
+        spread = 0,
         effect = "Cannon - Shoot",
-        ammo = sm.uuid.new("e36b172c-ae2d-4697-af44-8041d9cbde0e"),
-        uuid = sm.uuid.new("53e5da10-99ea-48d5-98b5-c03d0938811e")
+        ammo = obj_cannon_ratshot,
+        uuid = projectile_cannon_ratshot
     },
     {
         name = "Player Launcher",
@@ -50,7 +53,7 @@ MountedCannonGun.ammoTypes = {
         recoilStrength = 1,
         fireCooldown = 40,
         effect = "Cannon - Shoot",
-        ammo = sm.uuid.new( HotbarIcon.pLauncher ),
+        ammo = obj_guimesh_playerlaunch,
         ignoreAmmoConsumption = true
     }
 }
@@ -61,8 +64,8 @@ MountedCannonGun.overrideAmmoTypes = {
         recoilStrength = 3,
         fireCooldown = 40,
         effect = "Cannon - Shoot",
-        ammo = sm.uuid.new("47b43e6e-280d-497e-9896-a3af721d89d2"),
-        uuid = sm.uuid.new("47b43e6e-280d-497e-9896-a3af721d89d2"),
+        ammo = obj_cannon_nuke,
+        uuid = obj_cannon_nuke,
         ignoreAmmoConsumption = true
     },
     {
@@ -92,15 +95,15 @@ MountedCannonGun.overrideAmmoTypes = {
         recoilStrength = 1,
         fireCooldown = 40,
         effect = "Cannon - Shoot",
-        ammo = sm.uuid.new("254360f7-ba19-431d-ac1a-92c1ee9ba483"),
-        uuid = sm.uuid.new("a385b242-ce0c-4e3b-82a7-99da38510709"),
+        ammo = obj_big_potato,
+        uuid = projectile_big_potato,
         ignoreAmmoConsumption = true
     }
 }
 MountedCannonGun.containerToAmmoType = {
-    ["d9e6453a-2e8c-47f8-a843-d0e700957d39"] = 1,
-    -- ["037e3ecb-e0a6-402b-8187-a7264863c64f"] = 2,
-    ["da615034-dd24-4090-ba66-9d36785d7483"] = 3,
+    [tostring(obj_container_cannon_rockets)] = 1,
+    -- [tostring(obj_container_turret_explosive_ammo)] = 2,
+    [tostring(obj_container_cannon_ratshot)] = 3,
 }
 
 
@@ -255,10 +258,10 @@ function MountedCannonGun:sv_onRocketInput(data)
 end
 
 local itemToOverrideAmmoType = {
-    ["47b43e6e-280d-497e-9896-a3af721d89d2"] = 1,
-    ["24001201-40dd-4950-b99f-17d878a9e07b"] = 2,
-    ["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = 3,
-    ["254360f7-ba19-431d-ac1a-92c1ee9ba483"] = 4,
+    [tostring(obj_cannon_nuke)			   ] = 1,
+    ["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = 2,
+    ["24001201-40dd-4950-b99f-17d878a9e07b"] = 3,
+    [tostring(obj_big_potato)			   ] = 4,
 }
 function MountedCannonGun:sv_loadNuke(item)
     self:sv_setOverrideAmmoType(itemToOverrideAmmoType[tostring(item)])
@@ -449,10 +452,10 @@ function MountedCannonGun:cl_updateAmmoType(ammoType)
 end
 
 local itemTransforms = {
-    ["47b43e6e-280d-497e-9896-a3af721d89d2"] = { pos = vec3_up * 0.95 + vec3_forward * 0.022, scale = vec3_one * 0.2 },
-    ["24001201-40dd-4950-b99f-17d878a9e07b"] = { pos = vec3_up * 0.95 + vec3_forward * 0.022, scale = vec3_one * 0.2 },
+    [tostring(obj_cannon_nuke)			   ] = { pos = vec3_up * 0.95 + vec3_forward * 0.022, scale = vec3_one * 0.2 },
     ["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = { pos = vec3_up * 0.95 + vec3_forward * 0.022, scale = vec3_one * 0.2 },
-    ["a385b242-ce0c-4e3b-82a7-99da38510709"] = { pos = vec3_up * 1.05 + vec3_forward * 0.020, scale = vec3_one * 0.25, overrideUUID = sm.uuid.new("254360f7-ba19-431d-ac1a-92c1ee9ba483") },
+    ["24001201-40dd-4950-b99f-17d878a9e07b"] = { pos = vec3_up * 0.95 + vec3_forward * 0.022, scale = vec3_one * 0.2 },
+    [tostring(obj_big_potato)			   ] = { pos = vec3_up * 1.05 + vec3_forward * 0.020, scale = vec3_one * 0.25, overrideUUID = sm.uuid.new("254360f7-ba19-431d-ac1a-92c1ee9ba483") },
 
 }
 function MountedCannonGun:cl_updateLoadedNuke(state)

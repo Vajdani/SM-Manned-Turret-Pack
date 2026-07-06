@@ -21,8 +21,8 @@ MountedTurretGun.ammoTypes = {
         fireCooldown = 6,
         spread = 5,
         effect = "Turret - Shoot",
-        ammo = sm.uuid.new("cabf45e9-a47d-4086-8f5f-4f806d5ec3a2"),
-        uuid = projectile_turret_normal
+        ammo = obj_turret_cartridge_normal,
+        uuid = projectile_turret_bullet_normal
     },
     {
         name = "Tracer AA Rounds",
@@ -32,8 +32,8 @@ MountedTurretGun.ammoTypes = {
         fireCooldown = 6,
         spread = 5,
         effect = "Turret - Shoot",
-        ammo = sm.uuid.new("cc63ddb0-960d-4cf6-941d-d3ee73441d70"),
-        uuid = projectile_turret_normal_tracer
+        ammo = obj_turret_cartridge_normal_tracer,
+        uuid = projectile_turret_bullet_normal_tracer
     },
     {
         name = "Explosive Rounds",
@@ -43,8 +43,8 @@ MountedTurretGun.ammoTypes = {
         fireCooldown = 15,
         spread = 6,
         effect = "Turret - Shoot",
-        ammo = sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"),
-        uuid = projectile_turret_explosive
+        ammo = obj_turret_cartridge_explosive,
+        uuid = projectile_turret_bullet_explosive
     },
      {
         name = "Tracer Explosive Rounds",
@@ -54,8 +54,8 @@ MountedTurretGun.ammoTypes = {
         fireCooldown = 15,
         spread = 6,
         effect = "Turret - Shoot",
-        ammo = sm.uuid.new("2eddca4c-11b4-436a-b041-352bb3978546"),
-        uuid = projectile_turret_explosive_tracer
+        ammo = obj_turret_cartridge_explosive_tracer,
+        uuid = projectile_turret_bullet_explosive_tracer
     },
     {
         name = "Water drops",

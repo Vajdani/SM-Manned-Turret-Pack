@@ -2,7 +2,7 @@ dofile "TurretSeat.lua"
 
 ---@class MinigunSeat : TurretSeat
 MinigunSeat = class(TurretSeat)
-MinigunSeat.baseUUID = "ae0a8816-00d8-4515-932b-00661ef20a0a"
+MinigunSeat.baseUUID = tostring(obj_interactive_minigun_base)
 MinigunSeat.ammoTypes = {
     {
         name = "AA Rounds",
@@ -13,8 +13,8 @@ MinigunSeat.ammoTypes = {
         spread = 12.5,
         overheatPerShot = 0.015,
         effect = "Turret - Shoot",
-        ammo = sm.uuid.new("cabf45e9-a47d-4086-8f5f-4f806d5ec3a2"),
-        uuid = projectile_turret_normal
+        ammo = obj_turret_cartridge_normal,
+        uuid = projectile_turret_bullet_normal
     }
 }
 

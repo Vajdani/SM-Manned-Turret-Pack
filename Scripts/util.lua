@@ -12,6 +12,11 @@
 ---@field ammo Uuid
 ---@field uuid Uuid
 
+dofile "uuids.lua"
+dofile "$SURVIVAL_DATA/Scripts/util.lua"
+dofile "$GAME_DATA/Scripts/game/AnimationUtil.lua"
+dofile "$SURVIVAL_DATA/Scripts/game/survival_shapes.lua"
+dofile "$SURVIVAL_DATA/Scripts/game/survival_harvestable.lua"
 dofile "$SURVIVAL_DATA/Scripts/game/survival_projectiles.lua"
 
 vec3             = sm.vec3.new
@@ -38,19 +43,14 @@ ShootState = {
 }
 
 HotbarIcon = {
-    shoot        = "68a120d9-ba02-413a-a7c7-723d71172f47",
-    shoot_toggle = "d6cbdd2c-f6a3-4e2c-a818-2c6112c1b5e7",
-    light        = "9a42c98b-a8a1-4bc3-a45e-d0964325ca6d",
-    cancel       = "509d50c0-357c-4485-8f24-2f448c5e8e91",
-    zoomIn       = "a983d039-0b6b-43b4-8fef-682eab698a3f",
-    zoomOut      = "74306663-d10b-4738-aa31-c2459b758765",
-    pLauncher    = "242b84e4-c008-4780-a2dd-abacea821637",
+    shoot        = tostring(obj_guimesh_fire),
+    shoot_toggle = tostring(obj_guimesh_lockfire),
+    light        = tostring(obj_guimesh_headlight),
+    cancel       = tostring(obj_guimesh_stopfire),
+    zoomIn       = tostring(obj_guimesh_zoom_minus),
+    zoomOut      = tostring(obj_guimesh_zoom_plus),
+    pLauncher    = tostring(obj_guimesh_playerlaunch),
 }
-
-projectile_turret_normal = sm.uuid.new("fad5bb05-b6da-46ec-92f7-9ffb38bd6c9b")
-projectile_turret_normal_tracer = sm.uuid.new("f6836e94-67e7-4cbd-8f65-f928b4a3bbf0")
-projectile_turret_explosive = sm.uuid.new("cec68b0a-fc9d-4c9d-ae3b-c9d231148c4d")
-projectile_turret_explosive_tracer = sm.uuid.new("8e94e087-a12c-472f-a3d1-78b3fd696605")
 
 connectiontype_turretnormal    = 2^13
 connectiontype_turretexplosive = 2^14

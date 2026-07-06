@@ -55,6 +55,14 @@ function sm.visualization.isBodyHighlighted(body, lift)
     return false
 end
 
+dofile "$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Scripts/mod_override.lua"
+
+oldPreload = oldPreload or sm.tool.preloadRenderables
+function sm.tool.preloadRenderables(rends)
+    dofile "$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Scripts/mod_override.lua"
+
+    oldPreload(rends)
+end
 
 
 local function ReadFile(path)

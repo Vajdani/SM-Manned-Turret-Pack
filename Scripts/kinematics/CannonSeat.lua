@@ -10,8 +10,8 @@ CannonSeat.ammoTypes = {
         recoilStrength = 1,
         fireCooldown = 40,
         effect = "Cannon - Shoot",
-        ammo = sm.uuid.new("24d5e812-3902-4ac3-b214-a0c924a5c40f"),
-        uuid = sm.uuid.new("24d5e812-3902-4ac3-b214-a0c924a5c40f")
+        ammo = obj_cannon_guidedrocket,
+        uuid = obj_cannon_guidedrocket
     },
     {
         name = "AP Missile",
@@ -21,16 +21,16 @@ CannonSeat.ammoTypes = {
         fireCooldown = 80,
         spread = 0,
         effect = "Cannon - Shoot",
-        ammo = sm.uuid.new("667171c3-e8b5-4198-814f-425cbd830b0b"),
-        uuid = sm.uuid.new("aad3baad-861c-4a19-a3f6-b444e70bd27b")
+        ammo = obj_cannon_aprocket,
+        uuid = projectile_aprocket
     },
     {
         name = "Air Strike",
         recoilStrength = 1,
         fireCooldown = 40,
         effect = "Cannon - Shoot",
-        ammo = sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"),
-        uuid = projectile_explosivetape
+        ammo = obj_turret_cartridge_explosive,
+        uuid = projectile_turret_bullet_explosive
     },
     {
         name = "Ratshot",
@@ -40,8 +40,8 @@ CannonSeat.ammoTypes = {
         fireCooldown = 40,
         spread = 0,
         effect = "Cannon - Shoot",
-        ammo = sm.uuid.new("e36b172c-ae2d-4697-af44-8041d9cbde0e"),
-        uuid = sm.uuid.new("53e5da10-99ea-48d5-98b5-c03d0938811e")
+        ammo = obj_cannon_ratshot,
+        uuid = projectile_cannon_ratshot
     },
     {
         name = "Player Launcher",
@@ -49,7 +49,7 @@ CannonSeat.ammoTypes = {
         recoilStrength = 1,
         fireCooldown = 40,
         effect = "Cannon - Shoot",
-        ammo = sm.uuid.new( HotbarIcon.pLauncher ),
+        ammo = obj_guimesh_playerlaunch,
         ignoreAmmoConsumption = true
     }
 }
@@ -60,8 +60,8 @@ CannonSeat.overrideAmmoTypes = {
         recoilStrength = 3,
         fireCooldown = 40,
         effect = "Cannon - Shoot",
-        ammo = sm.uuid.new("47b43e6e-280d-497e-9896-a3af721d89d2"),
-        uuid = sm.uuid.new("47b43e6e-280d-497e-9896-a3af721d89d2"),
+        ammo = obj_cannon_nuke,
+        uuid = obj_cannon_nuke,
         ignoreAmmoConsumption = true
     },
     {
@@ -91,17 +91,17 @@ CannonSeat.overrideAmmoTypes = {
         recoilStrength = 1,
         fireCooldown = 40,
         effect = "Cannon - Shoot",
-        ammo = sm.uuid.new("254360f7-ba19-431d-ac1a-92c1ee9ba483"),
-        uuid = sm.uuid.new("a385b242-ce0c-4e3b-82a7-99da38510709"),
+        ammo = obj_big_potato,
+        uuid = projectile_big_potato,
         ignoreAmmoConsumption = true
     }
 }
 CannonSeat.containerToAmmoType = {
-    ["d9e6453a-2e8c-47f8-a843-d0e700957d39"] = 1,
-    ["037e3ecb-e0a6-402b-8187-a7264863c64f"] = 3,
-    ["da615034-dd24-4090-ba66-9d36785d7483"] = 4,
+    [tostring(obj_container_cannon_rockets)] = 1,
+    [tostring(obj_container_turret_explosive_ammo)] = 3,
+    [tostring(obj_container_cannon_ratshot)] = 4,
 }
-CannonSeat.baseUUID = "a0c96d35-37ca-4cf9-82d8-9b9077132918"
+CannonSeat.baseUUID = tostring(obj_interactive_cannon_base)
 CannonSeat.airStrikeDistanceLimit = 256
 CannonSeat.maxZoom = 5
 CannonSeat.beaconScale = vec3(0.5, 50, 0.5)
@@ -237,7 +237,7 @@ function CannonSeat:sv_startAirStrike(pos, caller)
                 return false
             end
 
-            sm.projectile.projectileAttack(projectile_explosivetape, 100, position, -vec3_up * 100, caller)
+            sm.projectile.projectileAttack(projectile_turret_bullet_explosive, 100, position, -vec3_up * 100, caller)
             turretSelf:sv_applyFiringImpulse(sm.GetTurretAmmoData(turretSelf, 2), turretSelf.harvestable.worldRotation * vec3_up, turretSelf:getFirePosEnd())
             return true
         end
@@ -280,10 +280,10 @@ function CannonSeat:sv_tryLaunchPlayer(player)
 end
 
 local itemToOverrideAmmoType = {
-    ["47b43e6e-280d-497e-9896-a3af721d89d2"] = 1,
-    ["24001201-40dd-4950-b99f-17d878a9e07b"] = 2,
-    ["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = 3,
-    ["254360f7-ba19-431d-ac1a-92c1ee9ba483"] = 4,
+    [tostring(obj_cannon_nuke)			   ] = 1,
+    ["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = 2,
+    ["24001201-40dd-4950-b99f-17d878a9e07b"] = 3,
+    [tostring(obj_big_potato)			   ] = 4,
 }
 function CannonSeat:sv_loadNuke(item)
     self:sv_setOverrideAmmoType(itemToOverrideAmmoType[tostring(item)])
@@ -611,10 +611,10 @@ function CannonSeat:cl_onRocketExplode(detonated)
 end
 
 local itemTransforms = {
-    ["47b43e6e-280d-497e-9896-a3af721d89d2"] = { pos = vec3_up * 2.085 + vec3_forward * 0.22, scale = vec3_one * 0.2 },
-    ["24001201-40dd-4950-b99f-17d878a9e07b"] = { pos = vec3_up * 2.085 + vec3_forward * 0.22, scale = vec3_one * 0.2 },
+    [tostring(obj_cannon_nuke)			   ] = { pos = vec3_up * 2.085 + vec3_forward * 0.22, scale = vec3_one * 0.2 },
     ["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = { pos = vec3_up * 2.085 + vec3_forward * 0.22, scale = vec3_one * 0.2 },
-    ["a385b242-ce0c-4e3b-82a7-99da38510709"] = { pos = vec3_up * 2.185 + vec3_forward * 0.20, scale = vec3_one * 0.25, overrideUUID = sm.uuid.new("254360f7-ba19-431d-ac1a-92c1ee9ba483") },
+    ["24001201-40dd-4950-b99f-17d878a9e07b"] = { pos = vec3_up * 2.085 + vec3_forward * 0.22, scale = vec3_one * 0.2 },
+    [tostring(obj_big_potato)			   ] = { pos = vec3_up * 2.185 + vec3_forward * 0.20, scale = vec3_one * 0.25, overrideUUID = obj_big_potato },
 }
 function CannonSeat:cl_updateLoadedNuke(state)
     if state then

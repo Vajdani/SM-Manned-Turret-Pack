@@ -38,7 +38,7 @@
          "friction": 0.2000000029802322,
          "mass": 3.0,
          "mesh": "$CONTENT_DATA/Projectiles/Renderables/turret_bullet_normal.rend",
-         "name": "turret_bullet_normal",
+         "name": "projectile_turret_bullet_normal",
          "radius": 0.250,
          "spin": 7.0,
          "uuid": "fad5bb05-b6da-46ec-92f7-9ffb38bd6c9b"
@@ -81,7 +81,7 @@
          "friction": 0.2000000029802322,
          "mass": 3.0,
          "mesh": "$CONTENT_DATA/Projectiles/Renderables/turret_bullet_explosive.rend",
-         "name": "turret_bullet_explosive",
+         "name": "projectile_turret_bullet_explosive",
          "radius": 0.250,
          "spin": 7.0,
          "uuid": "cec68b0a-fc9d-4c9d-ae3b-c9d231148c4d"
@@ -124,7 +124,7 @@
          "friction": 0.2000000029802322,
          "mass": 3.0,
          "mesh": "$CONTENT_DATA/Projectiles/Renderables/turret_bullet_normal_tracer.rend",
-         "name": "turret_bullet_normal_tracer",
+         "name": "projectile_turret_bullet_normal_tracer",
          "radius": 0.250,
          "spin": 7.0,
          "uuid": "f6836e94-67e7-4cbd-8f65-f928b4a3bbf0"
@@ -167,7 +167,7 @@
          "friction": 0.2000000029802322,
          "mass": 3.0,
          "mesh": "$CONTENT_DATA/Projectiles/Renderables/turret_bullet_explosive_tracer.rend",
-         "name": "turret_bullet_explosive_tracer",
+         "name": "projectile_turret_bullet_explosive_tracer",
          "radius": 0.250,
          "spin": 7.0,
          "uuid": "8e94e087-a12c-472f-a3d1-78b3fd696605"
@@ -211,7 +211,7 @@
          "friction": 0.2000000029802322,
          "mass": 3.0,
          "mesh": "$CONTENT_DATA/Projectiles/Renderables/cannon_ratshot.rend",
-         "name": "cannon_ratshot",
+         "name": "projectile_cannon_ratshot",
          "radius": 0.250,
          "spin": 7.0,
          "uuid": "53e5da10-99ea-48d5-98b5-c03d0938811e"
@@ -219,7 +219,7 @@
       {
          "attachedEffect": "",
          "uuid": "4cc37871-c53f-4f47-9e68-d08f84492d6a",
-         "name": "potato_copy_nohit",
+         "name": "projectile_potato_copy_nohit",
          "mass": 3.0,
          "radius": 0.25,
          "friction": 0.2,
@@ -242,7 +242,7 @@
       {
          "attachedEffect": "",
          "uuid": "baf7ff9d-191a-4ea4-beba-e160ceb54daf",
-         "name": "potato_copy",
+         "name": "projectile_potato_copy",
          "mass": 3.0,
          "radius": 0.25,
          "friction": 0.2,
@@ -265,7 +265,7 @@
       {
          "attachedEffect": "",
          "uuid": "a385b242-ce0c-4e3b-82a7-99da38510709",
-         "name": "big_potato",
+         "name": "projectile_big_potato",
          "mass": 9.0,
          "radius": 0.75,
          "friction": 0.2,
@@ -296,7 +296,7 @@
       {
          "attachedEffect": "Thruster - Level 5",
          "uuid": "aad3baad-861c-4a19-a3f6-b444e70bd27b",
-         "name": "aprocket",
+         "name": "projectile_aprocket",
          "mass": 500,
          "radius": 1,
          "friction": 0,

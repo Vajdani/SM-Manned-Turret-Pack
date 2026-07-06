@@ -16,8 +16,8 @@ TurretSeat.ammoTypes = {
         fireCooldown = 6,
         spread = 5,
         effect = "Turret - Shoot",
-        ammo = sm.uuid.new("cabf45e9-a47d-4086-8f5f-4f806d5ec3a2"),
-        uuid = projectile_turret_normal
+        ammo = obj_turret_cartridge_normal,
+        uuid = projectile_turret_bullet_normal
     },
     {
         name = "Tracer AA Rounds",
@@ -27,8 +27,8 @@ TurretSeat.ammoTypes = {
         fireCooldown = 6,
         spread = 5,
         effect = "Turret - Shoot",
-        ammo = sm.uuid.new("cc63ddb0-960d-4cf6-941d-d3ee73441d70"),
-        uuid = projectile_turret_normal_tracer
+        ammo = obj_turret_cartridge_normal_tracer,
+        uuid = projectile_turret_bullet_normal_tracer
     },
     {
         name = "Explosive Rounds",
@@ -38,8 +38,8 @@ TurretSeat.ammoTypes = {
         fireCooldown = 15,
         spread = 6,
         effect = "Turret - Shoot",
-        ammo = sm.uuid.new("4c69fa44-dd0d-42ce-9892-e61d13922bd2"),
-        uuid = projectile_turret_explosive
+        ammo = obj_turret_cartridge_explosive,
+        uuid = projectile_turret_bullet_explosive
     },
      {
         name = "Tracer Explosive Rounds",
@@ -49,8 +49,8 @@ TurretSeat.ammoTypes = {
         fireCooldown = 15,
         spread = 6,
         effect = "Turret - Shoot",
-        ammo = sm.uuid.new("2eddca4c-11b4-436a-b041-352bb3978546"),
-        uuid = projectile_turret_explosive_tracer
+        ammo = obj_turret_cartridge_explosive_tracer,
+        uuid = projectile_turret_bullet_explosive_tracer
     },
     {
         name = "Water drops",
@@ -96,8 +96,8 @@ TurretSeat.ammoTypes = {
 }
 TurretSeat.overrideAmmoTypes = {}
 TurretSeat.containerToAmmoType = {
-    ["756594d6-6fdd-4f60-9289-a2416287f942"] = 1,
-    ["037e3ecb-e0a6-402b-8187-a7264863c64f"] = 3,
+    [tostring(obj_container_turret_normal_ammo)] = 1,
+    [tostring(obj_container_turret_explosive_ammo)] = 3,
     ["ea10d1af-b97a-46fb-8895-dfd1becb53bb"] = 5,
     --["be29592a-ef58-4b1d-b18c-895023abd27f"] = 4,
     --["76331bbf-abbd-4b8d-bb54-f721a5b6193b"] = 5,
@@ -417,7 +417,7 @@ function TurretSeat:client_onClientDataUpdate(data, channel)
 end
 
 function TurretSeat:client_canErase()
-    local canErase = not g_repairingTurret and self.harvestable.clientPublicData.health >= sm.GetInteractableClientPublicData(self.cl_base).maxHealth and self.harvestable:getSeatCharacter() == nil
+    local canErase = not sm.MannedTurretRepairActive and self.harvestable.clientPublicData.health >= sm.GetInteractableClientPublicData(self.cl_base).maxHealth and self.harvestable:getSeatCharacter() == nil
     if not canErase then
         sm.gui.setInteractionText("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>Unable to pick up turret</p>")
     end
@@ -439,7 +439,7 @@ function TurretSeat:client_canInteract()
         sm.gui.setInteractionText("", getHealthDisplay(health))
     end
 
-    return canInteract and not g_repairingTurret
+    return canInteract and not sm.MannedTurretRepairActive
 end
 
 function TurretSeat:client_onInteract(char, state)
