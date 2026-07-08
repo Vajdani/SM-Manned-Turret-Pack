@@ -1,5 +1,7 @@
 ---@diagnostic disable: undefined-global
 
+dofile("$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Scripts/mod_override.lua")
+
 -- #region Player
 dofile( "$GAME_DATA/Scripts/game/BasePlayer.lua" )
 
@@ -662,8 +664,24 @@ for k, v in pairs(_G) do
 	elseif v.server_onPlayerJoined then
 		if mannedTurret_originalHookFuncs[k] == nil then
 			mannedTurret_originalHookFuncs[k] = {
-				server_onPlayerJoined = v.server_onPlayerJoined
+				server_onPlayerJoined = v.server_onPlayerJoined,
+				client_onLoadingScreenLifted = v.client_onLoadingScreenLifted
 			}
+		end
+
+		function v:client_onLoadingScreenLifted()
+			local func = mannedTurret_originalHookFuncs[k].client_onLoadingScreenLifted
+			if func then
+				func(self)
+			end
+
+			-- sm.log.error("loading hooks")
+			for k_, load in pairs(sm.MannedTurret_ToolHooks) do
+				load()
+			end
+			-- sm.log.error("loaded hooks")
+
+			sm.MannedTurret_ToolHooks = nil
 		end
 
 		function v:server_onPlayerJoined(player, newPlayer)

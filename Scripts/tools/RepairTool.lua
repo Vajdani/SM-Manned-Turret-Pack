@@ -406,7 +406,6 @@ end
 local startAnim = "hammer"
 function RepairTool:client_onEquip()
 	self.wantEquipped = true
-	self.markedUnforce = false
 
     local rend = renderables[startAnim]
     self.tool:setTpRenderables(rend.tp)
@@ -426,6 +425,7 @@ end
 function RepairTool:client_onUnequip()
 	self.wantEquipped = false
 	self.equipped = false
+	self.markedUnforce = false
 end
 
 function RepairTool:client_onEquippedUpdate()
