@@ -252,6 +252,10 @@ function TurretSeat:server_onExplosion(center, destructionLevel)
     sm.event.sendToInteractable(self.sv_base, "sv_takeDamage", destructionLevel * 25)
 end
 
+function TurretSeat:sv_e_onHit(args)
+    sm.event.sendToInteractable(self.sv_base, "sv_takeDamage", args.damage)
+end
+
 function TurretSeat:server_canErase()
     return self.harvestable.publicData.health >= self.sv_base.publicData.maxHealth and self.sv_seated == nil
 end

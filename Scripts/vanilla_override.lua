@@ -643,7 +643,9 @@ for k, v in pairs(_G) do
 								end
 							end
 						elseif type == "harvestable" then
-							result:getHarvestable():destroy()
+							if not sm.event.sendToHarvestable(target, "sv_e_onHit", { damage = 9999, position = pos }) then
+								sm.physics.explode( pos, 3, 1, 1, 1 )
+							end
 						else
 							break
 						end

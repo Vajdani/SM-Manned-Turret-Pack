@@ -9,7 +9,7 @@ function CannonRocket:server_onCreate()
     if self.isPrimed then
         self.sv_deathTick = sm.game.getServerTick() + self.lifeTime
 
-        self.seat = self.interactable.publicData.seat
+        self.seat = publicData.seat
 
         local owner = publicData.owner
 
