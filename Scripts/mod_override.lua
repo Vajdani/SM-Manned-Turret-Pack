@@ -43,7 +43,6 @@ function HookTools()
                         self.repairTool = repairTool
                     else
                         sm.tool.forceTool(repairTool)
-                        sm.MannedTurretRepairActive = true
                     end
                 end
             end
@@ -98,7 +97,6 @@ function HookTools()
                     local anim = self.fpAnimations.animations[self.unequipAnim]
                     if anim.time >= anim.info.duration then
                         sm.tool.forceTool(self.repairTool)
-                        sm.MannedTurretRepairActive = true
 
                         self.repairTool = nil
                     end

@@ -318,11 +318,11 @@ function TurretBase:client_onTinker(char, state)
             })
         else
             sm.tool.forceTool(g_repairTool)
-            sm.MannedTurretRepairActive = true
         end
 
         ---@type Interactable?
         g_turretBase = self.interactable
+        sm.MannedTurretRepairActive = true
     else
         self:cl_onRepairEnd()
     end
@@ -407,9 +407,13 @@ function TurretBase:client_onClientDataUpdate(data, channel)
                     self.repairVisualization:setOffsetPosition(vec3_forward * 1.33)
                     self.repairVisualization:setScale(vec3_one * 0.25)
                     self.repairVisualization:start()
+
+                    sm.effect.playEffect("Builderguide - Active", self.shape.worldPosition + self.shape.at * 0.53, nil, self.shape.worldRotation)
                 end
             elseif health <= 0 then
                 self.repairVisualization:destroy()
+
+                sm.effect.playEffect("TurretHologram - Deactivate", self.shape.worldPosition + self.shape.at * 0.53, nil, self.shape.worldRotation)
             end
 
             local seatBuilt = health >= self.maxHealth * 0.5
@@ -497,7 +501,7 @@ function TurretBase:cl_n_toggleHud(toggle, forceSurvivalOff)
 end
 
 function TurretBase:cl_onRepairEnd()
-    if not sm.exists(g_repairTool) then return end
+    if not sm.exists(g_repairTool) or not sm.MannedTurretRepairActive then return end
     sm.event.sendToTool(g_repairTool, "cl_markUnforce")
 end
 

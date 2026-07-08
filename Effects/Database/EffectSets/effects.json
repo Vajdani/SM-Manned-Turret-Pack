@@ -301,5 +301,23 @@
 				"delay": 0.0
 			}
 		]
+	},
+	"TurretHologram - Deactivate":
+	{
+		"effectList":
+		[
+			{
+				"type": "particle",
+				"name": "p_builderguide_deactivate",
+				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
+				"direction": { "x": 0.0, "y": 1.0, "z": 0.0 },
+				"attached": false
+			},
+			{
+				"type": "audio",
+				"name": "event:/tools/builderguide/deactivate",
+				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 }
+			}
+		]
 	}
 }
