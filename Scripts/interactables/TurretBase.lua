@@ -393,7 +393,7 @@ function TurretBase:client_onClientDataUpdate(data, channel)
 
         if data.destroyed then
             if data.prevDestroyed == false then
-                self.healthBar:close()
+                self:cl_n_toggleHud(false, false)
 
                 --self.turretRot = self.shape.worldRotation
                 --self.dir = { x = 0, y = 0 }
@@ -451,7 +451,10 @@ function TurretBase:client_onClientDataUpdate(data, channel)
 
             if data.prevDestroyed == true then
                 sm.effect.playEffect("Builderguide - Stagecomplete", self:getSeatPos(), vec3_zero, self.shape.worldRotation)
-                self.repairVisualization:destroy()
+
+                if sm.exists(self.repairVisualization) then
+                    self.repairVisualization:destroy()
+                end
             end
         end
     end

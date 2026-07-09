@@ -140,9 +140,8 @@ end
 function CannonSeat:sv_OnPlayerSuddenUnSeated()
     self:sv_detonateRocket()
 
-    if self.airStrike then
-        self:sv_cancelAirStrike()
-    end
+    self:sv_cancelAirStrike()
+    self.network:sendToClients("cl_endAirStrike")
 end
 
 function CannonSeat:sv_rocketRollUpdate(data)
@@ -383,7 +382,7 @@ function CannonSeat:client_onUpdate(dt)
             local horizontal = BoolToNum(self.strikeMoveControls[2]) - BoolToNum(self.strikeMoveControls[1])
             local veritcal = BoolToNum(self.strikeMoveControls[3]) - BoolToNum(self.strikeMoveControls[4])
 
-            self.strikeCamOffset = self.strikeCamOffset + (vec3_forward * veritcal + vec3_right * horizontal):safeNormalize(vec3_zero) * dt * 10 * self.strikeZoom^2
+            self.strikeCamOffset = self.strikeCamOffset + (vec3_forward * veritcal + vec3_right * horizontal):safeNormalize(vec3_zero) * dt * 10 * self.strikeZoom^1.75
             local distance = self.strikeCamOffset:length()
             if distance >= self.airStrikeDistanceLimit then
                 self.strikeCamOffset = self.strikeCamOffset * (self.airStrikeDistanceLimit / distance)
@@ -437,7 +436,13 @@ function CannonSeat:cl_strikeControls(action)
         self.network:sendToServer("sv_startAirStrike", result.pointWorld)
         self.blockStrikeCast = true
     elseif action == 6 then
-        self:cl_cancelAirStrike()
+        if self.blockStrikeCast then
+            self.network:sendToServer("sv_cancelAirStrike")
+        else
+            self:cl_endAirStrike()
+
+            self.network:sendToServer("sv_SetTurretControlsEnabled", true)
+        end
     elseif action == 7 then
         if self.strikeZoom > 1 then
             self.strikeZoom = self.strikeZoom - 1
@@ -532,6 +537,7 @@ function CannonSeat:cl_startAirStrike()
     self.strikeCamOffset = vec3_GetZero()
     self.strikeZoom = 1
     self.spottingStrike = true
+    self.strikeMoveControls = { [1] = false, [2] = false, [3] = false, [4] = false }
 
     SetPlayerCamOverride({
         cameraState = 3,
@@ -541,31 +547,26 @@ function CannonSeat:cl_startAirStrike()
     })
 end
 
-function CannonSeat:cl_cancelAirStrike(ignore)
-    if not ignore then
-        if self.blockStrikeCast then
-            self.network:sendToServer("sv_cancelAirStrike")
-        else
-            self.network:sendToServer("sv_SetTurretControlsEnabled", true)
-        end
-    end
-
-    if self.spottingStrike then
+function CannonSeat:cl_endAirStrike()
+    if self.seated then
         sm.gui.startFadeToBlack(1.0, 0.5)
         sm.gui.endFadeToBlack(0.8)
         sm.event.sendToInteractable(self.cl_base, "cl_n_toggleHud", true)
         self.controlHud:close()
-        self.airStrikeRadius:stop()
-        self.airStrikeBaseMarker:stop()
+
+        if sm.exists(self.airStrikeRadius) then
+            self.airStrikeRadius:stop()
+        end
+
+        if sm.exists(self.airStrikeBaseMarker) then
+            self.airStrikeBaseMarker:stop()
+        end
+
         self:cl_updateHotbar()
     end
 
     SetPlayerCamOverride()
     self.spottingStrike = false
-end
-
-function CannonSeat:cl_endAirStrike()
-    self:cl_cancelAirStrike(true)
     self.blockStrikeCast = false
 end
 
@@ -584,14 +585,18 @@ function CannonSeat:cl_updateAirStrikeBeacon(pos)
         self.airStrikeBeaconRange:setScale(vec3_one * 3 * 5)
         self.airStrikeBeaconRange:start()
     else
-        self.airStrikeBeacon:stop()
-        self.airStrikeBeacon:destroy()
+        if sm.exists(self.airStrikeBeacon) then
+            self.airStrikeBeacon:stop()
+            self.airStrikeBeacon:destroy()
+        end
 
-        self.airStrikeBeaconRange:stop()
-        self.airStrikeBeaconRange:destroy()
+        if sm.exists(self.airStrikeBeaconRange) then
+            self.airStrikeBeaconRange:stop()
+            self.airStrikeBeaconRange:destroy()
+        end
 
         if self.seated then
-            self:cl_endAirStrike()
+            self.blockStrikeCast = false
         end
     end
 end
