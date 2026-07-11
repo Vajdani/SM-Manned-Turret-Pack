@@ -259,8 +259,8 @@ end
 
 local itemToOverrideAmmoType = {
     [tostring(obj_cannon_nuke)			   ] = 1,
-    ["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = 2,
-    ["24001201-40dd-4950-b99f-17d878a9e07b"] = 3,
+    ["24001201-40dd-4950-b99f-17d878a9e07b"] = 2,
+    ["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = 3,
     [tostring(obj_big_potato)			   ] = 4,
 }
 function MountedCannonGun:sv_loadNuke(item)
@@ -455,7 +455,7 @@ local itemTransforms = {
     [tostring(obj_cannon_nuke)			   ] = { pos = vec3_up * 0.95 + vec3_forward * 0.022, scale = vec3_one * 0.2 },
     ["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = { pos = vec3_up * 0.95 + vec3_forward * 0.022, scale = vec3_one * 0.2 },
     ["24001201-40dd-4950-b99f-17d878a9e07b"] = { pos = vec3_up * 0.95 + vec3_forward * 0.022, scale = vec3_one * 0.2 },
-    [tostring(obj_big_potato)			   ] = { pos = vec3_up * 1.05 + vec3_forward * 0.020, scale = vec3_one * 0.25, overrideUUID = sm.uuid.new("254360f7-ba19-431d-ac1a-92c1ee9ba483") },
+    [tostring(projectile_big_potato)       ] = { pos = vec3_up * 1.05 + vec3_forward * 0.020, scale = vec3_one * 0.25, overrideUUID = sm.uuid.new("254360f7-ba19-431d-ac1a-92c1ee9ba483") },
 
 }
 function MountedCannonGun:cl_updateLoadedNuke(state)

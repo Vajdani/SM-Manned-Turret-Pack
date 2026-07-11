@@ -280,8 +280,8 @@ end
 
 local itemToOverrideAmmoType = {
     [tostring(obj_cannon_nuke)			   ] = 1,
-    ["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = 2,
-    ["24001201-40dd-4950-b99f-17d878a9e07b"] = 3,
+    ["24001201-40dd-4950-b99f-17d878a9e07b"] = 2,
+    ["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = 3,
     [tostring(obj_big_potato)			   ] = 4,
 }
 function CannonSeat:sv_loadNuke(item)
@@ -619,7 +619,7 @@ local itemTransforms = {
     [tostring(obj_cannon_nuke)			   ] = { pos = vec3_up * 2.085 + vec3_forward * 0.22, scale = vec3_one * 0.2 },
     ["8d3b98de-c981-4f05-abfe-d22ee4781d33"] = { pos = vec3_up * 2.085 + vec3_forward * 0.22, scale = vec3_one * 0.2 },
     ["24001201-40dd-4950-b99f-17d878a9e07b"] = { pos = vec3_up * 2.085 + vec3_forward * 0.22, scale = vec3_one * 0.2 },
-    [tostring(obj_big_potato)			   ] = { pos = vec3_up * 2.185 + vec3_forward * 0.20, scale = vec3_one * 0.25, overrideUUID = obj_big_potato },
+    [tostring(projectile_big_potato)       ] = { pos = vec3_up * 2.185 + vec3_forward * 0.20, scale = vec3_one * 0.25, overrideUUID = obj_big_potato },
 }
 function CannonSeat:cl_updateLoadedNuke(state)
     if state then

@@ -363,7 +363,7 @@ function CannonNuke_Tool:client_onUnequip()
 end
 
 local cannonUUIDs = {
-	[tostring(obj_interactive_cannon_base)] 		= true,
+	["f2efb390-b77d-4587-b2ce-b895698e2fd5"] 		= true,
 	[tostring(obj_interactive_mountable_cannongun)] = true,
 }
 

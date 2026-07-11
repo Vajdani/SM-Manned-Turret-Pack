@@ -119,9 +119,10 @@ function MountedTurretGun:server_onCreate()
 	self.sv.parentActive = false
 
 	local ammoType = self.storage:load()
-	self.sv_ammoType = ammoType or 1
 	if ammoType then
 		self:sv_updateAmmoType(ammoType)
+	else
+		self.sv_ammoType = 1
 	end
 end
 
