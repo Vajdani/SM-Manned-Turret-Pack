@@ -7,6 +7,14 @@
             {
                "material" : "PoseAnimDifAsgNor",
                "textureList" : [
+                  "$GAME_DATA/Textures/Tiled/Metal/t_tiled_building_shinymetal_dif.tga",
+                  "$GAME_DATA/Textures/Tiled/Metal/t_tiled_building_shinymetal_asg.tga",
+                  "$GAME_DATA/Textures/Tiled/Metal/t_tiled_building_shinymetal_nor.tga"
+               ]
+            },
+            {
+               "material" : "PoseAnimDifAsgNor",
+               "textureList" : [
                   "$CONTENT_DATA/Objects/Textures/TurretSeat/Normal/kin_interactive_turret_02_dif.tga",
                   "$CONTENT_DATA/Objects/Textures/TurretSeat/Normal/kin_interactive_turret_02_asg.tga",
                   "$CONTENT_DATA/Objects/Textures/TurretSeat/Normal/kin_interactive_turret_02_nor.tga"
