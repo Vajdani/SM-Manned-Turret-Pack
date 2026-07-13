@@ -7,9 +7,9 @@
             {
                "material" : "PoseAnimDifAsgNor",
                "textureList" : [
-                  "$GAME_DATA/Textures/Tiled/Metal/t_tiled_building_shinymetal_dif.tga",
-                  "$GAME_DATA/Textures/Tiled/Metal/t_tiled_building_shinymetal_asg.tga",
-                  "$GAME_DATA/Textures/Tiled/Metal/t_tiled_building_shinymetal_nor.tga"
+                  "$CONTENT_DATA/Objects/Textures/MountedGun/obj_interactive_mountable_turretgun_dif.tga",
+                  "$CONTENT_DATA/Objects/Textures/MountedGun/obj_interactive_mountable_turretgun_asg.tga",
+                  "$CONTENT_DATA/Objects/Textures/MountedGun/obj_interactive_mountable_turretgun_nor.tga"
                ]
             },
             {

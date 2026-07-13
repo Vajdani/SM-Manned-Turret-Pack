@@ -23,16 +23,16 @@
             "data" : {},
             "filename" : "$CONTENT_DATA/Scripts/interactables/MountedTurretGun.lua"
          },
-         "sticky" : "-X+X-Y",
+         "sticky" : "-X+X-Y+Y-Z",
          "uuid" : "891bd0f5-f387-4020-a2b4-1bace9932ec0"
       },
       {
-         "color" : "6b7d07",
          "box" : {
             "x" : 2,
             "y" : 2,
             "z" : 7
          },
+         "color" : "6b7d07",
          "name" : "obj_interactive_mountable_cannongun",
          "physicsMaterial" : "Metal",
          "ratings" : {
@@ -48,7 +48,7 @@
             "data" : {},
             "filename" : "$CONTENT_DATA/Scripts/interactables/MountedCannonGun.lua"
          },
-         "sticky" : "-X+X-Y+Y",
+         "sticky" : "-X+X-Y+Y-Z",
          "uuid" : "0af5379e-29e8-4eb3-b965-6b3993c8f1df"
       }
    ]
