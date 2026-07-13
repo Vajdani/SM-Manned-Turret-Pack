@@ -304,14 +304,14 @@ function MountedTurretGun:cl_updateAmmoType(ammoType)
 end
 
 local effectOffsets = {
-	["Mountedwatercanon - Shoot"] = vec3_zero
+	["Mountedwatercanon - Shoot"] = vec3_forward * 0.125
 }
 function MountedTurretGun:cl_onShoot(ammoData)
 	self.boltValue = 1.0
 
 	local effect = ammoData.effect
 	local rot = self.shape.worldRotation
-	sm.effect.playEffect(effect, self.shape.worldPosition + rot * (effectOffsets[effect] or vec3_up), vec3_zero, rot)
+	sm.effect.playEffect(effect, self.shape.worldPosition + rot * (effectOffsets[effect] or (vec3_up * 0.8 + vec3_forward * 0.125)), vec3_zero, rot)
 end
 
 function MountedTurretGun:getInputs()
