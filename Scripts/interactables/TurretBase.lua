@@ -175,7 +175,7 @@ function TurretBase:sv_createTurret()
     if self.destroyed then return end
 
     local pos = self:getSeatPos()
-    self.turret = sm.harvestable.create(sm.uuid.new(self.seatUUID), pos, self.shape.worldRotation)
+    self.turret = sm.harvestable.createHarvestable(sm.uuid.new(self.seatUUID), pos, self.shape.worldRotation)
     self.turret:setParams({ base = self.interactable, ammoType = self.sv_ammoType })
     self.network:setClientData(self.turret, 1)
 

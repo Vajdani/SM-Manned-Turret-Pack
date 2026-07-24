@@ -303,12 +303,18 @@ function CannonSeat:client_onDestroy()
     self.controlHud:destroy()
 
     if sm.exists(self.airStrikeBeacon) then
-        self.airStrikeBeaconRange:destroy()
         self.airStrikeBeacon:destroy()
+    end
+
+    if sm.exists(self.airStrikeBeaconRange) then
+        self.airStrikeBeaconRange:destroy()
     end
 
     if sm.exists(self.airStrikeRadius) then
         self.airStrikeRadius:destroy()
+    end
+
+    if sm.exists(self.airStrikeBaseMarker) then
         self.airStrikeBaseMarker:destroy()
     end
 end
