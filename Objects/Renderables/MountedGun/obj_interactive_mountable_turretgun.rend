@@ -1,26 +1,38 @@
 {
-   "lodList" : [
-      {
-         "mesh" : "$CONTENT_DATA/Objects/Mesh/MountedGun/TurretGun/obj_interactive_mountable_turretgun.fbx",
-         "pose0" : "$CONTENT_DATA/Objects/Mesh/MountedGun/TurretGun/obj_interactive_mountable_turretgun_pose0.fbx",
-         "subMeshList" : [
-            {
-               "material" : "PoseAnimDifAsgNor",
-               "textureList" : [
-                  "$CONTENT_DATA/Objects/Textures/MountedGun/obj_interactive_mountable_turretgun_dif.tga",
-                  "$CONTENT_DATA/Objects/Textures/MountedGun/obj_interactive_mountable_turretgun_asg.tga",
-                  "$CONTENT_DATA/Objects/Textures/MountedGun/obj_interactive_mountable_turretgun_nor.tga"
-               ]
-            },
-            {
-               "material" : "PoseAnimDifAsgNor",
-               "textureList" : [
-                  "$CONTENT_DATA/Objects/Textures/TurretSeat/Normal/kin_interactive_turret_02_dif.tga",
-                  "$CONTENT_DATA/Objects/Textures/TurretSeat/Normal/kin_interactive_turret_02_asg.tga",
-                  "$CONTENT_DATA/Objects/Textures/TurretSeat/Normal/kin_interactive_turret_02_nor.tga"
-               ]
-            }
-         ]
-      }
-   ]
+	"lodList" : 
+	[
+		{
+			"mesh" : "$CONTENT_DATA/Objects/Mesh/MountedGun/TurretGun/obj_interactive_mountable_turretgun.fbx",
+			"pose0" : "$CONTENT_DATA/Objects/Mesh/MountedGun/TurretGun/obj_interactive_mountable_turretgun_pose0.fbx",
+			"subMeshList" : 
+			[
+				{
+					"custom" : 
+					{
+						"metalProfile" : "DifAsgNor_Painted"
+					},
+					"material" : "PoseAnimDifAsgNor_Metal",
+					"textureList" : 
+					[
+						"$CONTENT_DATA/Objects/Textures/MountedGun/obj_interactive_mountable_turretgun_dif.tga",
+						"$CONTENT_DATA/Objects/Textures/MountedGun/obj_interactive_mountable_turretgun_asg.tga",
+						"$CONTENT_DATA/Objects/Textures/MountedGun/obj_interactive_mountable_turretgun_nor.tga"
+					]
+				},
+				{
+					"custom" : 
+					{
+						"metalProfile" : "DifAsgNor_MediumReflection"
+					},
+					"material" : "PoseAnimDifAsgNor_Metal",
+					"textureList" : 
+					[
+						"$CONTENT_DATA/Objects/Textures/TurretSeat/Normal/kin_interactive_turret_02_dif.tga",
+						"$CONTENT_DATA/Objects/Textures/TurretSeat/Normal/kin_interactive_turret_02_asg.tga",
+						"$CONTENT_DATA/Objects/Textures/TurretSeat/Normal/kin_interactive_turret_02_nor.tga"
+					]
+				}
+			]
+		}
+	]
 }

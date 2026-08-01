@@ -1,17 +1,24 @@
 {
-   "lodList" : [
-      {
-         "mesh" : "$CONTENT_DATA/Projectiles/Mesh/turret_bullet.fbx",
-         "subMeshList" : [
-            {
-               "material" : "DifAsgNor",
-               "textureList" : [
-                  "$CONTENT_DATA/Objects/Textures/Ammo/obj_turret_cartridge_tracer_dif.tga",
-                  "$CONTENT_DATA/Objects/Textures/Ammo/obj_turret_cartridge_asg.tga",
-                  "$CONTENT_DATA/Objects/Textures/Ammo/obj_turret_cartridge_nor.tga"
-               ]
-            }
-         ]
-      }
-   ]
+	"lodList" : 
+	[
+		{
+			"mesh" : "$CONTENT_DATA/Projectiles/Mesh/turret_bullet.fbx",
+			"subMeshList" : 
+			[
+				{
+					"custom" : 
+					{
+						"metalProfile" : "DifAsgNor_MediumReflection"
+					},
+					"material" : "DifAsgNor_Metal",
+					"textureList" : 
+					[
+						"$CONTENT_DATA/Objects/Textures/Ammo/obj_turret_cartridge_tracer_dif.tga",
+						"$CONTENT_DATA/Objects/Textures/Ammo/obj_turret_cartridge_asg.tga",
+						"$CONTENT_DATA/Objects/Textures/Ammo/obj_turret_cartridge_nor.tga"
+					]
+				}
+			]
+		}
+	]
 }

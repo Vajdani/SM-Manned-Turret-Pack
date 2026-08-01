@@ -1,17 +1,25 @@
 {
-   "lodList" : [
-      {
-         "mesh" : "$CONTENT_DATA/Objects/Mesh/Ammo/obj_cannon_rocket.fbx",
-         "subMeshMap" : {
-            "lambert1" : {
-               "material" : "DifAsgNor",
-               "textureList" : [
-                  "$CONTENT_DATA/Objects/Textures/Ammo/obj_cannon_rocket_dif.tga",
-                  "$CONTENT_DATA/Objects/Textures/Ammo/obj_cannon_rocket_asg.tga",
-                  "$CONTENT_DATA/Objects/Textures/Ammo/obj_cannon_rocket_nor.tga"
-               ]
-            }
-         }
-      }
-   ]
+	"lodList" : 
+	[
+		{
+			"mesh" : "$CONTENT_DATA/Objects/Mesh/Ammo/obj_cannon_rocket.fbx",
+			"subMeshMap" : 
+			{
+				"lambert1" : 
+				{
+					"custom" : 
+					{
+						"metalProfile" : "DifAsgNor_MediumReflection"
+					},
+					"material" : "DifAsgNor_Metal",
+					"textureList" : 
+					[
+						"$CONTENT_DATA/Objects/Textures/Ammo/obj_cannon_rocket_dif.tga",
+						"$CONTENT_DATA/Objects/Textures/Ammo/obj_cannon_rocket_asg.tga",
+						"$CONTENT_DATA/Objects/Textures/Ammo/obj_cannon_rocket_nor.tga"
+					]
+				}
+			}
+		}
+	]
 }
