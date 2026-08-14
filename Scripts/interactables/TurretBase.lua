@@ -210,6 +210,7 @@ function TurretBase:client_onCreate()
     self.healthBar = sm.gui.createSurvivalHudGui()
     self.healthBar:setVisible("WaterBar", false)
     self.healthBar:setVisible("FoodBar", false)
+    self.healthBar:setVisible("BreathPanel", false)
     self.healthBar:setVisible("BindingPanel", false)
 
     self.turretRot = self.shape.worldRotation

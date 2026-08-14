@@ -32,7 +32,7 @@
             ]
          },
          "effect": "Sledgehammer - Hit",
-         "effectmaterial": "Metal",
+         "effectmaterial": "Sledgehammer",
          "enableGravity": true,
          "enableImpactEffect": false,
          "friction": 0.2000000029802322,
@@ -75,7 +75,7 @@
             ]
          },
          "effect": "Sledgehammer - Hit",
-         "effectmaterial": "Metal",
+         "effectmaterial": "Sledgehammer",
          "enableGravity": true,
          "enableImpactEffect": false,
          "friction": 0.2000000029802322,
@@ -118,7 +118,7 @@
             ]
          },
          "effect": "Sledgehammer - Hit",
-         "effectmaterial": "Metal",
+         "effectmaterial": "Sledgehammer",
          "enableGravity": true,
          "enableImpactEffect": false,
          "friction": 0.2000000029802322,
@@ -161,7 +161,7 @@
             ]
          },
          "effect": "Sledgehammer - Hit",
-         "effectmaterial": "Metal",
+         "effectmaterial": "Sledgehammer",
          "enableGravity": true,
          "enableImpactEffect": false,
          "friction": 0.2000000029802322,
@@ -205,7 +205,7 @@
             ]
          },
          "effect": "Sledgehammer - Hit",
-         "effectmaterial": "Metal",
+         "effectmaterial": "Sledgehammer",
          "enableGravity": true,
          "enableImpactEffect": false,
          "friction": 0.2000000029802322,
@@ -304,7 +304,7 @@
          "mesh": "$CONTENT_DATA/Projectiles/Renderables/cannon_aprocket.rend",
          "effect": "PropaneTank - ExplosionSmall",
          "audiomass": 750.0,
-         "effectmaterial": "Metal",
+         "effectmaterial": "Sledgehammer",
          "enableGravity": false,
          "destruction": {
             "destructionLevels": [

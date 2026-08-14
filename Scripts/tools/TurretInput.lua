@@ -58,7 +58,6 @@ end
 function TurretInput:client_onCreate()
     if not self.tool:isLocal() then return end
 
-    sm.log.error("turret input")
     g_turretInput = self
 
     self.lmb = 0

@@ -2,29 +2,6 @@
 
 sm.MannedTurret_ToolHooks = sm.MannedTurret_ToolHooks or {}
 
-local gameHooked = false
-local oldEffect = sm.effect.createEffect
-function effectHook(name, object, bone)
-    if not gameHooked and name == "SurvivalMusic" then
-        gameHooked = true
-        dofile("$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Scripts/vanilla_override.lua")
-    end
-
-	return oldEffect(name, object, bone)
-end
-sm.effect.createEffect = effectHook
-
-oldBind = oldBind or sm.game.bindChatCommand
-function bindHook(command, params, callback, help)
-    if not gameHooked then
-        gameHooked = true
-        dofile("$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Scripts/vanilla_override.lua")
-    end
-
-	return oldBind(command, params, callback, help)
-end
-sm.game.bindChatCommand = bindHook
-
 oldVizSetBodies = oldVizSetBodies or sm.visualization.setCreationBodies
 function sm.visualization.setCreationBodies(bodies)
     sm.visualization.currentBodies = bodies
@@ -82,6 +59,7 @@ TurretAssistor = class()
 sm.MANNEDTURRET_turretChunkLoaders = sm.MANNEDTURRET_turretChunkLoaders or {}
 sm.MANNEDTURRET_turretChunkLoaders_saveKey = "af96778d-402e-4f42-9332-3cb7d9119479"
 function TurretAssistor:server_onCreate()
+    sm.log.warning("[MANNED TURRET] turret assistor create")
     if sm.MANNEDTURRET_turretAssistor then return end --Prevent multiple loads
 
     -- sm.storage.save(sm.MANNEDTURRET_turretChunkLoaders_saveKey, nil)
@@ -163,7 +141,12 @@ function TurretAssistor:sv_sendDataToJoiner(player)
 end
 
 function TurretAssistor:sv_saveChunkLoaders()
-	sm.storage.save(sm.MANNEDTURRET_turretChunkLoaders_saveKey, sm.MANNEDTURRET_turretChunkLoaders)
+    local saved = {}
+    for k, v in pairs(sm.MANNEDTURRET_turretChunkLoaders) do
+        saved[k] = { bases = v.bases }
+    end
+
+	sm.storage.save(sm.MANNEDTURRET_turretChunkLoaders_saveKey, saved)
 end
 
 function TurretAssistor:sv_addCharToDestroyQueue(char)

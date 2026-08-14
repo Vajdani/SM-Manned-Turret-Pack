@@ -19,6 +19,20 @@ dofile "$SURVIVAL_DATA/Scripts/game/survival_shapes.lua"
 dofile "$SURVIVAL_DATA/Scripts/game/survival_harvestable.lua"
 dofile "$SURVIVAL_DATA/Scripts/game/survival_projectiles.lua"
 
+oldUuid = oldUuid or sm.uuid.new
+function sm.uuid.new(uuid)
+    if not sm.MannedTurret_gameHooked then
+        dofile("$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Scripts/vanilla_override.lua")
+    end
+
+	return oldUuid(uuid)
+end
+
+--nuke default world creation
+function sm.world.getLegacyCreativeWorld()
+    return nil
+end
+
 vec3             = sm.vec3.new
 vec3_right       = vec3(1,0,0)
 vec3_forward     = vec3(0,1,0)
@@ -125,12 +139,12 @@ function SendDamageEventToCharacter(char, args)
 	if not sm.exists(char) then return end
 
 	if char:isPlayer() then
-		sm.event.sendToPlayer(char:getPlayer(), "sv_e_takeDamage", args)
+		sm.event.sendToPlayer(char:getPlayer(), "sv_e_receiveDamage", args)
 	else
 		local unit = char:getUnit()
 		if not sm.exists(unit) then return end
 
-		sm.event.sendToUnit(unit, "sv_e_takeDamage", args)
+		sm.event.sendToUnit(unit, "sv_e_receiveDamage", args)
 	end
 end
 

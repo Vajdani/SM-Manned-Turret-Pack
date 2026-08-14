@@ -1,3 +1,5 @@
+dofile "$CONTENT_DATA/Scripts/util.lua"
+
 ---@class TurretSeat : HarvestableClass
 ---@field sv_base Interactable
 ---@field cl_base Interactable
@@ -485,7 +487,7 @@ function TurretSeat:cl_unSeat_graphics()
 end
 
 function TurretSeat:client_onAction(action, state)
-    -- if action == 0 then return false end
+    -- if action == 20 or action == 21 then return false end
     if not self.cl_controlsEnabled or not sm.exists(self.cl_base) then return true end
 
     if self.cl_base.shape.body:isOnLift() then
@@ -524,17 +526,15 @@ function TurretSeat:client_onAction(action, state)
                 return true
             end
 
-            if #self.ammoTypes > 1 and not sm.game.getEnableAmmoConsumption() and self.cl_base:getSingleParent() == nil then
-                if self.cl_shootState == ShootState.null then
-                    local ammoType = self.cl_ammoType < #self.ammoTypes and self.cl_ammoType + 1 or 1
-                    sm.gui.displayAlertText("Ammunition selected: #df7f00"..sm.GetTurretAmmoData(self, ammoType).name, 2)
-                    sm.audio.play("PaintTool - ColorPick")
+            if #self.ammoTypes > 1 and not sm.game.getEnableAmmoConsumption() and self.cl_base:getSingleParent() == nil and self.cl_shootState == ShootState.null then
+                local ammoType = self.cl_ammoType < #self.ammoTypes and self.cl_ammoType + 1 or 1
+                sm.gui.displayAlertText("Ammunition selected: #df7f00"..sm.GetTurretAmmoData(self, ammoType).name, 2)
+                sm.audio.play("PaintTool - ColorPick")
 
-                    self.cl_ammoType = ammoType
-                    self:cl_updateHotbar()
+                self.cl_ammoType = ammoType
+                self:cl_updateHotbar()
 
-                    self.network:sendToServer("sv_updateAmmoType", ammoType)
-                end
+                self.network:sendToServer("sv_updateAmmoType", ammoType)
             end
         elseif action == 15 then
             self:cl_unSeat()
@@ -588,6 +588,8 @@ function TurretSeat:client_onUpdate(dt)
     self.harvestable:setPoseWeight(1, sm.util.easing("easeOutCubic", self.recoil_r))
 
     if self.seated then
+        -- local _, pullback = sm.camera.getCameraPullback()
+        -- SetPlayerCamOverride({ cameraState = pullback == 0 and 5 or 6 })
         SetPlayerCamOverride({ cameraState = 5 })
 
         self:cl_displayAmmoInfo()

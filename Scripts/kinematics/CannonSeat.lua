@@ -395,7 +395,7 @@ function CannonSeat:client_onUpdate(dt)
             end
 
             SetPlayerCamOverride({
-                cameraState = 3,
+                cameraState = 7,
                 cameraFov = 45,
                 cameraPosition = self:getStrikeCamPos(dt),
                 cameraDirection = -vec3_up
@@ -485,7 +485,7 @@ function CannonSeat:cl_shoot(args)
 
             local rot = self.harvestable.worldRotation
             SetPlayerCamOverride({
-                cameraState = 3,
+                cameraState = 7,
                 cameraFov = 45,
                 cameraPosition = sm.camera.getPosition() + rot * vec3_up * 0.25,
                 cameraRotation = rot * turret_projectile_rotation_adjustment
@@ -546,7 +546,7 @@ function CannonSeat:cl_startAirStrike()
     self.strikeMoveControls = { [1] = false, [2] = false, [3] = false, [4] = false }
 
     SetPlayerCamOverride({
-        cameraState = 3,
+        cameraState = 7,
         cameraFov = 45,
         cameraPosition = self:getStrikeCamPos(),
         cameraDirection = -vec3_up

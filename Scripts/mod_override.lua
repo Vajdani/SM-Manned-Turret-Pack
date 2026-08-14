@@ -1,4 +1,4 @@
-sm.log.error("Mod override loading")
+sm.log.error("[MANNED TURRET] Mod override loading")
 
 --All Technical Guns tools
 local blackList = {
@@ -14,7 +14,7 @@ local blackList = {
     coltt = true,
 }
 
-oldToolFuncs = oldToolFuncs or {}
+MannedTurret_oldToolFuncs = MannedTurret_oldToolFuncs or {}
 function HookTools()
     for k, v in pairs(_G) do
         if type(v) ~= "table" then
@@ -23,8 +23,8 @@ function HookTools()
 
         if v.client_onEquip and k ~= "RepairTool" then
             print("[Manned Turret] Tool found:", k)
-            if not oldToolFuncs[k] then
-                oldToolFuncs[k] = {
+            if not MannedTurret_oldToolFuncs[k] then
+                MannedTurret_oldToolFuncs[k] = {
                     client_onEquip = v.client_onEquip,
                     client_onUnequip = v.client_onUnequip,
                     client_onUpdate = v.client_onUpdate,
@@ -57,7 +57,7 @@ function HookTools()
 
                 -- print(k, "equipping", ...)
 
-                local func = oldToolFuncs[k].client_onEquip
+                local func = MannedTurret_oldToolFuncs[k].client_onEquip
                 if func then
                     func(self, ...)
                 end
@@ -81,14 +81,14 @@ function HookTools()
 
                 -- print(k, "unequipping", ...)
 
-                local func = oldToolFuncs[k].client_onUnequip
+                local func = MannedTurret_oldToolFuncs[k].client_onUnequip
                 if func then
                     func(self, ...)
                 end
             end
 
             function v:client_onUpdate(dt)
-                local func = oldToolFuncs[k].client_onUpdate
+                local func = MannedTurret_oldToolFuncs[k].client_onUpdate
                 if func then
                     func(self, dt)
                 end
@@ -109,9 +109,7 @@ function HookTools()
 end
 
 if sm.MannedTurret_ToolHooks then
-    table.insert(sm.MannedTurret_ToolHooks, function()
-        HookTools()
-    end)
+    table.insert(sm.MannedTurret_ToolHooks, HookTools)
 else
     HookTools()
 end

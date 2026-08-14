@@ -251,7 +251,7 @@
 		},
 		{
 			"autoTool": "e6b6a84a-ab65-4f1d-a80d-5481e0ca17f2",
-			"color": "cb0a00",
+			"color": "e0b963",
 			"cylinder": {
 				"axis": "Y",
 				"depth": 3,
@@ -259,7 +259,7 @@
 			},
 			"flammable": true,
 			"name": "obj_big_potato",
-			"physicsMaterial": "Potato",
+			"physicsMaterial": "Fruit",
 			"previewRotation": [
 				0,
 				0,

@@ -397,7 +397,7 @@ function MountedCannonGun:cl_onShoot(ammoData)
 
         local rot = self.shape.worldRotation
         SetPlayerCamOverride({
-            cameraState = 3,
+            cameraState = 7,
             cameraFov = 45,
             cameraPosition = self.shape.worldPosition + rot * self.fireOffset,
             cameraRotation = rot * turret_projectile_rotation_adjustment
