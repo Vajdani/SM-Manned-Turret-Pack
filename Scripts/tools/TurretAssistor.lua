@@ -77,27 +77,7 @@ function TurretAssistor:server_onCreate()
     sm.log.warning("[MANNED TURRET] turret assistor create")
     if sm.MANNEDTURRET_turretAssistor then return end --Prevent multiple loads
 
-    -- sm.storage.save(sm.MANNEDTURRET_turretChunkLoaders_saveKey, nil)
     sm.MANNEDTURRET_turretChunkLoaders = sm.storage.load(sm.MANNEDTURRET_turretChunkLoaders_saveKey) or {}
-    sm.log.error(sm.MANNEDTURRET_turretChunkLoaders)
-
-    for cellKey, chunk in pairs(sm.MANNEDTURRET_turretChunkLoaders) do
-        local newChunks = {}
-        for _k, base in pairs(chunk.bases) do
-            if sm.exists(base) then
-                table.insert(newChunks, base)
-            end
-        end
-
-        if #newChunks == 0 then
-            sm.event.sendToGame("sv_releaseTurretChunkLoaderHandle", cellKey)
-        end
-
-        chunk.bases = newChunks
-    end
-
-    self:sv_saveChunkLoaders()
-
     sm.MANNEDTURRET_turretAssistor = self.tool
 
     self.players = sm.player.getAllPlayers()
@@ -163,15 +143,6 @@ function TurretAssistor:sv_sendDataToJoiner(player)
             end
         end
     end
-end
-
-function TurretAssistor:sv_saveChunkLoaders()
-    local saved = {}
-    for k, v in pairs(sm.MANNEDTURRET_turretChunkLoaders) do
-        saved[k] = { bases = v.bases }
-    end
-
-	sm.storage.save(sm.MANNEDTURRET_turretChunkLoaders_saveKey, saved)
 end
 
 function TurretAssistor:sv_addCharToDestroyQueue(char)

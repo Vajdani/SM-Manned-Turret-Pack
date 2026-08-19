@@ -864,16 +864,12 @@ for k, v in pairs(_G) do
 				sm.log.error(int, "IS ALREADY SAVED, NOT SAVING AGAIN")
 			else
 				table.insert(sm.MANNEDTURRET_turretChunkLoaders[cellKey].bases, int)
-				-- sm.storage.save(sm.MANNEDTURRET_turretChunkLoaders_saveKey, sm.MANNEDTURRET_turretChunkLoaders)
-				sm.event.sendToTool(sm.MANNEDTURRET_turretAssistor, "sv_saveChunkLoaders")
 			end
 
 			sm.log.warning(sm.MANNEDTURRET_turretChunkLoaders[cellKey])
 		end
 
 		function v:sv_OnTurretChunkLoaded(world, x, y, params)
-			-- sm.storage.save(sm.MANNEDTURRET_turretChunkLoaders_saveKey, sm.MANNEDTURRET_turretChunkLoaders)
-			sm.event.sendToTool(sm.MANNEDTURRET_turretAssistor, "sv_saveChunkLoaders")
 			sm.log.warning("CHUNK LOADED FOR TURRET, HANDLE:", sm.MANNEDTURRET_turretChunkLoaders[CellKey(x, y)].handle)
 		end
 
@@ -907,9 +903,6 @@ for k, v in pairs(_G) do
 			if #sm.MANNEDTURRET_turretChunkLoaders[cellKey].bases == 0 then
 				self:sv_releaseTurretChunkLoaderHandle(cellKey)
 			end
-
-			-- sm.storage.save(sm.MANNEDTURRET_turretChunkLoaders_saveKey, sm.MANNEDTURRET_turretChunkLoaders)
-			sm.event.sendToTool(sm.MANNEDTURRET_turretAssistor, "sv_saveChunkLoaders")
 
 			sm.log.warning(sm.MANNEDTURRET_turretChunkLoaders[cellKey])
 		end
