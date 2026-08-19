@@ -77,6 +77,11 @@ function CannonRocket:server_onFixedUpdate(dt)
     end
 end
 
+--external event
+function CannonRocket:server_tryExplode()
+    self:sv_explode()
+end
+
 function CannonRocket:sv_explode(position)
     if self.destroyed then return end
 

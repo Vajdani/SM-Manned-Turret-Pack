@@ -14,10 +14,29 @@ CannonBase.explosionDebrisData = {
     { uuid = obj_effect_cannon_seat_debris_handle,      offset = vec3(0,           0.847786,     1.69998) * 0.25 },
 }
 
+function CannonBase:server_onDestroy()
+    if sm.isOverrideAmmoType(self) then
+        self:sv_spawnNukeOnDestroy()
+    end
 
+    TurretBase.server_onDestroy(self)
+end
 
-function CannonBase:sv_spawnNukeOnDestroy(ammoType)
-    local ammoData = CannonSeat.overrideAmmoTypes[ammoType.index]
+function CannonBase:sv_spawnNukeOnDestroy()
+    local world
+    if sm.exists(self.shape) then
+        world = self.shape.body:getWorld()
+    else
+        world = self.turret:getWorld()
+        self.shape = {
+            worldPosition = self.worldPosition,
+            worldRotation = self.worldRotation,
+            at = self.worldRotation * vec3_up,
+            velocity = vec3_zero
+        }
+    end
+
+    local ammoData = CannonSeat.overrideAmmoTypes[self.sv_ammoType.index]
     local turretRot = self.shape.worldRotation * angleAxis(self.dir.x, vec3_forward) * angleAxis(-self.dir.y, vec3_right)
     local projectileRot = turretRot * turret_projectile_rotation_adjustment
     ---@diagnostic disable: missing-fields
@@ -32,6 +51,13 @@ function CannonBase:sv_spawnNukeOnDestroy(ammoType)
         }
     )
 
-    sm.shape.createPart(ammoData.ammo, endPos - projectileRot * sm.item.getShapeOffset(ammoData.ammo), projectileRot)
-    self:sv_e_setAmmoType(ammoType.previous)
+    sm.event.sendToWorld(world, "sv_e_spawnPart", {
+        uuid = ammoData.ammo,
+        pos = endPos - projectileRot * sm.item.getShapeOffset(ammoData.ammo),
+        rot = projectileRot,
+    })
+
+    if type(self.shape) == "Shape" then
+        self:sv_e_setAmmoType(self.sv_ammoType.previous)
+    end
 end

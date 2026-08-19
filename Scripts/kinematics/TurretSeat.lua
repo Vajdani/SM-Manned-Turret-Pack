@@ -298,7 +298,7 @@ function TurretSeat:sv_shoot(ammoType, caller)
         if sm.item.isPart(ammoData.uuid) then
             local projectileRot = rot * turret_projectile_rotation_adjustment
             finalFirePos = endPos - projectileRot * sm.item.getShapeOffset(ammoData.uuid)
-            local projectile = sm.shape.createPart(ammoData.uuid, finalFirePos, projectileRot)
+            local projectile = sm.shape.createPart(ammoData.uuid, finalFirePos + self.sv_base.body.velocity * 0.05, projectileRot)
 
             if ammoData.velocity then
                 sm.physics.applyImpulse(projectile, (dir * ammoData.velocity + self.sv_base.body.velocity) * projectile.mass, true)
@@ -307,7 +307,7 @@ function TurretSeat:sv_shoot(ammoType, caller)
             self:sv_OnPartFire(ammoType, ammoData, projectile, caller)
         else
             finalFirePos = endPos + dir * 0.25
-            sm.projectile.projectileAttack( ammoData.uuid, ammoData.damage, finalFirePos, sm.noise.gunSpread(dir, ammoData.spread or 0) * ammoData.velocity + self.sv_base.body.velocity, caller )
+            sm.projectile.projectileAttack( ammoData.uuid, ammoData.damage, finalFirePos, sm.noise.gunSpread(dir, ammoData.spread or 0) * ammoData.velocity, caller )
             self:sv_OnProjectileFire(ammoType, ammoData, caller)
         end
 
@@ -434,7 +434,7 @@ end
 function TurretSeat:client_canInteract()
     local canInteract = self.harvestable:getSeatCharacter() == nil
     if canInteract then
-        sm.gui.setInteractionText("", sm.gui.getKeyBinding("Use", true), "#{INTERACTION_USE}")
+        sm.gui.setInteractionText(sm.gui.getKeyBinding("Use", true).."#{INTERACTION_USE}\t"..sm.gui.getKeyBinding("Attack", true).."Carry", "")
     else
         sm.gui.setInteractionText("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>#{ALERT_DRIVERS_SEAT_OCCUPIED}</p>")
     end

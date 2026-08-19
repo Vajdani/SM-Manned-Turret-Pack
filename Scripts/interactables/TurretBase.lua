@@ -44,8 +44,6 @@ function TurretBase:server_onCreate()
         health = self.maxHealth,
         maxHealth = self.maxHealth
     }
-
-    self.spawnPosition = self.shape.worldPosition
 end
 
 function TurretBase:sv_syncToLateJoiner(player)
@@ -71,6 +69,9 @@ function TurretBase:server_onDestroy()
 end
 
 function TurretBase:server_onFixedUpdate()
+    self.worldPosition = self.shape.worldPosition
+    self.worldRotation = self.shape.worldRotation
+
     local active = sm.exists(self.turret) and self.turret:getSeatCharacter() ~= nil or false
     if active ~= self.interactable.active then
         self.interactable.active = active
@@ -178,6 +179,8 @@ function TurretBase:sv_createTurret()
     self.turret = sm.harvestable.createHarvestable(sm.uuid.new(self.seatUUID), pos, self.shape.worldRotation)
     self.turret:setParams({ base = self.interactable, ammoType = self.sv_ammoType })
     self.network:setClientData(self.turret, 1)
+
+    self.spawnPosition = self.turret.initialPosition
 
     sm.event.sendToGame("sv_addTurretChunkLoader", self.interactable)
 end

@@ -122,7 +122,7 @@ function CannonSeat:server_onDestroy()
     end
 
     if sm.exists(self.sv_base) and sm.isOverrideAmmoType(self) then
-        sm.event.sendToInteractable(self.sv_base, "sv_spawnNukeOnDestroy", self.sv_ammoType)
+        sm.event.sendToInteractable(self.sv_base, "sv_spawnNukeOnDestroy")
     end
 end
 

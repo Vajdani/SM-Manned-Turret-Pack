@@ -117,6 +117,16 @@ function TurretAssistor:server_onCreate()
     end
 
     self.charQueue = {}
+
+    if sm.SEEKERBOT_TAKEDOWN then
+        self:RegisterSeekerbotTakeDown()
+    end
+end
+
+function TurretAssistor:server_onRefresh()
+    if sm.SEEKERBOT_TAKEDOWN then
+        self:RegisterSeekerbotTakeDown()
+    end
 end
 
 function TurretAssistor:server_onFixedUpdate()
@@ -167,4 +177,20 @@ end
 function TurretAssistor:sv_addCharToDestroyQueue(char)
     sm.log.warning("CHARACTER ADDED TO DISCARD QUEUE")
     table.insert(self.charQueue, char)
+end
+
+
+
+function TurretAssistor:RegisterSeekerbotTakeDown()
+    local SeekerbotDamageValues = {
+        [tostring(projectile_turret_bullet_explosive)]        = { "PROJ_TO_DAMAGE",  3   },
+        [tostring(projectile_turret_bullet_explosive_tracer)] = { "PROJ_TO_DAMAGE",  3   },
+        [tostring(projectile_aprocket)]                       = { "PROJ_TO_DAMAGE",  35  },
+        [tostring(obj_cannon_nuke)]                           = { "SHAPE_TO_DAMAGE", 200 },
+        [tostring(obj_cannon_guidedrocket)]                   = { "SHAPE_TO_DAMAGE", 50  },
+    }
+
+    for k, v in pairs(SeekerbotDamageValues) do
+        sm.SEEKERBOT_TAKEDOWN[v[1]][k] = v[2]
+    end
 end
