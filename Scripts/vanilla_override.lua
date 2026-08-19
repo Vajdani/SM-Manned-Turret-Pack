@@ -34,17 +34,7 @@ end
 -- #region Lift
 sm.MANNEDTURRET_turretBases_clientPublicData = sm.MANNEDTURRET_turretBases_clientPublicData or {}
 local LiftReplacement = {}
-function LiftReplacement.client_onEquippedUpdate(self, primaryState, secondaryState)
-	if self.tool:isLocal() and self.equipped and sm.localPlayer.getPlayer():getCharacter() then
-		local success, raycastResult = sm.localPlayer.getRaycast(7.5)
-		return true, self:client_interact(primaryState, secondaryState, raycastResult)
-	end
-	return true, false
-end
-
 function LiftReplacement:checkForTurret(result)
-	if #self.selectedBodies > 0 then return end
-
 	local harvestable = result:getHarvestable()
 	local base = (harvestable.clientPublicData or {}).base
 	if base then
@@ -53,23 +43,30 @@ function LiftReplacement:checkForTurret(result)
 end
 
 ---@param raycastResult RaycastResult
-function LiftReplacement.client_interact(self, primaryState, secondaryState, raycastResult)
+function LiftReplacement:client_interact(primaryState, secondaryState, raycastResult)
 	local targetBody = nil
-	local blockDelete = false
 
 	if self.importBodies then
 		self.selectedBodies = self.importBodies
 		self.importBodies = nil
+		self.selectedBodiesInitTick = sm.game.getCurrentTick()
 	end
 
 	--Clear states
-	if secondaryState == 1 and #self.selectedBodies > 0 then
+	if secondaryState ~= sm.tool.interactState.null then
 		self.hoverBodies = {}
+		if #self.selectedBodies > 0 then
+			if sm.exists( self.selectedBodies[1] ) then
+				if self.selectedBodies[1]:isGhost() then
+					self.network:sendToServer( "sv_n_removeGhostBody", self.selectedBodies[1] )
+				end
+			end
+		end
 		self.selectedBodies = {}
+		self.selectedBodiesInitTick = 0
 
 		sm.tool.forceTool(nil)
 		self.forced = false
-		blockDelete = true
 	end
 
 	--Raycast
@@ -125,7 +122,7 @@ function LiftReplacement.client_interact(self, primaryState, secondaryState, ray
 	end
 
 	--Hover
-	if isSelectable and #self.selectedBodies == 0 then
+	if isSelectable and #self.selectedBodies == 0 and self.worldAllowsLift then
 		self.hoverBodies = targetBody and targetBody:getCreationBodies() or {}
 	else
 		self.hoverBodies = {}
@@ -134,31 +131,129 @@ function LiftReplacement.client_interact(self, primaryState, secondaryState, ray
 	-- Unselect invalid bodies
 	if #self.selectedBodies > 0 and not isCarryable and not self.forced then
 		self.selectedBodies = {}
+		self.selectedBodiesInitTick = 0
 	end
 
 	--Check lift collision and if placeable surface
-	local isPlaceable = self:cl_checkPlaceable(raycastResult)
+	local isPlaceable = self:cl_checkPlaceable( raycastResult )
+	local specialPlacement = false
+	local specialPlacementPosition = nil
+	local specialPlacementInteractable = nil
+	if #self.selectedBodies == 0 then
+		local shape = raycastResult:getShape()
+		if shape and shape.interactable and shape.interactable:getType() == "scripted" and shape.interactable.clientPublicData then
+			if shape.interactable.clientPublicData.liftPlacement ~= nil then
+				specialPlacementPosition = shape.interactable.clientPublicData.liftPlacement
+				specialPlacementInteractable = shape.interactable
+				specialPlacement = true
+			end
+		end
+	end
 
-	--Lift level
-	local okPosition, liftLevel = sm.tool.checkLiftCollision(self.selectedBodies, self.liftPos, self.rotationIndex)
+	local maxLevel = sm.tool.getLiftMaxLevel()
+	local current = self.liftCollisionLevel
+	local testLevel = self.liftCollisionTestLevel
+	-- Set whenever a full sweep settles, signalling that `current` is a
+	-- stable enough answer to push to the visualization.
+	local commitDisplay = false
+
+	if #self.selectedBodies == 0 then
+		local valid = sm.tool.checkLiftCollisionAtLevel( self.selectedBodies, self.liftPos, self.rotationIndex, 0, self.selectedBodiesInitTick )
+		current = valid and 0 or -1
+		testLevel = 0
+		commitDisplay = true
+	elseif testLevel >= 0 and testLevel < maxLevel then
+		local valid = sm.tool.checkLiftCollisionAtLevel( self.selectedBodies, self.liftPos, self.rotationIndex, testLevel, self.selectedBodiesInitTick )
+		if current < 0 then
+			-- Searching upward for the first valid level
+			if valid then
+				current = testLevel
+				testLevel = current - 1
+				if testLevel < 0 then
+					testLevel = current -- nothing below; revalidate current next frame
+					commitDisplay = true
+				end
+			else
+				testLevel = testLevel + 1
+				if testLevel >= maxLevel then
+					testLevel = 0 -- restart search from the bottom
+					commitDisplay = true -- swept everything; commit invalid result
+				end
+			end
+		elseif testLevel == current then
+			-- Revalidating the current best level
+			if valid then
+				testLevel = current - 1
+				if testLevel < 0 then
+					testLevel = current -- already at the lowest level; keep revalidating
+					commitDisplay = true
+				end
+			else
+				current = -1
+				testLevel = 0 -- current became invalid, search again from the bottom
+			end
+		else
+			-- Scanning downward (testLevel < current) trying to find a lower valid level
+			if valid then
+				current = testLevel
+			end
+			testLevel = testLevel - 1
+			if testLevel < 0 then
+				testLevel = current -- finished scan; revalidate current next
+				commitDisplay = true
+			end
+		end
+	end
+
+	self.liftCollisionLevel = current
+	self.liftCollisionTestLevel = testLevel
+
+	if commitDisplay then
+		self.liftDisplayLevel = current
+		self.liftDisplayHasResult = true
+	end
+
+	local displayLevel = self.liftDisplayLevel
+	local okPosition = self.liftDisplayHasResult and displayLevel >= 0
+	local liftLevel = okPosition and displayLevel or 0
 	isPlaceable = isPlaceable and okPosition
 
+	local player = sm.localPlayer.getPlayer()
+	if self.needsWorldUpdate then
+		local character = player:getCharacter()
+		if character then
+			local world = character:getWorld()
+			self.needsWorldUpdate = false
+			if world and world.clientPublicData then
+				if world.clientPublicData.isLiftPlacable ~= nil then
+					self.worldAllowsLift = world.clientPublicData.isLiftPlacable
+				end
+			end
+		end
+	end
+	if not self.worldAllowsLift then
+		isPlaceable = false
+		isSelectable = false
+	end
+
 	--Pickup
-	if primaryState == sm.tool.interactState.start then
+	if primaryState == sm.tool.interactState.start and self.worldAllowsLift then
+
 		if isSelectable and #self.selectedBodies == 0 then
 			self.selectedBodies = self.hoverBodies
 			self.hoverBodies = {}
-		elseif isPlaceable then
-			local placeLiftParams = {
-				player = sm.localPlayer.getPlayer(),
-				selectedBodies = self.selectedBodies,
-				liftPos =
-					self.liftPos,
-				liftLevel = liftLevel,
-				rotationIndex = self.rotationIndex
-			}
-			self.network:sendToServer("server_placeLift", placeLiftParams)
+			self.selectedBodiesInitTick = sm.game.getCurrentTick()
+		elseif specialPlacement and self.liftPos == specialPlacementPosition then
+			if specialPlacementInteractable and sm.exists( specialPlacementInteractable ) then
+				sm.event.sendToInteractable( specialPlacementInteractable, "cl_onLiftPlacement" )
+			end
+		elseif isPlaceable and not specialPlacement then
+			local placeLiftParams = { player = player, selectedBodies = self.selectedBodies, liftPos = self.liftPos, liftLevel = liftLevel, rotationIndex = self.rotationIndex }
+			self.network:sendToServer( "server_placeLift", placeLiftParams )
 			self.selectedBodies = {}
+			self.selectedBodiesInitTick = 0
+			self.liftCollisionLevel = -1
+			self.liftCollisionTestLevel = 0
 		end
 
 		sm.tool.forceTool(nil)
@@ -166,8 +261,19 @@ function LiftReplacement.client_interact(self, primaryState, secondaryState, ray
 	end
 
 	--Visualization
-	sm.visualization.setCreationValid(isPlaceable, false)
-	sm.visualization.setLiftValid(isPlaceable)
+	if specialPlacement then
+		if self.liftPos == specialPlacementPosition then
+			sm.visualization.setLiftVisible( false )
+		else
+			sm.visualization.setLiftVisible( true )
+			sm.visualization.setLiftValid( false )
+			sm.visualization.setLiftPosition( self.liftPos * 0.25 )
+		end
+		return
+	end
+
+	sm.visualization.setCreationValid( isPlaceable, false )
+	sm.visualization.setLiftValid( isPlaceable )
 
 	if raycastResult.valid then
 		local showLift = #self.hoverBodies == 0
@@ -175,11 +281,16 @@ function LiftReplacement.client_interact(self, primaryState, secondaryState, ray
 		sm.visualization.setLiftLevel(liftLevel)
 		sm.visualization.setLiftVisible(showLift)
 
+		if not self.worldAllowsLift then
+			sm.visualization.setCreationBodies({})
+			sm.visualization.setCreationFreePlacement(false)
+			sm.visualization.setCreationVisible(false)
+			return
+		end
 		if #self.selectedBodies > 0 then
 			sm.visualization.setCreationBodies(self.selectedBodies)
 			sm.visualization.setCreationFreePlacement(true)
-			sm.visualization.setCreationFreePlacementPosition(self.liftPos * 0.25 + sm.vec3.new(0, 0, 0.5) +
-				sm.vec3.new(0, 0, 0.25) * liftLevel)
+			sm.visualization.setCreationFreePlacementPosition(self.liftPos * 0.25 + sm.vec3.new(0,0,0.5) + sm.vec3.new(0,0,0.25) * liftLevel)
 			sm.visualization.setCreationFreePlacementRotation(self.rotationIndex)
 			sm.visualization.setCreationVisible(true)
 
@@ -205,17 +316,7 @@ function LiftReplacement.client_interact(self, primaryState, secondaryState, ray
 		sm.visualization.setCreationVisible(false)
 		sm.visualization.setLiftVisible(false)
 	end
-
-	return blockDelete
 end
-
--- function LiftReplacement:client_onUnequip()
--- 	self.equipped = false
--- 	sm.visualization.setCreationBodies( {} )
--- 	sm.visualization.setCreationVisible( false )
--- 	sm.visualization.setLiftVisible( false )
--- 	self.forced = false
--- end
 
 for k, liftClass in pairs({ Lift, SurvivalLift }) do
 	for _k, v in pairs(LiftReplacement) do

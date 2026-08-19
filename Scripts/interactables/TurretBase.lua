@@ -552,8 +552,6 @@ function TurretBase:cl_checkHighlight()
     end
 
     if self.lifted ~= lifted then
-        self.lifted = lifted
-
         self:cl_onLifted(lifted)
     end
 end

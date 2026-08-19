@@ -8,6 +8,12 @@ function sm.visualization.setCreationBodies(bodies)
     oldVizSetBodies(bodies)
 end
 
+oldVisSetValid = oldVisSetValid or sm.visualization.setLiftValid
+function sm.visualization.setLiftValid(state)
+    sm.visualization.isLiftValid = state
+    oldVisSetValid(state)
+end
+
 oldVizSetVisible = oldVizSetVisible or sm.visualization.setCreationVisible
 function sm.visualization.setCreationVisible(state)
     sm.visualization.isVisible = state
@@ -22,6 +28,10 @@ end
 
 function sm.visualization.isBodyHighlighted(body, lift)
     if not sm.visualization.isVisible or not lift and sm.visualization.creationFreePlacement then
+        return false
+    end
+
+    if lift and sm.visualization.isVisible and not sm.visualization.isLiftValid then
         return false
     end
 
