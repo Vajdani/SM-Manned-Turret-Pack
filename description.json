@@ -1,6 +1,6 @@
 {
 	"allow_add_mods" : true,
-	"custom_icons" : false,
+	"custom_icons" : true,
 	"dependencies" : 
 	[
 		{
@@ -14,5 +14,5 @@
 	"localId" : "f51045bd-3f94-476a-8053-55ba172d19a5",
 	"name" : "Manned Turret Pack",
 	"type" : "Blocks and Parts",
-	"version" : 1
+	"version" : 2
 }
