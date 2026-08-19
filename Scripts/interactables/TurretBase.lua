@@ -571,22 +571,6 @@ function TurretBase:cl_onLifted(state)
     end
 end
 
-function TurretBase:cl_n_putOnLift()
-    self.network:sendToServer("sv_putOnLift")
-end
-
-function TurretBase:cl_putOnLift()
-    self.lifted = false
-
-    if sm.exists(self.cl_turret) then
-        self.interactable:setSubMeshVisible("turretpart1", false)
-        self.interactable:setSubMeshVisible("turretpart2", false)
-    else
-        self.interactable:setSubMeshVisible("turretpart1", self.seatBuilt)
-        self.interactable:setSubMeshVisible("turretpart2", self.gunBuilt)
-    end
-end
-
 
 
 local SpeedPerStep = 1 / rad( 27 ) / 3
