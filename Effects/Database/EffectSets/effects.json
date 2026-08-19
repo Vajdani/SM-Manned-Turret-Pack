@@ -1,142 +1,151 @@
 {
-	"Turret - Shoot": {
+	"APRocket - Thruster": {
 		"effectList": [
 			{
+				"audio": [
+					"event:/vehicle/thrusters/thruster05"
+				],
 				"delay": 0.0,
-				"duration": 0.330,
-				"name": "event:/char/npc/bots/enemies/farmbot/farmbot_shoot",
-				"type": "audio"
-			},
-			{
-				"attached": false,
-				"delay": 0.0,
-				"name": "p_spudgun_muzzel_spinner",
 				"offset": [
 					0.0,
 					0.0,
-					0.0
+					0.5
 				],
-				"type": "particle"
+				"parameters": [
+					"velocity",
+					"power"
+				],
+				"type": "audio"
 			},
 			{
 				"delay": 0.0,
-				"duration": 0.40,
 				"name": "",
 				"offset": [
 					0.0,
-					0.0,
+					-0.875,
 					0.0
 				],
 				"parameters": [
-					"shakeStrength",
-					"shakeRadius"
+					"color",
+					"radius",
+					"intensity"
 				],
-				"type": "cameraShake"
+				"type": "pointLight"
+			},
+			{
+				"delay": 0.0,
+				"direction": [
+					0.0,
+					-1.0,
+					0.0
+				],
+				"name": "5_thruster_afterburner_BurstThrust_lvl5",
+				"offset": [
+					0.0,
+					-0.862500012,
+					0.0
+				],
+				"type": "particle"
+			},
+			{
+				"delay": 0.25,
+				"direction": [
+					0.0,
+					-1.0,
+					0.0
+				],
+				"name": "5_thruster_afterburner_startup_lvl5",
+				"offset": [
+					0.0,
+					-0.75,
+					0.0
+				],
+				"type": "particle"
+			},
+			{
+				"delay": 0.425000012,
+				"direction": [
+					0.0,
+					-1.0,
+					0.0
+				],
+				"name": "5_thruster_afterburner_lvl5",
+				"offset": [
+					0.0,
+					-0.75,
+					0.0
+				],
+				"type": "particle"
 			}
 		],
 		"parameterList": {
-			"shakeRadius": 5.0,
-			"shakeStrength": 0.005
+			"color": "007fff",
+			"intensity": 0.01,
+			"nearFade": true,
+			"nearFadeEnd": 0.0,
+			"nearFadeRange": 200.0,
+			"nearFadeReversed": true,
+			"power": 0.0,
+			"radius": 1.5,
+			"velocity": 0.0
 		}
 	},
-	"Turret - FailedShoot": {
+	"Cannon - AirStrike - Beacon": {
 		"effectList": [
 			{
-				"name": "event:/vehicle/resourcecollector_insert",
-				"type": "audio"
-			}
-		]
-	},
-	"RepairTool - Weld": {
-		"effectList": [
-			{
-				"name": "WeldTool - Weld",
-				"type": "audio"
-			},
-			{
-				"name": "construct_welding",
+				"delay": 0.0,
+				"name": "$CONTENT_DATA/Effects/Renderables/strike_beacon.rend",
 				"offset": [
 					0.0,
 					0.0,
 					0.0
 				],
-				"type": "particle"
+				"type": "renderable"
 			}
 		]
 	},
-	"Turret - SeatRepair1":
-	{
-		"effectList":
-		[
+	"Cannon - AirStrike - BeaconRange": {
+		"effectList": [
 			{
-				"type": "particle",
-				"name": "construct_addingbearing",
-				"direction": { "x": 0.0, "y": 1.0, "z": 0.0 },
-				"attached": true,
-				"delay": 0.0
-			},
-			{
-				"type": "particle",
-				"name": "p_logfile_pickup",
-				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
-				"direction": { "x": 0.0, "y": 0.0, "z": 1.0 },
-				"attached": true,
-				"delay": 0.0
-			},
-			{
-				"type": "audio",
-				"name": "event:/tools/weldtool/wt_sparks",
-				"attached": true,
-				"delay": 0.0
+				"delay": 0.0,
+				"name": "$CONTENT_DATA/Effects/Renderables/beacon_range_visualizer.rend",
+				"offset": [
+					0.0,
+					0.0,
+					0.0
+				],
+				"type": "renderable"
 			}
 		]
 	},
-	"Turret - SeatRepair2":
-	{
-		"effectList":
-		[
+	"Cannon - AirStrike - Radius": {
+		"effectList": [
 			{
-				"type": "particle",
-				"name": "p_logfile_pickup",
-				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
-				"direction": { "x": 0.0, "y": 0.0, "z": 1.0 },
-				"attached": true,
-				"delay": 0.0
-			},
-			{
-				"type": "audio",
-				"name": "event:/tools/weldtool/wt_sparks",
-				"attached": true,
-				"delay": 0.0
-			}
-		]
-	},
-	"Turret - RepairEvent": {
-		"effectList":
-		[
-			{
-				"type": "particle",
-				"name": "turret_repair_hit_bolts",
-				"delay": 0.0
-			},
-			{
-				"type": "particle",
-				"name": "construct_hit_ground_small",
-				"delay": 0.0
+				"delay": 0.0,
+				"name": "$CONTENT_DATA/Effects/Renderables/radius_visualizer.rend",
+				"offset": [
+					0.0,
+					0.0,
+					0.0
+				],
+				"type": "renderable"
 			}
 		]
 	},
 	"Cannon - Shoot": {
 		"effectList": [
 			{
-				"type": "audio",
+				"delay": 0.0,
 				"name": "Gas Explosion",
-				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
-				"parameters":
-				[
+				"offset": [
+					0.0,
+					0.0,
+					0.0
+				],
+				"parameters": [
 					"size"
 				],
-				"delay": 0.0
+				"type": "audio"
 			},
 			{
 				"attached": false,
@@ -151,7 +160,7 @@
 			},
 			{
 				"delay": 0.0,
-				"duration": 0.40,
+				"duration": 0.400000006,
 				"name": "",
 				"offset": [
 					0.0,
@@ -171,88 +180,62 @@
 			"size": 0.5
 		}
 	},
-	"ControlHud - Open":
-	{
-		"effectList":
-		[
+	"ControlHud - Close": {
+		"effectList": [
 			{
-				"type": "audio",
-				"name": "event:/props/mapinspector/mi_on",
-				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
-				"delay": 0.0
-			}
-		]
-	},
-	"ControlHud - Close":
-	{
-		"effectList":
-		[
-			{
-				"type": "audio",
+				"delay": 0.0,
 				"name": "event:/props/mapinspector/mi_off",
-				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
-				"delay": 0.0
+				"offset": [
+					0.0,
+					0.0,
+					0.0
+				],
+				"type": "audio"
 			}
 		]
 	},
-	"Cannon - AirStrike - Radius":
-	{
-		"effectList":
-		[
+	"ControlHud - Open": {
+		"effectList": [
 			{
-				"type": "renderable",
-				"name": "$CONTENT_DATA/Effects/Renderables/radius_visualizer.rend",
-				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
-				"delay": 0.0
-			}
-		]
-	},
-	"Cannon - AirStrike - Beacon":
-	{
-		"effectList":
-		[
-			{
-				"type": "renderable",
-				"name": "$CONTENT_DATA/Effects/Renderables/strike_beacon.rend",
-				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
-				"delay": 0.0
-			}
-		]
-	},
-	"Cannon - AirStrike - BeaconRange":
-	{
-		"effectList":
-		[
-			{
-				"type": "renderable",
-				"name": "$CONTENT_DATA/Effects/Renderables/beacon_range_visualizer.rend",
-				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
-				"delay": 0.0
+				"delay": 0.0,
+				"name": "event:/props/mapinspector/mi_on",
+				"offset": [
+					0.0,
+					0.0,
+					0.0
+				],
+				"type": "audio"
 			}
 		]
 	},
 	"LightningGatling - Shoot": {
-		"effectList":
-		[
+		"effectList": [
 			{
-				"type": "particle",
+				"delay": 0.0,
 				"name": "p_lightning",
-				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
-				"delay": 0.0
-			},
-			{
-				"type": "audio",
-				"name": "Gas Explosion",
-				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
-				"parameters":
-				[
-					"size"
+				"offset": [
+					0.0,
+					0.0,
+					0.0
 				],
-				"delay": 0.0
+				"type": "particle"
 			},
 			{
 				"delay": 0.0,
-				"duration": 0.40,
+				"name": "Gas Explosion",
+				"offset": [
+					0.0,
+					0.0,
+					0.0
+				],
+				"parameters": [
+					"size"
+				],
+				"type": "audio"
+			},
+			{
+				"delay": 0.0,
+				"duration": 0.400000006,
 				"name": "",
 				"offset": [
 					0.0,
@@ -266,57 +249,274 @@
 				"type": "cameraShake"
 			},
 			{
-				"type": "audio",
+				"delay": 0.0,
 				"name": "event:/props/installations/powercore_insert",
-				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
-				"delay": 0.0
+				"offset": [
+					0.0,
+					0.0,
+					0.0
+				],
+				"type": "audio"
 			}
 		],
 		"parameterList": {
 			"shakeRadius": 1.0,
 			"shakeStrength": 0.01,
-			"size" : 0.5
+			"size": 0.5
 		}
 	},
-	"Nuke - Explode":
-	{
-		"maxInstances":32,"parameterList":{"size":512.0,"color":"ffff00","radius":30.0,"intensity":8.0,"shakeStrength":2.0,"shakeRadius":90.0},
-		"parameterCurves":{
-			//"radius":{"timeline":[{"time":0.4,"value":30.0},{"time":1.2,"value":0.0}]},
-			"intensity":{"timeline":[{"time":0.4,"value":8.0},{"time":1.2,"value":0.0}]}
-		},
-		"effectList":[
-			{"type":"audio","name":"Gas Explosion","offset":{"x":0.0,"y":0.0,"z":0.0},"parameters":["size"],"delay":0.0},
-			{"type":"cameraShake","name":"","offset":{"x":0.0,"y":0.0,"z":0.0},"parameters":["shakeStrength","shakeRadius"],"duration":0.1,"delay":0.0},
-			{"type":"pointLight","name":"","offset":{"x":0.0,"y":0.0,"z":0.5},"parameters":["color","radius","intensity"],"duration":1.2,"delay":0.0},
-			{"type":"particle","name":"p_nuke_explosion","delay":0.0}
-		]
-	},
-	"Tracer - Glow": {
-		"effectList":
-		[
+	"Nuke - Explode": {
+		"effectList": [
 			{
-				"type": "particle",
-				"name": "p_tracer_glow",
-				"delay": 0.0
+				"delay": 0.0,
+				"name": "Gas Explosion",
+				"offset": [
+					0.0,
+					0.0,
+					0.0
+				],
+				"parameters": [
+					"size"
+				],
+				"type": "audio"
+			},
+			{
+				"delay": 0.0,
+				"duration": 0.100000001,
+				"name": "",
+				"offset": [
+					0.0,
+					0.0,
+					0.0
+				],
+				"parameters": [
+					"shakeStrength",
+					"shakeRadius"
+				],
+				"type": "cameraShake"
+			},
+			{
+				"delay": 0.0,
+				"duration": 1.200000048,
+				"name": "",
+				"offset": [
+					0.0,
+					0.0,
+					0.5
+				],
+				"parameters": [
+					"color",
+					"radius",
+					"intensity"
+				],
+				"type": "pointLight"
+			},
+			{
+				"delay": 0.0,
+				"name": "p_nuke_explosion",
+				"type": "particle"
+			}
+		],
+		"maxInstances": 32,
+		"parameterCurves": {
+			"intensity": {
+				"timeline": [
+					{
+						"time": 0.400000006,
+						"value": 8.0
+					},
+					{
+						"time": 1.200000048,
+						"value": 0.0
+					}
+				]
+			}
+		},
+		"parameterList": {
+			"color": "ffff00",
+			"intensity": 8.0,
+			"radius": 30.0,
+			"shakeRadius": 90.0,
+			"shakeStrength": 2.0,
+			"size": 512.0
+		}
+	},
+	"RepairTool - Weld": {
+		"effectList": [
+			{
+				"name": "WeldTool - Weld",
+				"type": "audio"
+			},
+			{
+				"name": "construct_welding",
+				"offset": [
+					0.0,
+					0.0,
+					0.0
+				],
+				"type": "particle"
 			}
 		]
 	},
-	"TurretHologram - Deactivate":
-	{
-		"effectList":
-		[
+	"Tracer - Glow": {
+		"effectList": [
 			{
-				"type": "particle",
-				"name": "p_builderguide_deactivate",
-				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
-				"direction": { "x": 0.0, "y": 1.0, "z": 0.0 },
-				"attached": false
+				"delay": 0.0,
+				"name": "p_tracer_glow",
+				"type": "particle"
+			}
+		]
+	},
+	"Turret - FailedShoot": {
+		"effectList": [
+			{
+				"name": "event:/vehicle/resourcecollector_insert",
+				"type": "audio"
+			}
+		]
+	},
+	"Turret - RepairEvent": {
+		"effectList": [
+			{
+				"delay": 0.0,
+				"name": "turret_repair_hit_bolts",
+				"type": "particle"
 			},
 			{
-				"type": "audio",
+				"delay": 0.0,
+				"name": "construct_hit_ground_small",
+				"type": "particle"
+			}
+		]
+	},
+	"Turret - SeatRepair1": {
+		"effectList": [
+			{
+				"attached": true,
+				"delay": 0.0,
+				"direction": [
+					0.0,
+					1.0,
+					0.0
+				],
+				"name": "construct_addingbearing",
+				"type": "particle"
+			},
+			{
+				"attached": true,
+				"delay": 0.0,
+				"direction": [
+					0.0,
+					0.0,
+					1.0
+				],
+				"name": "p_logfile_pickup",
+				"offset": [
+					0.0,
+					0.0,
+					0.0
+				],
+				"type": "particle"
+			},
+			{
+				"attached": true,
+				"delay": 0.0,
+				"name": "event:/tools/weldtool/wt_sparks",
+				"type": "audio"
+			}
+		]
+	},
+	"Turret - SeatRepair2": {
+		"effectList": [
+			{
+				"attached": true,
+				"delay": 0.0,
+				"direction": [
+					0.0,
+					0.0,
+					1.0
+				],
+				"name": "p_logfile_pickup",
+				"offset": [
+					0.0,
+					0.0,
+					0.0
+				],
+				"type": "particle"
+			},
+			{
+				"attached": true,
+				"delay": 0.0,
+				"name": "event:/tools/weldtool/wt_sparks",
+				"type": "audio"
+			}
+		]
+	},
+	"Turret - Shoot": {
+		"effectList": [
+			{
+				"delay": 0.0,
+				"duration": 0.330000013,
+				"name": "event:/char/npc/bots/enemies/farmbot/farmbot_shoot",
+				"type": "audio"
+			},
+			{
+				"attached": false,
+				"delay": 0.0,
+				"name": "p_spudgun_muzzel_spinner",
+				"offset": [
+					0.0,
+					0.0,
+					0.0
+				],
+				"type": "particle"
+			},
+			{
+				"delay": 0.0,
+				"duration": 0.400000006,
+				"name": "",
+				"offset": [
+					0.0,
+					0.0,
+					0.0
+				],
+				"parameters": [
+					"shakeStrength",
+					"shakeRadius"
+				],
+				"type": "cameraShake"
+			}
+		],
+		"parameterList": {
+			"shakeRadius": 5.0,
+			"shakeStrength": 0.005
+		}
+	},
+	"TurretHologram - Deactivate": {
+		"effectList": [
+			{
+				"attached": false,
+				"direction": [
+					0.0,
+					1.0,
+					0.0
+				],
+				"name": "p_builderguide_deactivate",
+				"offset": [
+					0.0,
+					0.0,
+					0.0
+				],
+				"type": "particle"
+			},
+			{
 				"name": "event:/tools/builderguide/deactivate",
-				"offset": { "x": 0.0, "y": 0.0, "z": 0.0 }
+				"offset": [
+					0.0,
+					0.0,
+					0.0
+				],
+				"type": "audio"
 			}
 		]
 	}

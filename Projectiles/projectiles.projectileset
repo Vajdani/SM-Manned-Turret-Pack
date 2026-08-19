@@ -294,7 +294,7 @@
          "enableImpactEffect": true
       },
       {
-         "attachedEffect": "Thruster - Level 5",
+         "attachedEffect": "APRocket - Thruster",
          "uuid": "aad3baad-861c-4a19-a3f6-b444e70bd27b",
          "name": "projectile_aprocket",
          "mass": 500,

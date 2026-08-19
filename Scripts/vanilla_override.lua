@@ -798,15 +798,7 @@ for k, v in pairs(_G) do
 			MannedTurret_originalHookFuncs[k] = {
 				server_onPlayerJoined = v.server_onPlayerJoined,
 				client_onLoadingScreenLifted = v.client_onLoadingScreenLifted,
-				client_onFixedUpdate = v.client_onFixedUpdate
 			}
-		end
-
-		function v:client_onFixedUpdate()
-			local func = MannedTurret_originalHookFuncs[k].client_onFixedUpdate
-			if func then
-				func(self)
-			end
 		end
 
 		function v:client_onLoadingScreenLifted()
@@ -939,7 +931,7 @@ end
 --preload the CarryTool rends because we nuke the normal preload
 for key, config in pairs(sm.json.open("$GAME_DATA/Tools/carry_config.carryconfig").carryTypes) do
 	if config.animation.animObject then
-		sm.tool.preloadRenderables( config.animation.animObject)
+		sm.tool.preloadRenderables(config.animation.animObject)
 	end
 
 	sm.tool.preloadRenderables(config.animation.tp)
