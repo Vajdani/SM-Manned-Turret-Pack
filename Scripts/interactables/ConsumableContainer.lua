@@ -1,5 +1,8 @@
 ConsumableContainer = class( nil )
 ConsumableContainer.maxChildCount = 255
+ConsumableContainer.colorNormal = sm.color.new( 0xcb0a00ff )
+ConsumableContainer.colorHighlight = sm.color.new( 0xee0a00ff )
+ConsumableContainer.connectIcon = "ammo"
 
 local ContainerSize = 5
 
@@ -62,25 +65,15 @@ end
 
 TurretNormalAmmoContainer = class( ConsumableContainer )
 TurretNormalAmmoContainer.connectionOutput = connectiontype_turretnormal
-TurretNormalAmmoContainer.colorNormal = sm.color.new( 0x84ff32ff )
-TurretNormalAmmoContainer.colorHighlight = sm.color.new( 0xa7ff4fff )
 
 TurretExplosiveAmmoContainer = class( ConsumableContainer )
 TurretExplosiveAmmoContainer.connectionOutput = connectiontype_turretexplosive
-TurretExplosiveAmmoContainer.colorNormal = sm.color.new( 0x84ff32ff )
-TurretExplosiveAmmoContainer.colorHighlight = sm.color.new( 0xa7ff4fff )
 
 CannonRocketContainer = class( ConsumableContainer )
 CannonRocketContainer.connectionOutput = connectiontype_cannonrocket
-CannonRocketContainer.colorNormal = sm.color.new( 0x84ff32ff )
-CannonRocketContainer.colorHighlight = sm.color.new( 0xa7ff4fff )
 
 CannonRatshotContainer = class( ConsumableContainer )
 CannonRatshotContainer.connectionOutput = connectiontype_cannonratshot
-CannonRatshotContainer.colorNormal = sm.color.new( 0x84ff32ff )
-CannonRatshotContainer.colorHighlight = sm.color.new( 0xa7ff4fff )
 
 RailgunSpikeContainer = class( ConsumableContainer )
 RailgunSpikeContainer.connectionOutput = connectiontype_railgunspike
-RailgunSpikeContainer.colorNormal = sm.color.new( 0x84ff32ff )
-RailgunSpikeContainer.colorHighlight = sm.color.new( 0xa7ff4fff )

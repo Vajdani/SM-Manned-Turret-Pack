@@ -102,6 +102,7 @@ MountedTurretGun.containerToAmmoType = {
     --["76331bbf-abbd-4b8d-bb54-f721a5b6193b"] = 5,
     ["096d4daf-639e-4947-a1a6-1890eaa94464"] = 4,
 }
+MountedTurretGun.connectIcon = "ammo"
 
 local connectionTypes = {
 	1024,

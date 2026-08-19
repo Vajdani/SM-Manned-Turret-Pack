@@ -29,6 +29,7 @@ TurretBase.explosionDebrisData = { --swap the blender y and z coordinates, inver
     { uuid = obj_effect_turret_seat_debris_shield_left,     offset = vec3(1.45117,     -0.877968,    2.84755) * 0.25 },
     { uuid = obj_effect_turret_seat_debris_shield_right,    offset = vec3(-1.45117,    -0.877968,    2.84755) * 0.25 },
 }
+TurretBase.connectIcon = "ammo"
 
 function TurretBase:server_onCreate()
     local data = self.storage:load() or {}
