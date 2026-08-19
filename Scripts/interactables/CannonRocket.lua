@@ -153,14 +153,20 @@ function CannonRocket:client_onUpdate(dt)
         self.network:sendToServer("sv_updateDir", { x = x , y = y })
     end
 
-    sm.camera.setPosition(self.shape:getInterpolatedWorldPosition() + self.shape.velocity * dt)
-
+    local rotation
     local fraction = (self.deathTick - sm.game.getServerTick()) / self.lifeTime
     if fraction > 0.98 then
-        sm.camera.setRotation(self.shape.worldRotation)
+        rotation = self.shape.worldRotation
     else
-        sm.camera.setRotation(nlerp(sm.camera.getRotation(), self.shape.worldRotation, dt * 15))
+        rotation = nlerp(sm.camera.getRotation(), self.shape.worldRotation, dt * 15)
     end
+
+    SetPlayerCamOverride({
+        cameraState = 7,
+        cameraFov = 45,
+        cameraPosition = self.shape:getInterpolatedWorldPosition() + self.shape.velocity * dt,
+        cameraRotation = rotation
+    })
 
     sm.gui.setProgressFraction(fraction)
 end

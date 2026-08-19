@@ -1,5 +1,3 @@
-dofile "$GAME_DATA/Scripts/game/Explosive.lua"
-
 ---@class CannonNuke : ShapeClass
 ---@field alive boolean
 ---@field counting boolean

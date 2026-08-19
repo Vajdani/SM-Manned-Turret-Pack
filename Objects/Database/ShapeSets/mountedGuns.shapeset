@@ -17,7 +17,7 @@
             "friction" : 3
          },
          "renderable" : "$CONTENT_DATA/Objects/Renderables/MountedGun/obj_interactive_mountable_turretgun.rend",
-         "rotationSet" : "PropY",
+         "rotationSet" : "PropYX",
          "scripted" : {
             "classname" : "MountedTurretGun",
             "data" : {},

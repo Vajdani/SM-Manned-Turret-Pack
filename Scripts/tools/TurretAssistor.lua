@@ -44,15 +44,6 @@ function sm.visualization.isBodyHighlighted(body, lift)
     return false
 end
 
-oldUuid = oldUuid or sm.uuid.new
-function sm.uuid.new(uuid)
-    if not sm.MannedTurret_gameHooked then
-        dofile("$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Scripts/vanilla_override.lua")
-    end
-
-	return oldUuid(uuid)
-end
-
 --nuke default world creation
 function sm.world.getLegacyCreativeWorld()
     return nil

@@ -18,6 +18,16 @@ dofile "$GAME_DATA/Scripts/game/AnimationUtil.lua"
 dofile "$SURVIVAL_DATA/Scripts/game/survival_shapes.lua"
 dofile "$SURVIVAL_DATA/Scripts/game/survival_harvestable.lua"
 dofile "$SURVIVAL_DATA/Scripts/game/survival_projectiles.lua"
+dofile "$GAME_DATA/Scripts/game/Explosive.lua"
+
+oldUuid = oldUuid or sm.uuid.new
+function sm.uuid.new(uuid)
+    if not sm.MannedTurret_gameHooked then
+        dofile("$CONTENT_f51045bd-3f94-476a-8053-55ba172d19a5/Scripts/vanilla_override.lua")
+    end
+
+	return oldUuid(uuid)
+end
 
 vec3             = sm.vec3.new
 vec3_right       = vec3(1,0,0)

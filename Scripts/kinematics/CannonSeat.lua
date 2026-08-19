@@ -66,7 +66,7 @@ CannonSeat.overrideAmmoTypes = {
     },
     {
         name = "Large Explosive Canister",
-        velocity = 50,
+        velocity = 100,
         recoilStrength = 3,
         fireCooldown = 40,
         effect = "Cannon - Shoot",
@@ -87,7 +87,7 @@ CannonSeat.overrideAmmoTypes = {
     {
         name = "Big Potato",
         damage = 100,
-        velocity = 60,
+        velocity = 100,
         recoilStrength = 1,
         fireCooldown = 40,
         effect = "Cannon - Shoot",

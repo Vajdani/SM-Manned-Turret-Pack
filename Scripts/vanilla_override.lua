@@ -663,6 +663,26 @@ local step5ActiveWidget = FindWidget( connectionsWidget, "Step5Active" )
 FindWidget( step5ActiveWidget, "FillBig" ).Visible = false
 FindWidget( step5ActiveWidget, "FillSmall" ).Visible = true
 step5ActiveWidget.Skin = "SeatTurretConnectionsBearing"
+
+dofile "$SURVIVAL_DATA/Scripts/game/interactables/GyroSeat.lua"
+
+DriverSeat.cl_checkRocketInput = Seat.cl_checkRocketInput
+
+MannedTurret_oldGyroSeatAction = MannedTurret_oldGyroSeatAction or GyroSeat.client_onAction
+function GyroSeat:client_onAction(action, state)
+	return self:cl_checkRocketInput(action, state) or MannedTurret_oldGyroSeatAction(self, action, state)
+end
+
+MannedTurret_oldGyroUpdateCamera = MannedTurret_oldGyroUpdateCamera or GyroSeat.cl_updateCamera
+function GyroSeat:cl_updateCamera(baseShape, dt)
+	for k, int in pairs(self.interactable:getChildren(connectiontype_cannonrocket)) do
+		if sm.GetInteractableClientPublicData(int).hasRocket then
+			return
+		end
+	end
+
+	MannedTurret_oldGyroUpdateCamera(self, baseShape, dt)
+end
 -- #endregion
 
 -- #region Other hooks

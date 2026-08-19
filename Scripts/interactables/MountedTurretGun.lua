@@ -1,5 +1,3 @@
-dofile( "$SURVIVAL_DATA/Scripts/game/survival_projectiles.lua" )
-
 ---@class MountedTurretGun : ShapeClass
 ---@field sv_ammoType number|table
 ---@field cl_ammoType number|table
@@ -118,12 +116,16 @@ function MountedTurretGun:server_onCreate()
 	self.sv.canFire = true
 	self.sv.parentActive = false
 
-	local ammoType = self.storage:load()
+	local saved = self.storage:load() or {}
+	local ammoType = saved.ammoType
 	if ammoType then
 		self:sv_updateAmmoType(ammoType)
 	else
 		self.sv_ammoType = 1
 	end
+
+	self.sv_automatic = saved.automatic or false
+	self.network:setClientData( self.sv_automatic )
 end
 
 
@@ -156,12 +158,13 @@ function MountedTurretGun:sv_tryFire()
 	local ammoContainer = ammoInteractable and ammoInteractable:getContainer( 0 ) or nil
 	local freeFire = not sm.game.getEnableAmmoConsumption() and not ammoContainer
 
+	local triggered = (self.sv_automatic and active or active and not self.sv.parentActive) and self.sv.canFire
 	if freeFire then
-		if active and not self.sv.parentActive and self.sv.canFire and self:sv_beforeFiring(self.sv_ammoType) then
+		if triggered and self:sv_beforeFiring(self.sv_ammoType) then
 			self:sv_fire(sm.GetTurretAmmoData(self, self.sv_ammoType))
 		end
 	else
-		if active and not self.sv.parentActive and self.sv.canFire and ammoContainer then
+		if triggered and ammoContainer then
 			local ammoData = sm.GetTurretAmmoData(self, self.sv_ammoType)
 
 			sm.container.beginTransaction()
@@ -188,7 +191,7 @@ function MountedTurretGun:sv_fire(ammoData)
 	if sm.item.isPart(ammoData.uuid) then
 		local projectileRot = rot * turret_projectile_rotation_adjustment
 		finalFirePos = self.shape.worldPosition + rot * self.fireOffset - projectileRot * sm.item.getShapeOffset(ammoData.uuid)
-		local projectile = sm.shape.createPart(ammoData.uuid, finalFirePos, projectileRot)
+		local projectile = sm.shape.createPart(ammoData.uuid, finalFirePos + self.shape.velocity * 0.05, projectileRot)
 
 		if ammoData.velocity then
 			sm.physics.applyImpulse(projectile, (dir * ammoData.velocity + self.shape.velocity) * projectile.mass, true)
@@ -198,7 +201,7 @@ function MountedTurretGun:sv_fire(ammoData)
 		self:sv_OnPartFire(self.sv_ammoType, ammoData, projectile, char and char:getPlayer())
 	else
 		finalFirePos = self.shape.worldPosition + rot * self.fireOffset
-		sm.projectile.shapeProjectileAttack( ammoData.uuid, ammoData.damage, self.fireOffset, sm.noise.gunSpread(vec3_up, ammoData.spread or 0) * ammoData.velocity + self.shape.velocity, self.shape )
+		sm.projectile.shapeProjectileAttack( ammoData.uuid, ammoData.damage, self.fireOffset, sm.noise.gunSpread(vec3_up, ammoData.spread or 0) * ammoData.velocity, self.shape )
 
 		local char = self:getSeatCharacter()
 		self:sv_OnProjectileFire(self.sv_ammoType, ammoData, char and char:getPlayer())
@@ -233,7 +236,7 @@ function MountedTurretGun:sv_updateAmmoType(ammoType)
 	if self.sv_ammoType == ammoType then return end
 
 	self.sv_ammoType = ammoType
-	self.storage:save(ammoType)
+	self.storage:save({ ammoType = ammoType, automatic = self.sv_automatic })
 	self.network:sendToClients("cl_updateAmmoType", ammoType)
 end
 
@@ -246,17 +249,29 @@ function MountedTurretGun:sv_unSetOverrideAmmoType()
     self:sv_updateAmmoType(self.sv_ammoType.previous)
 end
 
+function MountedTurretGun.sv_n_changeFireMode( self )
+	self.sv_automatic = not self.sv_automatic
+	self.storage:save({ ammoType = self.sv_ammoType, automatic = self.sv_automatic })
+	self.network:setClientData( self.sv_automatic )
+end
+
 
 
 function MountedTurretGun:client_onCreate()
 	self.boltValue = 0.0
+	self.cl_changeFireMode = 0
 	self.cl_ammoType = 1
+	self.cl_automatic = false
 end
 
 function MountedTurretGun:client_canInteract()
 	local canInteract = ({self:getInputs()})[2] == nil
 	if canInteract then
-		sm.gui.setInteractionText("", sm.gui.getKeyBinding("Use", true), "Switch ammo type")
+		sm.gui.setInteractionText(
+			sm.gui.getKeyBinding("Use", true).."Switch ammo type\t"..
+			sm.gui.getKeyBinding( "Tinker", true )..(self.cl_automatic and "#{INTERACTION_SWITCH_TO_SEMI-AUTOMATIC}" or "#{INTERACTION_SWITCH_TO_AUTOMATIC}"),
+			""
+		)
 	end
 	sm.gui.setInteractionText(("<p textShadow='false' bg='gui_keybinds_bg_white' color='#444444' spacing='9'>Ammunition: %s</p>"):format(sm.GetTurretAmmoData(self).name))
 
@@ -275,9 +290,27 @@ function MountedTurretGun:client_onInteract(char, state)
 	self.network:sendToServer("sv_updateAmmoType", ammoType)
 end
 
+function MountedTurretGun:client_onTinker(char, state)
+	if not state then return end
+
+	self.cl_changeFireMode = 1.0
+	self.network:sendToServer( "sv_n_changeFireMode" )
+
+	return true
+end
+
 function MountedTurretGun:client_onUpdate( dt )
-	if self.boltValue > 0.0 then
-		self.boltValue = self.boltValue - dt * 7.5
+	if self.cl_changeFireMode > 0.0 then
+		self.cl_changeFireMode = math.max( self.cl_changeFireMode - dt * 5, 0.0 )
+		if self.cl_changeFireMode == 0.0 then
+			self.boltValue = 0.0
+		else
+			self.boltValue = 1.0
+		end
+	else
+		if self.boltValue > 0.0 then
+			self.boltValue = math.max( self.boltValue - dt * 10, 0.0 )
+		end
 	end
 	if self.boltValue ~= self.prevBoltValue then
 		self.interactable:setPoseWeight( 0, sm.util.easing("easeOutCubic", self.boltValue) )
@@ -297,6 +330,10 @@ function MountedTurretGun:client_getAvailableParentConnectionCount( connectionTy
 
 		return 1
 	end
+end
+
+function MountedTurretGun.client_onClientDataUpdate( self, automatic )
+	self.cl_automatic = automatic
 end
 
 function MountedTurretGun:cl_updateAmmoType(ammoType)
