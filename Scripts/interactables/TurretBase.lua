@@ -498,13 +498,13 @@ function TurretBase:cl_n_toggleHud(toggle, forceSurvivalOff)
 
     if toggle then
         self.healthBar:open()
-        if sm.exists(sm.SURVIVALHUD) then
-            sm.SURVIVALHUD:close()
+        if SurvivalHudExists() then
+            CloseSurvivalHud()
         end
     else
         self.healthBar:close()
-        if sm.exists(sm.SURVIVALHUD) and not forceSurvivalOff then
-            sm.SURVIVALHUD:open()
+        if SurvivalHudExists() and not forceSurvivalOff then
+            OpenSurvivalHud()
         end
     end
 end

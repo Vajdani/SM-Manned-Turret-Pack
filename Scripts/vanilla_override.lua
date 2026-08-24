@@ -1,5 +1,7 @@
 ---@diagnostic disable: undefined-global
 
+local DEBUGVISUALS = false
+
 sm.log.warning("[MANNED TURRET] LOAD VANILLA OVERRIDE")
 
 if RayProjectileManager then
@@ -26,7 +28,19 @@ function BasePlayer:client_onCreate()
 	sm.BASEPLAYERENABLED = true
 
 	if g_survivalHud then
-		sm.SURVIVALHUD = g_survivalHud
+		table.insert(sm.SURVIVALHUD, g_survivalHud )
+	end
+end
+
+if SurvivalPlayer then
+	MannedTurret_oldSurvPlayerClientCreate = MannedTurret_oldSurvPlayerClientCreate or SurvivalPlayer.client_onCreate
+	function SurvivalPlayer:client_onCreate()
+		MannedTurret_oldSurvPlayerClientCreate(self)
+
+		if self.cl.statusPanelGui then
+			table.insert(sm.SURVIVALHUD, self.cl.statusPanelGui)
+			table.insert(sm.SURVIVALHUD, self.cl.oxygenPanelGui)
+		end
 	end
 end
 -- #endregion
@@ -690,6 +704,16 @@ end
 function SendDamageEventToCharacter(char, args)
 	if not sm.exists(char) then return end
 
+	if not args.impact then
+		sm.log.error("No 'impact' argument for SendDamageEventToCharacter.")
+		return
+	end
+
+	if not args.hitPos then
+		sm.log.warning("No 'hitPos' argument for SendDamageEventToCharacter, substituting with character position.")
+		args.hitPos = char.worldPosition
+	end
+
 	if char:isPlayer() then
 		sm.event.sendToPlayer(char:getPlayer(), "sv_e_receiveDamage", args)
 	else
@@ -741,39 +765,47 @@ for k, v in pairs(_G) do
 			end
 
 			if uuidstr == "aad3baad-861c-4a19-a3f6-b444e70bd27b" then --AP rocket
-				-- if count then
-				-- 	for i = 1, count do
-				-- 		sm.debugDraw.clear("apImpact"..i)
-				-- 	end
-				-- end
-
-				-- sm.debugDraw.addSphere("apImpactStart", position, 0.25, sm.color.new(1,0,0))
-
 				local dir = velocity:normalize()
 				local distance = 10
+				if DEBUGVISUALS then
+					if DEBUG_apCount then
+						for i = 1, DEBUG_apCount do
+							sm.debugDraw.clear("apImpact"..i)
+						end
+					end
 
-				-- sm.debugDraw.addArrow("apLength", position, position + dir * distance)
+					sm.debugDraw.addSphere("apImpactStart", position, 0.25, sm.color.new(1,0,0))
 
-				-- count = 0
-				while distance > 0 do
-					local hit, result = sm.physics.raycast(position, position + dir * distance)
+					sm.debugDraw.addLine("apLength", position, position + dir * distance)
+
+					DEBUG_apCount = 0
+				end
+
+				local i = 0
+				while distance > 0 or i > 99 do
+					i = i + 1
+
+					local hit, result = sm.physics.raycast(position, position + dir * distance, nil, sm.physics.filter.all)
+					-- print(hit, result)
 					if hit then
-						-- count = count + 1
-
 						distance = distance - distance * result.fraction
 						position = result.pointWorld + dir * 0.01
 
-						-- if count == 1 then
-						-- 	sm.debugDraw.addSphere("apImpact"..count, position, 0.1, sm.color.new(0,1,1))
-						-- else
-						-- 	sm.debugDraw.addSphere("apImpact"..count, position, 0.1, sm.color.new(0,1,0))
-						-- end
+						if DEBUGVISUALS then
+							DEBUG_apCount = DEBUG_apCount + 1
+							if DEBUG_apCount == 1 then
+								sm.debugDraw.addSphere("apImpact"..DEBUG_apCount, position, 0.1, sm.color.new(0,1,1))
+							else
+								sm.debugDraw.addSphere("apImpact"..DEBUG_apCount, position, 0.1, sm.color.new(0,1,0))
+							end
+						end
 
 						sm.physics.explode(position, 4, 2, 3, 8) --, "PropaneTank - ExplosionSmall")
 
 						local type = result.type
 						if type == "character" then
-							SendDamageEventToCharacter(char, { damage = 9999 })
+							sm.log.error("hello")
+							SendDamageEventToCharacter(result:getCharacter(), { damage = 9999, impact = dir * 10, hitPos = position })
 						elseif type == "body" then
 							local shape = result:getShape()
 							if shape.isBlock then
@@ -940,6 +972,11 @@ function sm.game.bindChatCommand(command, params, callback, help)
 	MannedTurret_oldBindCMD(command, params, callback, help)
 end
 -- #endregion
+
+--script reload
+if MannedTurret_GHooked then
+	GHooks()
+end
 
 --preload the CarryTool rends because we nuke the normal preload
 for key, config in pairs(sm.json.open("$GAME_DATA/Tools/carry_config.carryconfig").carryTypes) do

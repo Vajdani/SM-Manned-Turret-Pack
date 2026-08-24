@@ -1,6 +1,10 @@
 ---@diagnostic disable:duplicate-set-field
 
 sm.MannedTurret_ToolHooks = sm.MannedTurret_ToolHooks or {}
+sm.SURVIVALHUD = sm.SURVIVALHUD or {}
+if sm.SURVIVALHUD_STATE == nil then
+    sm.SURVIVALHUD_STATE = true
+end
 
 oldVizSetBodies = oldVizSetBodies or sm.visualization.setCreationBodies
 function sm.visualization.setCreationBodies(bodies)
@@ -148,6 +152,24 @@ end
 function TurretAssistor:sv_addCharToDestroyQueue(char)
     sm.log.warning("CHARACTER ADDED TO DISCARD QUEUE")
     table.insert(self.charQueue, char)
+end
+
+
+
+function TurretAssistor:client_onCreate()
+    if g_cl_turretAssistor then
+        return
+    end
+
+    g_cl_turretAssistor = self.tool
+end
+
+function TurretAssistor:client_onUpdate()
+    if self.tool ~= g_cl_turretAssistor then return end
+
+    if not sm.SURVIVALHUD_STATE then
+        CloseSurvivalHud()
+    end
 end
 
 

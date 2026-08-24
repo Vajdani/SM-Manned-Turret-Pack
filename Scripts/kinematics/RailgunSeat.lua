@@ -75,7 +75,7 @@ function RailgunSeat:sv_shoot(ammoType, caller)
                     end
                 end
             elseif type(obj) == "Character" then
-                SendDamageEventToCharacter(obj, { damage = damage })
+                SendDamageEventToCharacter(obj, { damage = damage, impact = dir * 10, hitPos = pos })
             elseif not sm.event.sendToHarvestable(obj, "sv_e_onHit", { damage = damage, position = pos }) then
                 sm.physics.explode( pos, 100, 1, 1, 1 )
             end

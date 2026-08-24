@@ -117,6 +117,32 @@ function SetPlayerCamOverride(data)
     end
 end
 
+function SurvivalHudExists()
+    return sm.exists(sm.SURVIVALHUD[1])
+end
+
+function OpenSurvivalHud()
+    sm.SURVIVALHUD_STATE = true
+    for k, v in pairs(sm.SURVIVALHUD) do
+        if type(v) == "GuiInterface" then
+            v:open()
+        else
+            v:setHidden(false)
+        end
+    end
+end
+
+function CloseSurvivalHud()
+    sm.SURVIVALHUD_STATE = false
+    for k, v in pairs(sm.SURVIVALHUD) do
+        if type(v) == "GuiInterface" then
+            v:close()
+        else
+            v:setHidden(true)
+        end
+    end
+end
+
 ---@param int Interactable
 ---@param data any
 function sm.SetInteractableClientPublicData(int, data)
@@ -133,6 +159,16 @@ end
 ---@param char Character
 function SendDamageEventToCharacter(char, args)
 	if not sm.exists(char) then return end
+
+	if not args.impact then
+		sm.log.error("No 'impact' argument for SendDamageEventToCharacter.")
+		return
+	end
+
+	if not args.hitPos then
+		sm.log.warning("No 'hitPos' argument for SendDamageEventToCharacter, substituting with character position.")
+		args.hitPos = char.worldPosition
+	end
 
 	if char:isPlayer() then
 		sm.event.sendToPlayer(char:getPlayer(), "sv_e_receiveDamage", args)

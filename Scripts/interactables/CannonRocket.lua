@@ -169,7 +169,7 @@ function CannonRocket:client_onUpdate(dt)
     SetPlayerCamOverride({
         cameraState = 7,
         cameraFov = 45,
-        cameraPosition = self.shape:getInterpolatedWorldPosition() + self.shape.velocity * dt,
+        cameraPosition = self.shape:getInterpolatedWorldPosition() + self.shape.velocity * dt + self.shape:getInterpolatedAt(),
         cameraRotation = rotation
     })
 

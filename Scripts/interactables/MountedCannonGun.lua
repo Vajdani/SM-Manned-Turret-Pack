@@ -304,8 +304,8 @@ function MountedCannonGun:client_onDestroy()
 
     SetPlayerCamOverride()
 
-    if sm.GetInteractableClientPublicData({ id = self.id }).hasRocket and sm.exists(sm.SURVIVALHUD) then
-        sm.SURVIVALHUD:open()
+    if sm.GetInteractableClientPublicData({ id = self.id }).hasRocket and SurvivalHudExists() then
+        OpenSurvivalHud()
     end
 
     sm.SetInteractableClientPublicData({ id = self.id }, nil)
@@ -431,12 +431,12 @@ function MountedCannonGun:cl_n_toggleHud(toggle, forceSurvivalOff)
     end
 
     if toggle then
-        if sm.exists(sm.SURVIVALHUD) then
-            sm.SURVIVALHUD:close()
+        if SurvivalHudExists() then
+            CloseSurvivalHud()
         end
     else
-        if sm.exists(sm.SURVIVALHUD) and not forceSurvivalOff then
-            sm.SURVIVALHUD:open()
+        if SurvivalHudExists() and not forceSurvivalOff then
+            OpenSurvivalHud()
         end
     end
 end
